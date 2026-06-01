@@ -66,24 +66,25 @@
 
         /* Custom Scrollbar Styles for Wow Factor */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 12px;
+            height: 12px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(0, 230, 118, 0.15);
+            background: rgba(0, 230, 118, 0.8);
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 230, 118, 0.35);
-            box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
+            background: rgba(0, 255, 136, 1);
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.8);
         }
 
         /* Master Dashboard Frame */
@@ -179,11 +180,18 @@
         .brand-title h1 {
             font-family: 'Outfit', sans-serif;
             font-weight: 900;
-            font-size: 24px;
+            font-size: 28px;
             letter-spacing: -0.5px;
-            background: linear-gradient(to right, #ffffff, #c7ffde);
+            background: linear-gradient(to right, #00e676, #00e5ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 230, 118, 0.5);
+            animation: text-pulse 2s infinite alternate;
+        }
+
+        @keyframes text-pulse {
+            from { text-shadow: 0 0 10px rgba(0, 230, 118, 0.3); }
+            to { text-shadow: 0 0 25px rgba(0, 230, 118, 0.9); }
         }
 
         .brand-title p {

@@ -29,7 +29,7 @@ def test_split_documents():
 def test_embeddings_generation():
     from src.ingest.uploader import get_embeddings_model
     embeddings = get_embeddings_model()
-    assert embeddings.model == "text-embedding-004"
+    assert embeddings.model == "gemini-embedding-001"
     vector = embeddings.embed_query("Test embedding generation")
     assert len(vector) == 768
 

@@ -283,6 +283,7 @@
             flex-direction: column;
             gap: 24px;
             background: radial-gradient(circle at 50% 10%, rgba(0, 230, 118, 0.01) 0%, rgba(0,0,0,0) 80%);
+            scroll-behavior: smooth;
         }
 
         .message-row {
@@ -759,7 +760,7 @@
                     <span class="metric-lbl">Gemini 2.5 Dual Split</span>
                 </div>
                 <div class="metric-card">
-                    <span class="metric-val">text-embedding-004</span>
+                    <span class="metric-val">gemini-embedding-001</span>
                     <span class="metric-lbl">Google Embedding API</span>
                 </div>
                 <div class="metric-card">
@@ -776,11 +777,9 @@
             <div class="chat-history" id="chatHistory">
                 <div class="message-row system">
                     <div class="bubble">
-                        Welcome to **Health AI**. 
-                        
-                        I am your dedicated enterprise-grade assistant. Any medical question or document analysis you submit here is processed using the hybrid **Gemini 2.5 Flash** reasoning engine, securely grounded in your proprietary Pinecone vector files with active self-correction to ensure **0% hallucination compliance**.
-                        
-                        How can I assist your diagnostic analysis today?
+                        <p style="margin-bottom: 12px;">Welcome to <strong>Health AI</strong>.</p>
+                        <p style="margin-bottom: 12px;">I am your dedicated enterprise-grade assistant. Any medical question or document analysis you submit here is processed using the hybrid <strong>Gemini 2.5 Flash</strong> reasoning engine, securely grounded in your proprietary Pinecone vector files with active self-correction to ensure <strong>0% hallucination compliance</strong>.</p>
+                        <p>How can I assist your diagnostic analysis today?</p>
                     </div>
                 </div>
             </div>
@@ -857,7 +856,7 @@
         // Interactive architecture visual highlights
         const flowDetails = {
             1: "<strong>Step 1: Intelligent Router & Rewriter (Gemini 2.5 Flash-Lite)</strong><br>Analyzes your query. Conversational greetings are bypassed to save Pinecone database reads. Complex search queries are optimized with clinical synonyms to guarantee semantic retrieval precision.",
-            2: "<strong>Step 2: Vector Embeddings (text-embedding-004)</strong><br>Translates your optimized query into a high-dimensional mathematical vector (768 dimensions) using Google's premier text-embedding-004 model.",
+            2: "<strong>Step 2: Vector Embeddings (gemini-embedding-001)</strong><br>Translates your optimized query into a high-dimensional mathematical vector (768 dimensions) using Google's premier gemini-embedding-001 model with Matryoshka Representation Learning.",
             3: "<strong>Step 3: Pinecone Search</strong><br>Performs a rapid cosine-similarity search against your Pinecone index to retrieve the top 4 most relevant medical document chunks under 12 milliseconds.",
             4: "<strong>Step 4: Grounded Generation (Gemini 2.5 Flash)</strong><br>Feeds the query and the exact retrieved text chunks into Gemini 2.5 Flash's advanced reasoning model to draft a grounded clinical answer.",
             5: "<strong>Step 5: Self-Correction Hallucination Check</strong><br>A secondary verification pass cross-checks the draft against retrieved source files. Any ungrounded assumptions or facts are instantly pruned and self-corrected to guarantee 100% data fidelity."
@@ -869,6 +868,73 @@
             flowDetailBox.innerHTML = flowDetails[step];
         }
 
+        // Beautiful smooth autoscroll helper
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatHistory.scrollTo({
+                    top: chatHistory.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
+
+        // Modern, premium Markdown-to-HTML formatter
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            // Escape HTML characters to prevent XSS
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+            // Bullet points (lines starting with - or * followed by a space)
+            let lines = html.split('\n');
+            let inList = false;
+            
+            for (let i = 0; i < lines.length; i++) {
+                let trimmed = lines[i].trim();
+                if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+                    let content = trimmed.substring(2);
+                    if (!inList) {
+                        inList = true;
+                        lines[i] = '<ul><li>' + content + '</li>';
+                    } else {
+                        lines[i] = '<li>' + content + '</li>';
+                    }
+                } else {
+                    if (inList) {
+                        inList = false;
+                        lines[i] = '</ul>' + lines[i];
+                    }
+                }
+            }
+            if (inList) {
+                lines.push('</ul>');
+            }
+            html = lines.join('\n');
+
+            // Bold **text**
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Italic *text*
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Paragraphs (split by double newlines)
+            html = html.split('\n\n').map(p => {
+                let trimmed = p.trim();
+                if (!trimmed) return '';
+                if (trimmed.startsWith('<ul>') || trimmed.startsWith('<li>') || trimmed.startsWith('</ul>')) {
+                    return trimmed;
+                }
+                return `<p style="margin-bottom: 12px; line-height: 1.6;">${trimmed}</p>`;
+            }).join('');
+
+            return html;
+        }
+
         // Send a message
         async function sendMessage() {
             const query = chatInput.value.trim();
@@ -878,10 +944,11 @@
 
             // User message bubble
             appendMessage(query, 'user');
+            scrollToBottom();
 
             // Typing indicator
             const typingRow = appendTypingIndicator();
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+            scrollToBottom();
 
             try {
                 const response = await fetch('/query', {
@@ -907,7 +974,7 @@
                 appendMessage(`Connection error: Unable to contact the API.`, 'system');
             }
 
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+            scrollToBottom();
         }
 
         function appendMessage(text, sender) {
@@ -916,19 +983,32 @@
             
             const bubble = document.createElement('div');
             bubble.className = 'bubble';
-            bubble.textContent = text;
+            bubble.innerHTML = parseMarkdown(text);
             
             if (sender === 'system') {
                 const actions = document.createElement('div');
                 actions.className = 'bubble-actions';
-                actions.innerHTML = `
-                    <button class="action-icon-btn" onclick="navigator.clipboard.writeText('${text.replace(/'/g, "\\'")}')">
-                        📋 Copy
-                    </button>
-                    <button class="action-icon-btn" onclick="alert('Feedback recorded!')">
-                        👍
-                    </button>
-                `;
+                
+                // Copy Action Button
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'action-icon-btn';
+                copyBtn.textContent = '📋 Copy';
+                copyBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(text);
+                    copyBtn.textContent = '✅ Copied!';
+                    setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 2000);
+                });
+
+                // Positive Feedback Button
+                const thumbBtn = document.createElement('button');
+                thumbBtn.className = 'action-icon-btn';
+                thumbBtn.textContent = '👍';
+                thumbBtn.addEventListener('click', () => {
+                    alert('Feedback recorded!');
+                });
+
+                actions.appendChild(copyBtn);
+                actions.appendChild(thumbBtn);
                 bubble.appendChild(actions);
             }
             

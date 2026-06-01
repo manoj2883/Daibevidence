@@ -802,8 +802,6 @@
         <div class="sidebar">
             <div class="sidebar-tabs">
                 <button class="tab-btn active" onclick="switchTab('sources')">Sources</button>
-                <button class="tab-btn" onclick="switchTab('compare')">Comparisons</button>
-                <button class="tab-btn" onclick="switchTab('flow')">Architecture</button>
                 <button class="tab-btn" onclick="switchTab('ingest')">Add</button>
             </div>
             
@@ -816,157 +814,7 @@
                     <div id="sourcesContainer" style="display: flex; flex-direction: column; gap: 15px; width: 100%;"></div>
                 </div>
 
-                <!-- Comparisons Tab (Top 10 AI Chatbots) -->
-                <div class="sidebar-panel" id="comparePanel">
-                    <div class="benchmarks-intro">
-                        Comparing **Health AI** against top general chatbots on medical accuracy, data compliance, and hallucination reduction:
-                    </div>
-                    <div class="comparison-scroll-wrapper">
-                        <!-- Health AI -->
-                        <div class="comp-card active-brand">
-                            <div class="comp-info">
-                                <span class="comp-name">🟢 Health AI (RAG)</span>
-                                <span class="comp-spec">Grounded Dual-Model Gemini 2.5</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">99.8% Accuracy</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill" style="width: 99.8%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- GPT-4o -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">GPT-4o (OpenAI)</span>
-                                <span class="comp-spec">General Model - High Hallucinations</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">84.2%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill orange" style="width: 84.2%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Claude 3.5 Sonnet -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Claude 3.5 Sonnet</span>
-                                <span class="comp-spec">Good reasoning, lacks local files</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">88.5%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill" style="width: 88.5%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Gemini 1.5 Pro -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Gemini 1.5 Pro</span>
-                                <span class="comp-spec">Wide window, slower recall speed</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">87.1%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill" style="width: 87.1%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Llama 3.1 -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Llama 3.1 (70B)</span>
-                                <span class="comp-spec">Open weights, high baseline risk</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">79.3%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill orange" style="width: 79.3%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Copilot -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Microsoft Copilot</span>
-                                <span class="comp-spec">Commercial search focus</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">76.4%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill orange" style="width: 76.4%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Perplexity -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Perplexity AI</span>
-                                <span class="comp-spec">Web search RAG, unsanitized facts</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">82.0%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill orange" style="width: 82%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Grok 2 -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Grok 2 (xAI)</span>
-                                <span class="comp-spec">Real-time social feeds focus</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">73.1%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill red" style="width: 73.1%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Character.ai -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Character.ai</span>
-                                <span class="comp-spec">Pure conversational, 0% fact compliance</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">28.0%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill red" style="width: 28%;"></div></div>
-                            </div>
-                        </div>
-                        <!-- Gemini Advanced -->
-                        <div class="comp-card">
-                            <div class="comp-info">
-                                <span class="comp-name">Gemini Advanced</span>
-                                <span class="comp-spec">Consumer focus, no vector custom index</span>
-                            </div>
-                            <div class="comp-score-section">
-                                <span class="comp-score-val">89.4%</span>
-                                <div class="comp-score-bar"><div class="comp-score-fill" style="width: 89.4%;"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Architectural Flow Diagram Tab -->
-                <div class="sidebar-panel" id="flowPanel">
-                    <div class="diagram-section">
-                        <div class="diagram-title">System Execution Path</div>
-                        <div class="node-chain">
-                            <div class="node-step active" onclick="showFlowDetail(1)">
-                                <div class="node-num">1</div>
-                                <div class="node-lbl">Router (Flash-Lite)</div>
-                            </div>
-                            <div class="node-step" onclick="showFlowDetail(2)">
-                                <div class="node-num">2</div>
-                                <div class="node-lbl">text-embedding-004</div>
-                            </div>
-                            <div class="node-step" onclick="showFlowDetail(3)">
-                                <div class="node-num">3</div>
-                                <div class="node-lbl">Pinecone Search</div>
-                            </div>
-                            <div class="node-step" onclick="showFlowDetail(4)">
-                                <div class="node-num">4</div>
-                                <div class="node-lbl">Generation (Flash)</div>
-                            </div>
-                            <div class="node-step" onclick="showFlowDetail(5)">
-                                <div class="node-num">5</div>
-                                <div class="node-lbl">Self-Correction Pass</div>
-                            </div>
-                        </div>
-                        <div class="node-detail-panel" id="flowDetailBox">
-                            <strong>Step 1: Intelligent Router & Rewriter</strong><br>
-                            Gemini 2.5 Flash-Lite analyzes your query instantly. Conversational chats (like greetings) are replied to directly. Medical queries are expanded and rewritten with synonyms to optimize Pinecone search.
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Admin Ingestion Form Tab -->
                 <div class="sidebar-panel" id="ingestPanel">
@@ -1000,14 +848,8 @@
             if (tab === 'sources') {
                 document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
                 document.getElementById('sourcesPanel').classList.add('active');
-            } else if (tab === 'compare') {
-                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-                document.getElementById('comparePanel').classList.add('active');
-            } else if (tab === 'flow') {
-                document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
-                document.getElementById('flowPanel').classList.add('active');
             } else {
-                document.querySelector('.tab-btn:nth-child(4)').classList.add('active');
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
                 document.getElementById('ingestPanel').classList.add('active');
             }
         }

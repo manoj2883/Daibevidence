@@ -120,7 +120,7 @@ async def query_rag(request: QueryRequest):
         rag_chain = get_rag_chain()
         
         # Run chain
-        response = rag_chain.invoke(request.question)
+        response = rag_chain(request.question)
         
         # Format response documents
         source_docs = [

@@ -1,40 +1,71 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from typing import List
+import csv
+import os
+from typing import Dict, List
 
-def split_text(text: str, chunk_size: int = 1000, chunk_overlap: int = 200) -> List[str]:
-    """
-    Split a single string into chunks.
-    """
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=len,
-    )
-    return text_splitter.split_text(text)
+from src.ingest.config import CHUNK_OVERLAP_WORDS, CHUNK_SIZE_WORDS, CHUNKS_CSV_PATH
 
-def split_documents(documents: List[dict], chunk_size: int = 1000, chunk_overlap: int = 200) -> List[dict]:
+
+def split_text_by_words(text: str, chunk_size_words: int = 300, overlap_words: int = 50) -> List[str]:
     """
-    Split list of document dicts (containing 'text' and optional 'metadata') into chunks.
-    Returns a list of dicts with chunked text and inherited metadata.
+    Split a string into overlapping chunks measured in whole words (a sliding
+    window over text.split()), rather than characters.
     """
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=len,
-    )
-    
+    words = text.split()
+    if not words:
+        return []
+
+    step = max(chunk_size_words - overlap_words, 1)
+    chunks = []
+    for start in range(0, len(words), step):
+        chunk_words = words[start : start + chunk_size_words]
+        if not chunk_words:
+            break
+        chunks.append(" ".join(chunk_words))
+        if start + chunk_size_words >= len(words):
+            break
+
+    return chunks
+
+
+CHUNK_METADATA_FIELDS = ["pmid", "title", "journal", "year", "publication_type", "population"]
+
+
+def split_pubmed_documents(
+    documents: List[Dict],
+    chunk_size_words: int = CHUNK_SIZE_WORDS,
+    overlap_words: int = CHUNK_OVERLAP_WORDS,
+) -> List[Dict]:
+    """
+    Chunk PubMed abstract dicts (as produced by src.ingest.pubmed) into
+    word-based chunks, attaching pmid/title/journal/year/publication_type/
+    population/chunk_index as metadata on every chunk.
+    """
     chunked_docs = []
     for doc in documents:
-        text = doc.get("text", "")
-        metadata = doc.get("metadata", {})
-        chunks = text_splitter.split_text(text)
-        
+        abstract = doc.get("abstract", "")
+        chunks = split_text_by_words(abstract, chunk_size_words=chunk_size_words, overlap_words=overlap_words)
+
         for i, chunk in enumerate(chunks):
-            chunk_metadata = metadata.copy()
-            chunk_metadata["chunk_index"] = i
+            metadata = {field: doc.get(field, "") for field in CHUNK_METADATA_FIELDS}
+            metadata["chunk_index"] = i
             chunked_docs.append({
                 "text": chunk,
-                "metadata": chunk_metadata
+                "metadata": metadata,
             })
-            
+
     return chunked_docs
+
+
+def write_chunks_csv(chunks: List[Dict], path: str = CHUNKS_CSV_PATH) -> None:
+    """
+    Export chunks (with their full metadata) to CSV for spreadsheet use.
+    """
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    fieldnames = CHUNK_METADATA_FIELDS + ["chunk_index", "text"]
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for chunk in chunks:
+            row = dict(chunk["metadata"])
+            row["text"] = chunk["text"]
+            writer.writerow(row)

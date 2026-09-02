@@ -1,894 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthFit AI - Intelligent Medical Assistant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        medical: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        health: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            300: '#86efac',
-                            400: '#4ade80',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                            900: '#14532d',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'slide-up': 'slideUp 0.5s ease-out',
-                        'fade-in': 'fadeIn 0.3s ease-out',
-                        'typing': 'typing 1.5s infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        glow: {
-                            '0%': { boxShadow: '0 0 5px rgba(14, 165, 233, 0.5)' },
-                            '100%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.8), 0 0 40px rgba(14, 165, 233, 0.4)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #f0fdf4 100%);
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        .message-bubble-user {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-        }
-        .message-bubble-ai {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(14, 165, 233, 0.15);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-        .source-card {
-            transition: all 0.3s ease;
-        }
-        .source-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        .typing-dot {
-            animation: typing 1.4s infinite ease-in-out both;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-        .rag-indicator {
-            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-        }
-        .confidence-bar {
-            transition: width 1s ease-out;
-        }
-        .neural-bg {
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 50%);
-        }
-        .expandable-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .expandable-content.expanded {
-            max-height: 500px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiabEvidence — Diabetes Research Evidence Assistant</title>
+<style>
+  :root {
+    --bg: #f5f8f2;
+    --surface: #ffffff;
+    --surface-alt: #edf3e8;
+    --border: #dbe5d3;
+    --text: #1f2b22;
+    --text-muted: #5b6b5d;
+    --accent: #1f6b4a;
+    --accent-hover: #185a3d;
+    --accent-contrast: #ffffff;
+    --user-bubble-bg: #1f6b4a;
+    --user-bubble-text: #ffffff;
+    --warning-bg: #fdf3e3;
+    --warning-border: #d99a2b;
+    --warning-text: #6b4a0a;
+    --info-bg: #eef3ea;
+    --info-border: #c3d2bb;
+    --info-text: #435548;
+    --focus-ring: #1f6b4a;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
 
-        /* Custom Scrollbar Styles */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(241, 245, 249, 0.5);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
-            border-radius: 10px;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-            transition: all 0.3s ease;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-        .custom-scrollbar::-webkit-scrollbar-corner {
-            background: transparent;
-        }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10160f;
+      --surface: #17211b;
+      --surface-alt: #1c2820;
+      --border: #2a3a30;
+      --text: #e9efe9;
+      --text-muted: #9db09f;
+      --accent: #55b587;
+      --accent-hover: #6cc79b;
+      --accent-contrast: #08130d;
+      --user-bubble-bg: #2c6b4a;
+      --user-bubble-text: #eafff1;
+      --warning-bg: #2e2410;
+      --warning-border: #caa14a;
+      --warning-text: #f0cf8e;
+      --info-bg: #1c2820;
+      --info-border: #33453a;
+      --info-text: #b7c7ba;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10160f;
+    --surface: #17211b;
+    --surface-alt: #1c2820;
+    --border: #2a3a30;
+    --text: #e9efe9;
+    --text-muted: #9db09f;
+    --accent: #55b587;
+    --accent-hover: #6cc79b;
+    --accent-contrast: #08130d;
+    --user-bubble-bg: #2c6b4a;
+    --user-bubble-text: #eafff1;
+    --warning-bg: #2e2410;
+    --warning-border: #caa14a;
+    --warning-text: #f0cf8e;
+    --info-bg: #1c2820;
+    --info-border: #33453a;
+    --info-text: #b7c7ba;
+  }
 
-        /* Firefox scrollbar */
-        .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
-        }
-    </style>
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  @media (min-width: 480px) {
+    html, body { font-size: 18px; }
+  }
+
+  a { color: var(--accent); }
+
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  .app-shell {
+    max-width: 720px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .brand svg { flex-shrink: 0; }
+
+  .theme-toggle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  main#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Empty state */
+  #empty-state {
+    margin: auto 0;
+    text-align: center;
+    padding: 24px 8px;
+  }
+  #empty-state h1 {
+    font-size: 1.4rem;
+    margin: 0 0 10px;
+  }
+  #empty-state p.scope {
+    color: var(--text-muted);
+    max-width: 46ch;
+    margin: 0 auto 28px;
+  }
+  .starters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+  .starter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+  .starter-btn:hover { border-color: var(--accent); }
+
+  /* Messages */
+  .msg-row { display: flex; }
+  .msg-row.user { justify-content: flex-end; }
+  .msg-row.assistant { justify-content: flex-start; }
+
+  .bubble-user {
+    background: var(--user-bubble-bg);
+    color: var(--user-bubble-text);
+    border-radius: var(--radius);
+    border-bottom-right-radius: 4px;
+    padding: 12px 16px;
+    max-width: 85%;
+  }
+
+  .assistant-block {
+    width: 100%;
+  }
+
+  .mismatch-banner {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    color: var(--warning-text);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    font-size: 0.92em;
+  }
+  .mismatch-banner svg { flex-shrink: 0; margin-top: 2px; }
+
+  .info-banner {
+    background: var(--info-bg);
+    border: 1px solid var(--info-border);
+    color: var(--info-text);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 0.92em;
+  }
+
+  .answer-text {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    border-bottom-left-radius: 4px;
+    padding: 16px 18px;
+  }
+  .answer-text p { margin: 0 0 0.9em; }
+  .answer-text p:last-child { margin-bottom: 0; }
+
+  .answer-text.refusal {
+    color: var(--text-muted);
+  }
+
+  sup.citation {
+    font-size: 0.75em;
+  }
+  a.citation-marker {
+    text-decoration: none;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0 4px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  a.citation-marker:hover { border-color: var(--accent); }
+
+  .disclaimer {
+    color: var(--text-muted);
+    font-size: 0.8em;
+    margin-top: 10px;
+  }
+
+  /* Source cards */
+  .sources-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  @media (min-width: 560px) {
+    .sources-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .source-card {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 0.85em;
+  }
+  .source-card.highlight {
+    border-color: var(--accent);
+  }
+  .source-card .idx {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-radius: 999px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 0.8em;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .source-card .title { font-weight: 600; margin: 0 0 4px; }
+  .source-card .meta { color: var(--text-muted); margin: 0 0 6px; }
+  .source-card .pmid-link { font-size: 0.9em; }
+  .pop-chip {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.8em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .pop-chip.mismatched {
+    background: var(--warning-bg);
+    border-color: var(--warning-border);
+    color: var(--warning-text);
+  }
+
+  /* Retrieval inspector */
+  details.inspector {
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  details.inspector summary {
+    cursor: pointer;
+    padding: 10px 14px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    list-style: none;
+  }
+  details.inspector summary::-webkit-details-marker { display: none; }
+  details.inspector summary::before {
+    content: "▸ ";
+  }
+  details.inspector[open] summary::before {
+    content: "▾ ";
+  }
+  .inspector-body {
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chunk-card {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    font-size: 0.85em;
+  }
+  .chunk-card .excerpt {
+    color: var(--text-muted);
+    margin: 4px 0 8px;
+  }
+  .score-bar-track {
+    background: var(--border);
+    border-radius: 999px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    background: var(--accent);
+    height: 100%;
+  }
+  .score-label {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Composer */
+  .composer-wrap {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+  }
+  .composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px;
+  }
+  .composer:focus-within { border-color: var(--accent); }
+  textarea#user-input {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    padding: 8px;
+    max-height: 140px;
+  }
+  button#send-btn {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: none;
+    border-radius: 999px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  button#send-btn:hover { background: var(--accent-hover); }
+  button#send-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .typing-indicator {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px 0;
+  }
+  .typing-indicator span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .starter-btn, .theme-toggle, button#send-btn, a.citation-marker, .source-card {
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .typing-indicator span {
+      animation: blink 1.2s infinite ease-in-out both;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.25; }
+      40% { opacity: 1; }
+    }
+    .source-card.highlight {
+      animation: flash-highlight 1.6s ease-out;
+    }
+    @keyframes flash-highlight {
+      0% { background: var(--accent); }
+      100% { background: var(--surface-alt); }
+    }
+  }
+
+  [hidden] { display: none !important; }
+</style>
 </head>
-<body class="h-screen overflow-hidden neural-bg text-slate-800">
+<body>
 
-    <!-- App Container -->
-    <div class="flex h-full max-w-[1600px] mx-auto p-4 gap-4">
-        
-        <!-- Sidebar -->
-        <aside class="w-80 hidden lg:flex flex-col gap-4 animate-slide-up custom-scrollbar overflow-y-auto overflow-x-hidden">
-            <!-- Logo -->
-            <div class="glass-panel rounded-2xl p-6 flex items-center gap-3 flex-shrink-0">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-medical-500 to-health-500 flex items-center justify-center shadow-lg animate-pulse-slow">
-                    <i class="fas fa-heart-pulse text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-xl text-slate-800">HealthFit AI</h1>
-                    <p class="text-xs text-slate-500 font-medium">RAG-Powered Assistant</p>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="glass-panel rounded-2xl p-4 flex-1 flex flex-col gap-2 min-h-0 overflow-y-auto custom-scrollbar">
-                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">Menu</div>
-                <button onclick="switchTab('chat')" id="nav-chat" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl bg-medical-50 text-medical-700 font-medium transition-all hover:bg-medical-100">
-                    <i class="fas fa-comments w-5"></i>
-                    <span>Chat</span>
-                    <span class="ml-auto bg-medical-500 text-white text-xs px-2 py-0.5 rounded-full">New</span>
-                </button>
-                <button onclick="switchTab('history')" id="nav-history" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-all">
-                    <i class="fas fa-clock-rotate-left w-5"></i>
-                    <span>History</span>
-                </button>
-                <button onclick="switchTab('sources')" id="nav-sources" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-all">
-                    <i class="fas fa-book-medical w-5"></i>
-                    <span>Knowledge Base</span>
-                </button>
-                <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-all">
-                    <i class="fas fa-chart-line w-5"></i>
-                    <span>Analytics</span>
-                </button>
-
-                <div class="mt-auto pt-4">
-                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">System Status</div>
-                    <div class="bg-slate-50 rounded-xl p-4 space-y-3">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-600"><i class="fas fa-database mr-2 text-health-500"></i>Vector DB</span>
-                            <span class="text-health-600 font-semibold text-xs bg-health-100 px-2 py-1 rounded-full">Connected</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-600"><i class="fas fa-brain mr-2 text-medical-500"></i>LLM Model</span>
-                            <span class="text-medical-600 font-semibold text-xs bg-medical-100 px-2 py-1 rounded-full">Gemini Flash</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-600"><i class="fas fa-shield-halved mr-2 text-amber-500"></i>HIPAA</span>
-                            <span class="text-amber-600 font-semibold text-xs bg-amber-100 px-2 py-1 rounded-full">Compliant</span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- User Profile -->
-            <div class="glass-panel rounded-2xl p-4 flex items-center gap-3 flex-shrink-0">
-                <img src="https://ui-avatars.com/api/?name=Dr+Smith&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full" alt="User">
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-slate-800 truncate">Dr. Sarah Smith</p>
-                    <p class="text-xs text-slate-500 truncate">Cardiology Dept.</p>
-                </div>
-                <button class="text-slate-400 hover:text-slate-600"><i class="fas fa-gear"></i></button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col gap-4 min-w-0 animate-slide-up" style="animation-delay: 0.1s">
-            
-            <!-- Top Bar -->
-            <header class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between flex-shrink-0">
-                <div class="flex items-center gap-4">
-                    <button class="lg:hidden text-slate-600"><i class="fas fa-bars text-xl"></i></button>
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800">Medical Consultation</h2>
-                        <p class="text-xs text-slate-500 flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            RAG System Active • Real-time Retrieval
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="clearChat()" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2">
-                        <i class="fas fa-trash-can"></i>
-                        <span class="hidden sm:inline">Clear</span>
-                    </button>
-                    <button class="px-4 py-2 rounded-lg text-sm font-medium bg-medical-50 text-medical-700 hover:bg-medical-100 transition-colors flex items-center gap-2">
-                        <i class="fas fa-share-nodes"></i>
-                        <span class="hidden sm:inline">Export</span>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Dynamic Content Sections -->
-            <div class="flex-1 flex min-h-0 relative">
-                
-                <!-- Chat Panel Section -->
-                <div id="section-chat" class="flex-grow flex flex-col glass-panel rounded-2xl overflow-hidden relative min-h-0">
-                    <!-- Messages Container -->
-                    <div id="chat-messages" class="flex-grow overflow-y-auto custom-scrollbar p-6 space-y-6">
-                        
-                        <!-- Welcome Message -->
-                        <div class="flex gap-4 animate-fade-in">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-medical-500 to-health-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                                <i class="fas fa-robot text-white"></i>
-                            </div>
-                            <div class="flex-1 max-w-3xl">
-                                <div class="message-bubble-ai rounded-2xl rounded-tl-sm p-5">
-                                    <p class="text-slate-700 leading-relaxed mb-3">
-                                        Hello! I'm <strong>HealthFit AI</strong>, your premium intelligent clinical assistant powered by dual-model RAG.
-                                    </p>
-                                    <p class="text-slate-700 leading-relaxed">
-                                        I perform vector searches against your proprietary Pinecone vector files with active self-correction to ensure <strong>0% hallucination compliance</strong>. If no custom documents are found, I fallback gracefully to high-fidelity, verified medical knowledge guidelines.
-                                    </p>
-                                    <div class="mt-4 flex flex-wrap gap-2">
-                                        <span class="text-xs bg-medical-50 text-medical-700 px-3 py-1.5 rounded-full font-medium border border-medical-100">
-                                            <i class="fas fa-check-circle mr-1"></i>Evidence-Based
-                                        </span>
-                                        <span class="text-xs bg-health-50 text-health-700 px-3 py-1.5 rounded-full font-medium border border-health-100">
-                                            <i class="fas fa-shield-halved mr-1"></i>HIPAA Compliant
-                                        </span>
-                                        <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full font-medium border border-amber-100">
-                                            <i class="fas fa-triangle-exclamation mr-1"></i>Clinical Decision Support
-                                        </span>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-slate-400 mt-2 ml-1">HealthFit AI • Just now</p>
-                            </div>
-                        </div>
-
-                        <!-- Quick Actions -->
-                        <div class="flex gap-4 animate-fade-in" style="animation-delay: 0.2s">
-                            <div class="w-10 flex-shrink-0"></div>
-                            <div class="flex-1 max-w-3xl">
-                                <p class="text-sm text-slate-500 mb-3 font-medium">Try asking about:</p>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <button onclick="sendQuickMessage('What are the latest guidelines for hypertension management in adults?')" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-medical-300 hover:shadow-md transition-all group">
-                                        <i class="fas fa-heart-crack text-medical-500 mb-2 group-hover:scale-110 transition-transform block"></i>
-                                        <p class="text-sm font-medium text-slate-700">Hypertension Guidelines</p>
-                                        <p class="text-xs text-slate-400 mt-1">ACC/AHA 2023 recommendations</p>
-                                    </button>
-                                    <button onclick="sendQuickMessage('Explain the mechanism of action of SGLT2 inhibitors in heart failure')" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-medical-300 hover:shadow-md transition-all group">
-                                        <i class="fas fa-pills text-health-500 mb-2 group-hover:scale-110 transition-transform block"></i>
-                                        <p class="text-sm font-medium text-slate-700">Drug Mechanisms</p>
-                                        <p class="text-xs text-slate-400 mt-1">Pharmacology & therapeutics</p>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- RAG Status Bar (appears during retrieval) -->
-                    <div id="rag-status" class="hidden px-6 py-3 bg-gradient-to-r from-medical-50 to-health-50 border-t border-medical-100 flex-shrink-0">
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-medical-500 animate-pulse"></div>
-                                <span class="text-xs font-semibold text-medical-700" id="rag-status-text">Retrieving from Knowledge Base...</span>
-                            </div>
-                            <div class="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                <div id="rag-progress" class="h-full bg-gradient-to-r from-medical-500 to-health-500 rounded-full confidence-bar" style="width: 0%"></div>
-                            </div>
-                            <span id="rag-source-count" class="text-xs font-mono text-slate-500">0 sources</span>
-                        </div>
-                    </div>
-
-                    <!-- Input Area -->
-                    <div class="p-4 border-t border-slate-200 bg-white/50 backdrop-blur-sm flex-shrink-0">
-                        <div class="max-w-4xl mx-auto relative">
-                            <div class="flex items-end gap-3 bg-white rounded-2xl border border-slate-200 shadow-sm focus-within:shadow-md focus-within:border-medical-300 transition-all p-2">
-                                <button class="p-3 rounded-xl text-slate-400 hover:text-medical-600 hover:bg-medical-50 transition-colors">
-                                    <i class="fas fa-paperclip"></i>
-                                </button>
-                                <textarea id="user-input" rows="1" placeholder="Ask a medical question..." 
-                                    class="flex-1 resize-none bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 py-3 max-h-32 custom-scrollbar"
-                                    oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 128) + 'px'"
-                                    onkeydown="handleKeyDown(event)"></textarea>
-                                <button onclick="sendMessage()" id="send-btn" class="p-3 rounded-xl bg-gradient-to-r from-medical-500 to-medical-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                            <p class="text-center text-xs text-slate-400 mt-2">
-                                <i class="fas fa-lock mr-1"></i>End-to-end encrypted • Responses are for informational purposes only
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Knowledge Base / Ingestion Ingest Section -->
-                <div id="section-sources" class="hidden flex-grow flex flex-col glass-panel rounded-2xl overflow-y-auto p-8 custom-scrollbar bg-white/70">
-                    <div class="max-w-2xl">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-                            <i class="fas fa-cloud-arrow-up text-medical-500"></i>
-                            Clinical Document Ingestion
-                        </h3>
-                        <p class="text-sm text-slate-500 mb-6">Index guidelines, textbooks, or custom clinical research directly into your Pinecone Vector Database to enable zero-hallucination semantic RAG diagnostics.</p>
-                        
-                        <div class="space-y-5">
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-2">Document Clinical Text Content</label>
-                                <textarea id="docText" rows="10" placeholder="Paste guidelines, medical journals, textbooks or general clinical records here to index..." 
-                                    class="w-full rounded-xl border border-slate-200 focus:border-medical-300 focus:shadow-md outline-none p-4 text-slate-700 bg-white/50 custom-scrollbar"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-2">Document Source Identifier Name</label>
-                                <input type="text" id="docSource" placeholder="e.g. clinical_cardiology_notes_2024.pdf" 
-                                    class="w-full rounded-xl border border-slate-200 focus:border-medical-300 focus:shadow-md outline-none p-4 text-slate-700 bg-white/50">
-                            </div>
-                            <button id="ingestBtn" onclick="ingestDocument()" class="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-medical-500 to-medical-600 shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all">
-                                <i class="fas fa-database mr-2"></i>Index into Pinecone Vector Database
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- History Section -->
-                <div id="section-history" class="hidden flex-grow flex flex-col glass-panel rounded-2xl items-center justify-center p-8 text-center bg-white/50">
-                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl mb-4 shadow-inner">
-                        <i class="fas fa-history"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-2">Consultation History</h3>
-                    <p class="text-sm text-slate-500 max-w-sm">Access logs of prior clinical queries and diagnostic summaries. Secure session compliance keeps patient data safe under HIPAA rules.</p>
-                </div>
-
-                <!-- Analytics Section -->
-                <div id="section-analytics" class="hidden flex-grow flex flex-col glass-panel rounded-2xl items-center justify-center p-8 text-center bg-white/50">
-                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl mb-4 shadow-inner">
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-2">System Performance Analytics</h3>
-                    <p class="text-sm text-slate-500 max-w-sm">Inspect response latencies, vector storage indexes, cosine search distributions, and retrieval compliance curves in real-time.</p>
-                </div>
-
-            </div>
-        </main>
-
-        <!-- Right Panel - Sources & Context -->
-        <aside class="w-96 hidden xl:flex flex-col gap-4 animate-slide-up" style="animation-delay: 0.2s">
-            
-            <!-- Retrieved Sources Panel -->
-            <div class="glass-panel rounded-2xl flex-1 flex flex-col overflow-hidden min-h-0 bg-white/80">
-                <div class="p-5 border-b border-slate-100 flex-shrink-0">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fas fa-layer-group text-medical-500"></i>
-                            Retrieved Sources
-                        </h3>
-                        <span id="source-badge" class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-full font-mono">0 docs</span>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-1">Top-k relevant grounded documents from vector DB</p>
-                </div>
-                
-                <div id="sources-list" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
-                    <div class="text-center py-10 text-slate-400">
-                        <i class="fas fa-magnifying-glass text-3xl mb-3 opacity-50"></i>
-                        <p class="text-sm">Sources will appear here<br>when you ask a clinical query</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Confidence Metrics -->
-            <div class="glass-panel rounded-2xl p-5 flex-shrink-0 bg-white/80">
-                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i class="fas fa-chart-pie text-health-500"></i>
-                    Response Metrics
-                </h3>
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-slate-600">Retrieval Confidence</span>
-                            <span id="metric-retrieval" class="font-mono font-semibold text-medical-600">--</span>
-                        </div>
-                        <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div id="bar-retrieval" class="h-full bg-medical-500 rounded-full confidence-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-slate-600">Source Relevance</span>
-                            <span id="metric-relevance" class="font-mono font-semibold text-health-600">--</span>
-                        </div>
-                        <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div id="bar-relevance" class="h-full bg-health-500 rounded-full confidence-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-slate-600">Response Latency</span>
-                            <span id="metric-latency" class="font-mono font-semibold text-amber-600">--</span>
-                        </div>
-                        <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div id="bar-latency" class="h-full bg-amber-500 rounded-full confidence-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </aside>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2C8 6 5 10.5 5 14.5C5 18.6 8.1 22 12 22C15.9 22 19 18.6 19 14.5C19 10.5 16 6 12 2Z" fill="var(--accent)"/>
+        <path d="M12 22C12 22 9 19 9 15.5" stroke="var(--surface)" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>DiabEvidence</span>
     </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
+      <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
 
-    <script>
-        let messageHistory = [];
-        let isProcessing = false;
+  <main id="chat" aria-live="off">
+    <div id="empty-state">
+      <h1>Diabetes research, only from the evidence.</h1>
+      <p class="scope">
+        Diet &amp; nutrition, glycemic control, body composition &amp; weight, and diet–medication
+        interactions — across type 1, type 2, gestational, and prediabetes. Every answer is grounded
+        in retrieved PubMed evidence and cited by PMID, or it declines to answer.
+      </p>
+      <div class="starters">
+        <button class="starter-btn" type="button" data-question="What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?">
+          What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?
+        </button>
+        <button class="starter-btn" type="button" data-question="In gestational diabetes, how effective is a ketogenic diet for glycemic control?">
+          In gestational diabetes, how effective is a ketogenic diet for glycemic control?
+        </button>
+        <button class="starter-btn" type="button" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
+          What's the best marathon training plan for a healthy adult with no diabetes risk factors? <em>(out of scope — watch it decline)</em>
+        </button>
+      </div>
+    </div>
+  </main>
 
-        function handleKeyDown(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        }
+  <div class="composer-wrap">
+    <form class="composer" id="composer-form">
+      <textarea id="user-input" rows="1" placeholder="Ask a diabetes research question…" aria-label="Ask a diabetes research question"></textarea>
+      <button id="send-btn" type="submit" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
 
-        function sendQuickMessage(text) {
-            // Switch to chat tab if not there
-            switchTab('chat');
-            document.getElementById('user-input').value = text;
-            sendMessage();
-        }
+<script>
+(function () {
+  "use strict";
 
-        // Beautiful smooth autoscroll helper
-        function scrollToBottom() {
-            const container = document.getElementById('chat-messages');
-            setTimeout(() => {
-                container.scrollTo({
-                    top: container.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 50);
-        }
+  // ---------- Theme ----------
+  const THEME_KEY = "diabevidence-theme";
+  function applyTheme(theme) {
+    if (theme === "light" || theme === "dark") {
+      document.documentElement.setAttribute("data-theme", theme);
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }
+  function currentEffectiveTheme() {
+    const attr = document.documentElement.getAttribute("data-theme");
+    if (attr) return attr;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  (function initTheme() {
+    let stored = null;
+    try { stored = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (stored) applyTheme(stored);
+  })();
+  document.getElementById("theme-toggle").addEventListener("click", function () {
+    const next = currentEffectiveTheme() === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  });
 
-        // Modern, premium Markdown-to-HTML formatter
-        function parseMarkdown(text) {
-            if (!text) return '';
-            
-            // Escape HTML characters to prevent XSS
-            let html = text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+  // ---------- Helpers ----------
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
 
-            // Bullet points (lines starting with - or * followed by a space)
-            let lines = html.split('\n');
-            let inList = false;
-            
-            for (let i = 0; i < lines.length; i++) {
-                let trimmed = lines[i].trim();
-                if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-                    let content = trimmed.substring(2);
-                    if (!inList) {
-                        inList = true;
-                        lines[i] = '<ul><li>' + content + '</li>';
-                    } else {
-                        lines[i] = '<li>' + content + '</li>';
-                    }
-                } else {
-                    if (inList) {
-                        inList = false;
-                        lines[i] = '</ul>' + lines[i];
-                    }
-                }
-            }
-            if (inList) {
-                lines.push('</ul>');
-            }
-            html = lines.join('\n');
+  function renderParagraphs(escapedText) {
+    return escapedText
+      .split(/\n\s*\n/)
+      .map(function (p) { return p.trim(); })
+      .filter(Boolean)
+      .map(function (p) { return "<p>" + p.replace(/\n/g, "<br>") + "</p>"; })
+      .join("");
+  }
 
-            // Bold **text**
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
-            // Italic *text*
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  let msgCounter = 0;
 
-            // Paragraphs (split by double newlines)
-            html = html.split('\n\n').map(p => {
-                let trimmed = p.trim();
-                if (!trimmed) return '';
-                if (trimmed.startsWith('<ul>') || trimmed.startsWith('<li>') || trimmed.startsWith('</ul>')) {
-                    return trimmed;
-                }
-                return `<p class="mb-3 leading-relaxed">${trimmed}</p>`;
-            }).join('');
+  // ---------- SSE streaming ----------
+  async function streamQuery(question, handlers) {
+    let response;
+    try {
+      response = await fetch("/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: question }),
+      });
+    } catch (err) {
+      handlers.onError({ message: "Could not reach the server. Check your connection and try again." });
+      return;
+    }
 
-            return html;
-        }
+    if (!response.ok || !response.body) {
+      handlers.onError({ message: "Could not reach the server. Check your connection and try again." });
+      return;
+    }
 
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            if (!text || isProcessing) return;
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
 
-            isProcessing = true;
-            input.value = '';
-            input.style.height = 'auto';
-            document.getElementById('send-btn').disabled = true;
+    while (true) {
+      let chunk;
+      try {
+        chunk = await reader.read();
+      } catch (err) {
+        handlers.onError({ message: "The connection was interrupted." });
+        return;
+      }
+      if (chunk.done) break;
+      buffer += decoder.decode(chunk.value, { stream: true });
 
-            // Add user message
-            addMessage(text, 'user');
-            messageHistory.push({ role: 'user', content: text });
+      let idx;
+      while ((idx = buffer.indexOf("\n\n")) !== -1) {
+        const rawEvent = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 2);
+        if (!rawEvent.trim()) continue;
 
-            // Show RAG status bar
-            const ragStatus = document.getElementById('rag-status');
-            const ragProgress = document.getElementById('rag-progress');
-            const ragSourceCount = document.getElementById('rag-source-count');
-            
-            ragStatus.classList.remove('hidden');
-            ragProgress.style.width = '20%';
-            ragSourceCount.textContent = 'Searching vectors...';
-            scrollToBottom();
-
-            try {
-                // Animate progress bar during retrieval
-                const progressInterval = setInterval(() => {
-                    let w = parseInt(ragProgress.style.width);
-                    if (w < 75) {
-                        ragProgress.style.width = (w + 12) + '%';
-                    }
-                }, 200);
-
-                const response = await fetch('/query', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: text })
-                });
-
-                clearInterval(progressInterval);
-                const data = await response.json();
-
-                if (response.ok) {
-                    ragProgress.style.width = '100%';
-                    ragSourceCount.textContent = `${data.source_documents ? data.source_documents.length : 0} sources`;
-                    await new Promise(r => setTimeout(r, 200));
-
-                    // Update retrieved sources panel and analytics metrics
-                    updateSources(data.source_documents || []);
-                    updateMetrics(data.source_documents || []);
-
-                    // Render AI response bubble
-                    await addAIResponse(data.answer, data.source_documents || []);
-                } else {
-                    await addAIResponse(`Error: ${data.detail || 'Failed to generate answer.'}`, []);
-                }
-            } catch (err) {
-                await addAIResponse(`Connection error: Unable to contact the API.`, []);
-            } finally {
-                ragStatus.classList.add('hidden');
-                isProcessing = false;
-                document.getElementById('send-btn').disabled = false;
-                scrollToBottom();
-            }
-        }
-
-        function addMessage(text, sender) {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            div.className = 'flex gap-4 animate-fade-in';
-            
-            if (sender === 'user') {
-                div.innerHTML = `
-                    <div class="flex-1 max-w-3xl ml-auto">
-                        <div class="message-bubble-user rounded-2xl rounded-tr-sm p-5 text-white">
-                            <p class="leading-relaxed">${escapeHtml(text)}</p>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-2 mr-1 text-right">You • Just now</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-user text-slate-500"></i>
-                    </div>
-                `;
-            }
-            
-            container.appendChild(div);
-            scrollToBottom();
-        }
-
-        async function addAIResponse(text, sources) {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            div.className = 'flex gap-4 animate-fade-in';
-            
-            div.innerHTML = `
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-medical-500 to-health-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <i class="fas fa-robot text-white"></i>
-                </div>
-                <div class="flex-1 max-w-3xl">
-                    <div class="message-bubble-ai rounded-2xl rounded-tl-sm p-5">
-                        <div class="prose prose-sm max-w-none text-slate-700 ai-response-content"></div>
-                        
-                        <div class="mt-4 pt-4 border-t border-slate-100 ${sources.length === 0 ? 'hidden' : ''}">
-                            <button onclick="toggleSources(this)" class="text-xs font-medium text-medical-600 hover:text-medical-700 flex items-center gap-1 mb-2">
-                                <i class="fas fa-book-open"></i>
-                                View Retrieved Sources (${sources.length})
-                                <i class="fas fa-chevron-down transition-transform"></i>
-                            </button>
-                            <div class="expandable-content space-y-2 custom-scrollbar overflow-y-auto" style="max-height: 0;">
-                                ${sources.map((s, i) => {
-                                    const metadata = s.metadata || {};
-                                    const filename = metadata.source || `source_doc_${i + 1}`;
-                                    const relevance = metadata.relevance || (1.0 - i * 0.05);
-                                    return `
-                                        <div class="source-card bg-slate-50 rounded-lg p-3 border border-slate-100">
-                                            <div class="flex items-start gap-2">
-                                                <span class="text-xs font-mono bg-medical-100 text-medical-700 px-1.5 py-0.5 rounded mt-0.5">[${i+1}]</span>
-                                                <div>
-                                                    <p class="text-xs font-semibold text-slate-700">${escapeHtml(filename)}</p>
-                                                    <p class="text-xs text-slate-500">Relevance: ${(relevance * 100).toFixed(1)}%</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2 ml-1">HealthFit AI • Just now</p>
-                </div>
-            `;
-            
-            container.appendChild(div);
-            scrollToBottom();
-
-            // Render Markdown beautifully inside responses
-            const contentDiv = div.querySelector('.ai-response-content');
-            contentDiv.innerHTML = parseMarkdown(text);
-            scrollToBottom();
-        }
-
-        function updateSources(sources) {
-            const container = document.getElementById('sources-list');
-            const badge = document.getElementById('source-badge');
-            
-            badge.textContent = `${sources.length} docs`;
-            
-            if (sources.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-10 text-slate-400">
-                        <i class="fas fa-magnifying-glass text-3xl mb-3 opacity-50"></i>
-                        <p class="text-sm">Sources will appear here<br>when you ask a clinical query</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = sources.map((source, index) => {
-                const metadata = source.metadata || {};
-                const filename = metadata.source || `source_doc_${index + 1}`;
-                const relevance = metadata.relevance || (1.0 - index * 0.05);
-                
-                return `
-                    <div class="source-card bg-white rounded-xl p-4 border border-slate-100 cursor-pointer group">
-                        <div class="flex items-start justify-between mb-2">
-                            <span class="text-xs font-mono bg-medical-50 text-medical-600 px-2 py-1 rounded-md">Rank ${index + 1}</span>
-                            <span class="text-xs font-semibold ${getRelevanceColor(relevance)} bg-opacity-10 px-2 py-1 rounded-full">
-                                ${(relevance * 100).toFixed(0)}%
-                            </span>
-                        </div>
-                        <h4 class="text-sm font-semibold text-slate-800 mb-1 group-hover:text-medical-600 transition-colors line-clamp-2">
-                            ${escapeHtml(filename)}
-                        </h4>
-                        <div class="mt-2 flex items-center gap-2">
-                            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">Document Chunk</span>
-                        </div>
-                        <div class="mt-3 pt-3 border-t border-slate-50">
-                            <div class="flex items-start gap-2 text-xs text-slate-505">
-                                <i class="fas fa-quote-left mt-0.5 text-slate-400"></i>
-                                <span class="line-clamp-4">${escapeHtml(source.page_content)}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function getRelevanceColor(score) {
-            if (score >= 0.9) return 'text-health-600 bg-health-500';
-            if (score >= 0.8) return 'text-medical-600 bg-medical-500';
-            return 'text-amber-600 bg-amber-500';
-        }
-
-        function updateMetrics(sources) {
-            let avgRelevance = 0.95;
-            if (sources.length > 0) {
-                avgRelevance = sources.reduce((a, b) => a + (b.metadata && b.metadata.relevance ? b.metadata.relevance : 0.92), 0) / sources.length;
-            } else {
-                avgRelevance = 0.0;
-            }
-            const latency = (Math.random() * 0.4 + 0.6).toFixed(2);
-            
-            document.getElementById('metric-retrieval').textContent = sources.length > 0 ? (avgRelevance * 100).toFixed(1) + '%' : '--';
-            document.getElementById('bar-retrieval').style.width = (avgRelevance * 100) + '%';
-            
-            document.getElementById('metric-relevance').textContent = sources.length > 0 ? (avgRelevance * 100).toFixed(1) + '%' : '--';
-            document.getElementById('bar-relevance').style.width = (avgRelevance * 100) + '%';
-            
-            document.getElementById('metric-latency').textContent = sources.length > 0 ? latency + 's' : '--';
-            document.getElementById('bar-latency').style.width = sources.length > 0 ? Math.min((latency / 2) * 100, 100) + '%' : '0%';
-        }
-
-        function toggleSources(btn) {
-            const content = btn.nextElementSibling;
-            const icon = btn.querySelector('.fa-chevron-down');
-            
-            if (content.style.maxHeight === '300px') {
-                content.style.maxHeight = '0px';
-                content.classList.remove('custom-scrollbar');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.maxHeight = '300px';
-                content.classList.add('custom-scrollbar');
-                icon.style.transform = 'rotate(180deg)';
-            }
-        }
-
-        function clearChat() {
-            const container = document.getElementById('chat-messages');
-            container.innerHTML = `
-                <div class="flex gap-4 animate-fade-in">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-medical-500 to-health-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                        <i class="fas fa-robot text-white"></i>
-                    </div>
-                    <div class="flex-1 max-w-3xl">
-                        <div class="message-bubble-ai rounded-2xl rounded-tl-sm p-5">
-                            <p class="text-slate-700 leading-relaxed mb-3">
-                                Chat cleared. How can I help you today?
-                            </p>
-                            <p class="text-slate-700 leading-relaxed">
-                                Feel free to submit any medical questions, or upload new files in the <strong>Knowledge Base</strong> uploader tab.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('sources-list').innerHTML = `
-                <div class="text-center py-10 text-slate-400">
-                    <i class="fas fa-magnifying-glass text-3xl mb-3 opacity-50"></i>
-                    <p class="text-sm">Sources will appear here<br>when you ask a clinical query</p>
-                </div>
-            `;
-            document.getElementById('source-badge').textContent = '0 docs';
-            ['retrieval', 'relevance', 'latency'].forEach(id => {
-                document.getElementById(`metric-${id}`).textContent = '--';
-                document.getElementById(`bar-${id}`).style.width = '0%';
-            });
-            messageHistory = [];
-        }
-
-        // Sidebar tab switcher
-        function switchTab(tab) {
-            // Remove active classes from all nav buttons
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('bg-medical-50', 'text-medical-700');
-                el.classList.add('text-slate-600');
-            });
-            // Add active class to the clicked nav button
-            document.getElementById(`nav-${tab}`).classList.add('bg-medical-50', 'text-medical-700');
-            document.getElementById(`nav-${tab}`).classList.remove('text-slate-600');
-
-            // Hide all content sections
-            ['chat', 'sources', 'history', 'analytics'].forEach(sec => {
-                const element = document.getElementById(`section-${sec}`);
-                if (element) {
-                    element.classList.add('hidden');
-                }
-            });
-
-            // Show selected section
-            const targetSection = document.getElementById(`section-${tab}`);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-            }
-        }
-
-        // Live Ingestion to backend RAG pipeline
-        async function ingestDocument() {
-            const textEl = document.getElementById('docText');
-            const sourceEl = document.getElementById('docSource');
-            const ingestBtn = document.getElementById('ingestBtn');
-
-            const text = textEl.value.trim();
-            const source = sourceEl.value.trim();
-
-            if (!text) {
-                alert('Please enter document content.');
-                return;
-            }
-
-            ingestBtn.disabled = true;
-            ingestBtn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i>Processing Vector...';
-
-            try {
-                const response = await fetch('/ingest', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        documents: [{
-                            text: text,
-                            metadata: { source: source || 'manual_ingest' }
-                        }]
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert(`Ingestion Successful! Structured into ${data.chunks_created} vectors and uploaded to Pinecone.`);
-                    textEl.value = '';
-                    sourceEl.value = '';
-                    switchTab('chat');
-                } else {
-                    alert(`Error: ${data.detail}`);
-                }
-            } catch (err) {
-                alert('Failed to connect to ingestion server.');
-            } finally {
-                ingestBtn.disabled = false;
-                ingestBtn.innerHTML = '<i class="fas fa-database mr-2"></i>Index into Pinecone Vector Database';
-            }
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('user-input').focus();
+        let eventType = "message";
+        let dataStr = "";
+        rawEvent.split("\n").forEach(function (line) {
+          if (line.startsWith("event:")) eventType = line.slice(6).trim();
+          else if (line.startsWith("data:")) dataStr += line.slice(5).trim();
         });
-    </script>
+        if (!dataStr) continue;
+
+        let data;
+        try { data = JSON.parse(dataStr); } catch (e) { continue; }
+
+        if (eventType === "sources" && handlers.onSources) handlers.onSources(data);
+        else if (eventType === "token" && handlers.onToken) handlers.onToken(data);
+        else if (eventType === "done" && handlers.onDone) handlers.onDone(data);
+        else if (eventType === "refusal" && handlers.onRefusal) handlers.onRefusal(data);
+        else if (eventType === "error" && handlers.onError) handlers.onError(data);
+      }
+    }
+  }
+
+  // ---------- Message rendering ----------
+  const chatEl = document.getElementById("chat");
+  const emptyStateEl = document.getElementById("empty-state");
+
+  function scrollToBottom() {
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const row = document.createElement("div");
+    row.className = "msg-row user";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble-user";
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    chatEl.appendChild(row);
+    scrollToBottom();
+  }
+
+  function popChip(pop, mismatched) {
+    return '<span class="pop-chip' + (mismatched ? " mismatched" : "") + '">' + escapeHtml(pop || "unknown") + "</span>";
+  }
+
+  function buildSourceCards(sources, requestedPopulation, msgId) {
+    if (!sources || !sources.length) return "";
+    const cards = sources.map(function (s, i) {
+      const idx = i + 1;
+      const mismatched = requestedPopulation !== "mixed" && s.population && s.population !== requestedPopulation;
+      const pmidLink = s.pmid
+        ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(s.pmid) + '/" target="_blank" rel="noopener">PMID: ' + escapeHtml(s.pmid) + "</a>"
+        : "PMID: unknown";
+      return (
+        '<div class="source-card" id="source-' + msgId + "-" + idx + '">' +
+        '<span class="idx">' + idx + "</span>" +
+        '<p class="title">' + escapeHtml(s.title || "Untitled") + "</p>" +
+        '<p class="meta">' + escapeHtml(s.journal || "") + (s.journal && s.year ? ", " : "") + escapeHtml(String(s.year || "")) + "</p>" +
+        pmidLink +
+        popChip(s.population, mismatched) +
+        "</div>"
+      );
+    }).join("");
+    return '<div class="sources-grid">' + cards + "</div>";
+  }
+
+  function buildInspector(sources) {
+    if (!sources || !sources.length) return "";
+    const chunks = sources.map(function (s, i) {
+      const pct = Math.max(0, Math.min(100, Math.round((s.score || 0) * 100)));
+      return (
+        '<div class="chunk-card">' +
+        "<strong>[" + (i + 1) + "] PMID " + escapeHtml(s.pmid || "unknown") + "</strong>" +
+        '<p class="excerpt">' + escapeHtml((s.excerpt || "").slice(0, 320)) + ((s.excerpt || "").length > 320 ? "…" : "") + "</p>" +
+        '<div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="score-label">Similarity: ' + pct + "%</div>" +
+        "</div>"
+      );
+    }).join("");
+    return (
+      '<details class="inspector">' +
+      "<summary>Show retrieved evidence (" + sources.length + " chunks)</summary>" +
+      '<div class="inspector-body">' + chunks + "</div>" +
+      "</details>"
+    );
+  }
+
+  function finalizeAnswerHtml(rawText, sources, msgId) {
+    const pmidIndex = {};
+    (sources || []).forEach(function (s, i) {
+      if (s.pmid && !(s.pmid in pmidIndex)) pmidIndex[s.pmid] = i + 1;
+    });
+
+    let escaped = escapeHtml(rawText);
+    escaped = escaped.replace(/\[PMID:\s*(\d+)\]/g, function (match, pmid) {
+      const idx = pmidIndex[pmid];
+      if (!idx) return match;
+      return '<sup class="citation"><a href="#source-' + msgId + "-" + idx + '" class="citation-marker" data-target="source-' + msgId + "-" + idx + '">' + idx + "</a></sup>";
+    });
+
+    return renderParagraphs(escaped);
+  }
+
+  function wireCitationClicks(container) {
+    container.querySelectorAll("a.citation-marker").forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        const targetId = link.getAttribute("data-target");
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ block: "center" });
+        target.classList.add("highlight");
+        setTimeout(function () { target.classList.remove("highlight"); }, 1600);
+      });
+    });
+  }
+
+  function addAssistantMessage() {
+    msgCounter += 1;
+    const msgId = "m" + msgCounter;
+
+    const row = document.createElement("div");
+    row.className = "msg-row assistant";
+    const block = document.createElement("div");
+    block.className = "assistant-block";
+    block.innerHTML =
+      '<div class="mismatch-banner-slot"></div>' +
+      '<div class="answer-text" aria-live="polite"><span class="typing-indicator"><span></span><span></span><span></span></span></div>' +
+      '<div class="disclaimer-slot"></div>' +
+      '<div class="sources-slot"></div>' +
+      '<div class="inspector-slot"></div>';
+    row.appendChild(block);
+    chatEl.appendChild(row);
+    scrollToBottom();
+
+    const els = {
+      msgId: msgId,
+      banner: block.querySelector(".mismatch-banner-slot"),
+      answer: block.querySelector(".answer-text"),
+      disclaimer: block.querySelector(".disclaimer-slot"),
+      sources: block.querySelector(".sources-slot"),
+      inspector: block.querySelector(".inspector-slot"),
+    };
+
+    let rawText = "";
+    let sourcesData = [];
+    let requestedPopulation = "mixed";
+    let firstToken = true;
+
+    return {
+      onSources: function (data) {
+        sourcesData = data.sources || [];
+        requestedPopulation = data.requested_population || "mixed";
+        if (data.mismatch) {
+          const retrievedStr = (data.retrieved_populations || []).join(", ") || "a different population";
+          els.banner.innerHTML =
+            '<div class="mismatch-banner">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+            "<span>The retrieved evidence covers <strong>" + escapeHtml(retrievedStr) + "</strong>, which differs from the <strong>" + escapeHtml(requestedPopulation) + "</strong> population asked about — it may not generalize.</span>" +
+            "</div>";
+        }
+      },
+      onToken: function (data) {
+        if (firstToken) {
+          els.answer.innerHTML = "";
+          firstToken = false;
+        }
+        rawText += data.text;
+        els.answer.textContent = rawText;
+        scrollToBottom();
+      },
+      onDone: function (data) {
+        els.answer.innerHTML = finalizeAnswerHtml(rawText, sourcesData, msgId);
+        wireCitationClicks(els.answer);
+        if (data.disclaimer) {
+          els.disclaimer.innerHTML = '<p class="disclaimer">' + escapeHtml(data.disclaimer) + "</p>";
+        }
+        els.sources.innerHTML = buildSourceCards(sourcesData, requestedPopulation, msgId);
+        els.inspector.innerHTML = buildInspector(sourcesData);
+        scrollToBottom();
+      },
+      onRefusal: function (data) {
+        els.answer.classList.add("refusal");
+        els.answer.textContent = data.message;
+        if (data.disclaimer) {
+          els.disclaimer.innerHTML = '<p class="disclaimer">' + escapeHtml(data.disclaimer) + "</p>";
+        }
+        scrollToBottom();
+      },
+      onError: function (data) {
+        els.answer.innerHTML =
+          '<div class="info-banner">' + escapeHtml(data.message || "Something went wrong.") + "</div>";
+        scrollToBottom();
+      },
+    };
+  }
+
+  // ---------- Composer ----------
+  const form = document.getElementById("composer-form");
+  const input = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+  let isSending = false;
+
+  input.addEventListener("input", function () {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 140) + "px";
+  });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  async function sendQuestion(question) {
+    if (!question || isSending) return;
+    isSending = true;
+    sendBtn.disabled = true;
+
+    emptyStateEl.setAttribute("hidden", "");
+
+    addUserMessage(question);
+    const handlers = addAssistantMessage();
+
+    await streamQuery(question, handlers);
+
+    isSending = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+    input.value = "";
+    input.style.height = "auto";
+    sendQuestion(question);
+  });
+
+  document.querySelectorAll(".starter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      sendQuestion(btn.getAttribute("data-question"));
+    });
+  });
+
+  input.focus();
+})();
+</script>
+
 </body>
 </html>

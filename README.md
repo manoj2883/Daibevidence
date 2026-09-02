@@ -1,2 +1,122 @@
-# Rag_enterprise-
-Chatbot 
+# DiabEvidence
+
+A trustworthy retrieval-augmented QA system for **diabetes research questions** — type 1, type 2, gestational, and prediabetes. It answers strictly from PubMed evidence it has ingested — every claim is cited inline by PMID, it states which population the evidence applies to (and flags it when that differs from what was asked), and it declines to answer when the retrieved evidence doesn't support one. It is **not medical advice**, and medication-related answers are informational only — never dosing or prescribing guidance.
+
+The contribution is the trustworthy retrieval method, not diabetes answers specifically — diabetes is the test bed; the same pipeline works for any clinical domain by swapping the corpus. Direct Pinecone and Anthropic API calls only — **no LangChain** — for fewer dependencies and an easier-to-explain pipeline.
+
+## Repository layout
+
+```
+src/ingest/config.py       # single source of truth for scope/filters/limits — edit this to change the corpus
+src/ingest/pubmed.py       # NCBI E-utilities client: search, fetch, parse, classify, cache raw JSON/CSV
+src/ingest/population.py   # keyword classifier: type1 / type2 / gestational / prediabetes / mixed
+src/ingest/chunker.py      # word-based chunking + chunk CSV export
+src/ingest/local_embeddings.py  # sentence-transformers wrapper (shared by ingestion and retrieval)
+src/ingest/uploader.py     # Pinecone index creation + idempotent upsert
+src/ingest/freeze.py       # corpus freeze manifest (provenance + stats)
+src/ingest/run_ingest.py   # ingestion pipeline entrypoint (CLI)
+src/rag/types.py           # RetrievedChunk — plain chunk type shared by retrieval and generation
+src/rag/cost.py            # prompt-size estimate + hard chunk-count safety cap before any Claude call
+src/rag/retriever.py       # query embedding + direct Pinecone index.query()
+src/rag/chain.py           # grounded, streaming generation: direct Anthropic SDK, citations, population-mismatch flag, disclaimer
+src/rag/query_log.py       # appends every /query call + its retrieved chunks to data/query_log.jsonl
+src/api/main.py            # FastAPI app: /query (streaming SSE), /health
+src/api/index.html         # single-page chat frontend (vanilla HTML/CSS/JS, no build step)
+eval/test_questions.json   # fixed 30-question evaluation set (see below)
+data/                      # gitignored local cache — except corpus_manifest.json (see "Freezing the corpus")
+```
+
+## Architecture
+
+Two pipelines, both built on [Pinecone](https://www.pinecone.io/) as the vector store. Scope, filters, and limits are named constants at the top of `src/ingest/config.py` — that's the file to edit to change the corpus.
+
+**Ingestion** (`python -m src.ingest.run_ingest`)
+1. Query [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) across 4 topics — diet & nutrition, glycemic control, body composition & weight, and diet/medication interaction — for up to `FETCH_LIMIT` (default 300) abstracts total, covering all diabetes types. Filtered to reviews, systematic reviews, meta-analyses, and clinical trials (`PUBLICATION_TYPES`); the last `DATE_RANGE_YEARS` (default 10) years; human studies only; English language.
+2. Save the raw abstracts to `data/pubmed_raw.json` **and** `data/pubmed_raw.csv`, plus the exact queries/date-range used to `data/pubmed_fetch_meta.json` — all before anything else happens, so you can iterate on chunking/embedding without re-hitting PubMed (`--skip-fetch`), open the corpus in Excel, and know exactly what was asked of PubMed.
+3. Chunk each abstract into `CHUNK_SIZE_WORDS`-word passages (default 300) with `CHUNK_OVERLAP_WORDS` overlap (default 50), tagging every chunk with `pmid` / `title` / `journal` / `year` / `publication_type` / `population` / `chunk_index`. `population` (`type1` / `type2` / `gestational` / `prediabetes` / `mixed`) is extracted from each abstract's text by a keyword classifier (`src/ingest/population.py`) during ingestion.
+4. Save the processed chunks (with full metadata) to `data/pubmed_chunks.json` **and** `data/pubmed_chunks.csv` — again, before anything is sent to Pinecone.
+5. Embed locally and for free with `sentence-transformers/all-MiniLM-L6-v2` (384-dim) — no embedding API key or cost.
+6. Upsert into Pinecone (serverless, cosine metric, auto-created if the index doesn't exist yet) with a **stable ID per chunk** (`{pmid}_{chunk_index}`), so re-running the script updates existing vectors instead of duplicating them.
+7. Write a **corpus freeze manifest** (`data/corpus_manifest.json`) — see "Freezing the corpus" below.
+
+`data/` is gitignored — it's a regenerable local cache — with one deliberate exception: `data/corpus_manifest.json` is tracked, since it's the provenance record for whatever corpus is currently in Pinecone.
+
+**Query** (`POST /query`, streams a server-sent-events response)
+1. Embed the question with the same local model.
+2. Retrieve the top `RETRIEVAL_TOP_K` chunks from Pinecone (default 5) — never more; a hard cap in `src/rag/cost.py` raises rather than silently sending a larger slice to Claude.
+3. Emit a `sources` event (retrieved chunks + population info + a deterministic population-mismatch flag), then hand the labeled chunks to **Claude** (`messages.stream`, direct Anthropic SDK), which:
+   - answers only from them, citing every claim inline as `[PMID: 12345678]`
+   - states which diabetes population the cited evidence applies to
+   - explicitly flags a mismatch if the retrieved evidence covers a different population than the question asked about
+   - discusses medications only in general informational terms — never dosing or prescribing advice
+   - declines with a fixed refusal sentence when the evidence doesn't support an answer (a `refusal` event — no Claude call is made at all in this case)
+4. Stream each text delta as a `token` event, then a final `done` event carrying the disclaimer (kept separate from the answer text, not concatenated, so the frontend can render it as its own quiet line).
+5. Every call — question, the exact chunks retrieved (PMID, score, population), and the final answer — is appended to `data/query_log.jsonl`. This is the raw material for the evaluation section; it isn't reconstructable after the fact, so it's logged unconditionally rather than only during a formal eval run.
+
+## Freezing the corpus
+
+PubMed's result set for the same query shifts over time as new articles are indexed, so "re-run the ingestion query" is not a valid way to reproduce a prior corpus later. Two files exist for this:
+
+- `data/pubmed_fetch_meta.json` — written at fetch time: the fetch timestamp, the exact per-topic queries sent to E-utilities, the date range, and the full PMID list.
+- `data/corpus_manifest.json` — written at the end of every ingestion run (unless `--no-manifest`): the fetch info above, plus corpus-level stats (population/topic/publication-type breakdowns, chunk count), the embedding model + dimension, the Pinecone index name, and the current git commit. **This is the only `data/` file that isn't gitignored** — commit it once you're happy with a corpus, so the exact evidence base behind a set of results is on record for reviewers.
+
+Current corpus (frozen 2026-09-02, see `data/corpus_manifest.json` for full detail): **264 abstracts / 319 chunks** — population split `type2: 166, mixed: 57, type1: 28, gestational: 9, prediabetes: 4`; topic split `diet_nutrition: 75, diet_medication_interaction: 69, glycemic_control: 61, body_composition_weight: 59`. Note the thin gestational/prediabetes coverage — that's expected from the topic queries as written, not a bug, and it's exactly the kind of gap the eval set below is designed to surface (via refusals or explicit population-mismatch flags, not silent extrapolation from type 2 evidence).
+
+## Evaluation
+
+`eval/test_questions.json` is a fixed set of 30 questions, written **before** any prompt or retrieval tuning against this corpus, so tuning can't unconsciously bend the pipeline toward passing them. It covers: per-topic questions for each population, population-mismatch traps (asking about a population the corpus doesn't actually have matching evidence for — the system must flag this, not paper over it), medication-dosing traps (must decline, not answer), and out-of-scope traps (must return the exact refusal sentence). Each entry has an `expected_behavior` rubric, not a ground-truth answer — grade against the rubric, and if a question exposes a real gap, fix the pipeline, not the question.
+
+Run questions through `/query` (or `get_rag_chain()` directly) and cross-reference `data/query_log.jsonl` for the retrieval side of each answer.
+
+## Setup
+
+```bash
+python -m venv venv
+source venv/Scripts/activate  # or venv\Scripts\activate on Windows cmd
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Fill in `.env` (all secrets — never committed, `.env` is gitignored):
+- `ANTHROPIC_API_KEY` — [console.anthropic.com](https://console.anthropic.com/)
+- `PINECONE_API_KEY` / `PINECONE_INDEX_NAME` — [app.pinecone.io](https://app.pinecone.io/)
+- `PUBMED_EMAIL` (recommended by NCBI etiquette) and optionally `PUBMED_API_KEY` (raises the rate limit from 3 to 10 req/s)
+
+No Gemini/OpenAI key is needed — embeddings run locally. Non-secret pipeline tunables (fetch limit, date range, topics, publication types, retrieval count) live in `src/ingest/config.py`, not `.env`.
+
+## Running the ingestion pipeline
+
+```bash
+python -m src.ingest.run_ingest                    # fetch up to FETCH_LIMIT abstracts, chunk, embed, upsert, freeze
+python -m src.ingest.run_ingest --skip-fetch        # reuse data/pubmed_raw.json, no PubMed calls
+python -m src.ingest.run_ingest --dry-run           # fetch + chunk + export CSV/JSON, skip Pinecone
+python -m src.ingest.run_ingest --fetch-limit 50    # override the corpus size for a quick test
+python -m src.ingest.run_ingest --no-manifest       # skip writing/overwriting the freeze manifest
+```
+
+## Running the API
+
+```bash
+uvicorn src.api.main:app --reload
+```
+
+- `GET /health` — reports whether Claude and Pinecone are configured
+- `POST /query` — `{"question": "..."}` → `text/event-stream` of `sources` / `token` / `done` / `refusal` / `error` events (see above; also logged to `data/query_log.jsonl`)
+
+There is no live ingestion endpoint — the frontend is chat-only, and ingestion is CLI-only (`python -m src.ingest.run_ingest`), per the offline ingestion pipeline above.
+
+## Tests
+
+```bash
+pytest tests/ -v
+```
+
+Embedding, chunking, and population-classification tests run with no external dependencies. Tests that call the live Claude/Pinecone APIs are skipped unless `ANTHROPIC_API_KEY` is set.
+
+## Deployment (Render)
+
+`render.yaml` defines a free-tier web service. Set `ANTHROPIC_API_KEY`, `PINECONE_API_KEY`, and `PINECONE_INDEX_NAME` as secrets in the Render dashboard. Run the ingestion script locally (or as a one-off Render job) to populate Pinecone before querying — it isn't run automatically on deploy.
+
+## Disclaimer
+
+DiabEvidence summarizes published research literature. It is a research tool, not a source of medical advice, diagnosis, treatment, or medication guidance.

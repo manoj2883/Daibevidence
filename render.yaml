@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: health-ai-rag
+    name: diabevidence
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
@@ -8,9 +8,15 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
-      - key: GEMINI_API_KEY
+      - key: ANTHROPIC_API_KEY
         sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-5
       - key: PINECONE_API_KEY
         sync: false
       - key: PINECONE_INDEX_NAME
         sync: false
+      - key: PINECONE_CLOUD
+        value: aws
+      - key: PINECONE_REGION
+        value: us-east-1

@@ -8,5 +8,5 @@ def test_health_check():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
-    assert "gemini_configured" in data
+    assert "claude_configured" in data
     assert "pinecone_configured" in data

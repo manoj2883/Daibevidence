@@ -11,7 +11,7 @@ src/ingest/config.py       # single source of truth for scope/filters/limits —
 src/ingest/pubmed.py       # NCBI E-utilities client: search, fetch, parse, classify, cache raw JSON/CSV
 src/ingest/population.py   # keyword classifier: type1 / type2 / gestational / prediabetes / mixed
 src/ingest/chunker.py      # word-based chunking + chunk CSV export
-src/ingest/local_embeddings.py  # sentence-transformers wrapper (shared by ingestion and retrieval)
+src/ingest/local_embeddings.py  # fastembed (ONNX) wrapper (shared by ingestion and retrieval)
 src/ingest/uploader.py     # Pinecone index creation + idempotent upsert
 src/ingest/freeze.py       # corpus freeze manifest (provenance + stats)
 src/ingest/run_ingest.py   # ingestion pipeline entrypoint (CLI)
@@ -35,7 +35,7 @@ Two pipelines, both built on [Pinecone](https://www.pinecone.io/) as the vector 
 2. Save the raw abstracts to `data/pubmed_raw.json` **and** `data/pubmed_raw.csv`, plus the exact queries/date-range used to `data/pubmed_fetch_meta.json` — all before anything else happens, so you can iterate on chunking/embedding without re-hitting PubMed (`--skip-fetch`), open the corpus in Excel, and know exactly what was asked of PubMed.
 3. Chunk each abstract into `CHUNK_SIZE_WORDS`-word passages (default 300) with `CHUNK_OVERLAP_WORDS` overlap (default 50), tagging every chunk with `pmid` / `title` / `journal` / `year` / `publication_type` / `population` / `chunk_index`. `population` (`type1` / `type2` / `gestational` / `prediabetes` / `mixed`) is extracted from each abstract's text by a keyword classifier (`src/ingest/population.py`) during ingestion.
 4. Save the processed chunks (with full metadata) to `data/pubmed_chunks.json` **and** `data/pubmed_chunks.csv` — again, before anything is sent to Pinecone.
-5. Embed locally and for free with `sentence-transformers/all-MiniLM-L6-v2` (384-dim) — no embedding API key or cost.
+5. Embed locally and for free with `sentence-transformers/all-MiniLM-L6-v2` (384-dim), run via [fastembed](https://github.com/qdrant/fastembed)'s pure-ONNX runtime rather than the PyTorch backend — no embedding API key or cost, and no torch/transformers dependency (~220MB RSS instead of 500MB+, which matters on Render's free 512MB tier).
 6. Upsert into Pinecone (serverless, cosine metric, auto-created if the index doesn't exist yet) with a **stable ID per chunk** (`{pmid}_{chunk_index}`), so re-running the script updates existing vectors instead of duplicating them.
 7. Write a **corpus freeze manifest** (`data/corpus_manifest.json`) — see "Freezing the corpus" below.
 

@@ -196,7 +196,6 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     with client.messages.stream(
         model=get_model(),
         max_tokens=2048,
-        temperature=0,
         system=system_prompt,
         messages=[{"role": "user", "content": question}],
     ) as stream:

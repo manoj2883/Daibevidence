@@ -193,15 +193,21 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     print_prompt_estimate(f"query: {question[:60]!r}", system_prompt, question)
 
     full_answer = ""
-    with client.messages.stream(
-        model=get_model(),
-        max_tokens=2048,
-        system=system_prompt,
-        messages=[{"role": "user", "content": question}],
-    ) as stream:
-        for text in stream.text_stream:
-            full_answer += text
-            yield {"event": "token", "data": {"text": text}}
+    try:
+        with client.messages.stream(
+            model=get_model(),
+            max_tokens=2048,
+            system=system_prompt,
+            messages=[{"role": "user", "content": question}],
+        ) as stream:
+            for text in stream.text_stream:
+                full_answer += text
+                yield {"event": "token", "data": {"text": text}}
+    except anthropic.APIError as e:
+        # A partial answer may already have streamed — surface the failure
+        # explicitly rather than letting the connection die silently.
+        yield {"event": "error", "data": {"message": f"Generation failed: {e}"}}
+        return
 
     log_query_event(question, requested_population, chunks, full_answer)
 

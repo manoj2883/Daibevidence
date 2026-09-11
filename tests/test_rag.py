@@ -63,6 +63,38 @@ def test_refuses_when_no_evidence_retrieved():
                 mock_get_client.return_value.messages.stream.assert_not_called()
 
 
+def test_generation_failure_yields_error_event_not_silent_death():
+    """
+    If Claude's API call itself fails (rate limit, usage cap, network blip),
+    the stream must yield a clean "error" event after "sources" — not die
+    as an unhandled exception that leaves the client hanging forever.
+    """
+    import anthropic
+    import httpx2
+
+    from src.rag.types import RetrievedChunk
+
+    chunk = RetrievedChunk(
+        text="Some evidence text.",
+        metadata={"pmid": "123", "title": "t", "journal": "j", "year": "2024", "publication_type": "Review", "population": "type2"},
+        score=0.9,
+    )
+
+    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
+        with patch("src.rag.chain.retrieve", return_value=[chunk]):
+            with patch("src.rag.chain.get_client") as mock_get_client:
+                mock_client = mock_get_client.return_value
+                fake_request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+                mock_client.messages.stream.side_effect = anthropic.APIConnectionError(request=fake_request)
+
+                from src.rag.chain import stream_answer
+
+                events = list(stream_answer("What does the evidence say about type 2 diabetes diet?"))
+
+                assert [e["event"] for e in events] == ["sources", "error"]
+                assert "Generation failed" in events[1]["data"]["message"]
+
+
 def test_format_context_and_retrieved_populations():
     from src.rag.chain import format_context, retrieved_populations_summary
     from src.rag.types import RetrievedChunk

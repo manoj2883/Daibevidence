@@ -55,8 +55,9 @@ Two pipelines, both built on [Pinecone](https://www.pinecone.io/) as the vector 
      - explicitly flags a mismatch if the retrieved evidence covers a different population than the question asked about
      - discusses medications only in general informational terms — never dosing or prescribing advice
      - declines with the fixed refusal sentence if, despite clearing the floor, the excerpts still don't support an answer
-4. Stream each text delta as a `token` event, then a final `done` event carrying the disclaimer (kept separate from the answer text, not concatenated, so the frontend can render it as its own quiet line).
-5. Every call — question, state, the exact chunks retrieved (PMID, score, population), and the final answer — is appended to `data/query_log.jsonl`. This is the raw material for the evaluation section; it isn't reconstructable after the fact, so it's logged unconditionally rather than only during a formal eval run.
+4. Before writing prose, the model first compares the surviving excerpts for genuine contradictions — conflicting findings on the same specific claim (not just different topics, and not a population difference, which stays a separate mismatch flag). It emits a JSON preamble (delimited by fixed markers, parsed server-side and never shown to the user) which becomes its own `contradictions` event, sent before any `token` events. When a contradiction is found, the model's prose must present both positions rather than silently picking one, and state what differs between the studies (population, design, duration, sample size) that could explain the disagreement.
+5. Stream each text delta as a `token` event, then a final `done` event carrying the disclaimer (kept separate from the answer text, not concatenated, so the frontend can render it as its own quiet line).
+6. Every call — question, state, the exact chunks retrieved (PMID, score, population), and the final answer — is appended to `data/query_log.jsonl`. This is the raw material for the evaluation section; it isn't reconstructable after the fact, so it's logged unconditionally rather than only during a formal eval run.
 
 ### Tuning the similarity floor
 

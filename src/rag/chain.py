@@ -3,8 +3,9 @@ Grounded, cited, population-aware generation over retrieved PubMed chunks.
 Direct Anthropic SDK only — no LangChain. Streams the answer token by token
 so the frontend can render it word by word, per spec.
 """
+import json
 import os
-from typing import Any, Dict, Generator, List, Set
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
 import anthropic
 from dotenv import load_dotenv
@@ -33,6 +34,17 @@ DISCLAIMER = (
     "consult a qualified healthcare provider before making any health decisions."
 )
 
+# Markers delimiting the contradiction-check JSON block the model must emit
+# before its prose answer. Kept out of user-visible text — parsed off the
+# stream server-side before any prose is forwarded as "token" events.
+CONTRA_START = "<<<CONTRADICTIONS>>>"
+CONTRA_END = "<<<END_CONTRADICTIONS>>>"
+
+# If the model never emits a complete contradiction block within this many
+# buffered characters, give up waiting and treat everything buffered so far
+# as prose (handles a refusal-sentence response, or plain non-compliance).
+MAX_PREAMBLE_BUFFER = 6000
+
 SYSTEM_PROMPT = """You are a clinical evidence assistant covering all forms of diabetes \
 (type 1, type 2, gestational, and prediabetes) research. You answer strictly from the source \
 excerpts below, drawn from PubMed reviews, systematic reviews, meta-analyses, and clinical trials. \
@@ -43,22 +55,35 @@ Rules, in order of priority:
 or assumptions, even if you believe you know the answer.
 2. Cite every factual claim inline by PubMed ID, in the form [PMID: 12345678]. If a claim draws on \
 multiple excerpts, cite each one, e.g. [PMID: 11111111][PMID: 22222222].
-3. State which diabetes population (type 1, type 2, gestational, prediabetes, or a mix) the evidence \
+3. Before writing your answer, compare the source excerpts for genuine contradictions — cases where \
+two excerpts report conflicting findings on the same specific claim (not just different topics, and \
+not a population difference — that is handled separately). Report this as a JSON preamble, exactly as \
+follows, before any other text: a line containing exactly "{contra_start}", then a JSON array (or "[]" \
+if none), then a line containing exactly "{contra_end}". Each array entry must have exactly these keys: \
+"excerpt_indices" (array of the [Excerpt N] numbers involved, e.g. [1, 3]), "claim" (the specific point \
+they disagree on), "position_a" (what the first excerpt found), "position_b" (what the other found), and \
+"differs_by" (what differs between the studies that could explain the disagreement — e.g. population, \
+study design, duration, sample size). If you report a contradiction here, your prose answer below MUST \
+present both positions rather than silently picking one. \
+Exception: if you are refusing per rule 6 below, skip this preamble entirely and output only the refusal \
+sentence.
+4. State which diabetes population (type 1, type 2, gestational, prediabetes, or a mix) the evidence \
 you cite applies to, as part of the answer itself — not only in a source list.
-4. The user's question was automatically classified as being about the "{requested_population}" \
+5. The user's question was automatically classified as being about the "{requested_population}" \
 population (this may be "mixed" if the question didn't specify one, or mentioned more than one). \
 The retrieved excerpts cover population(s): {retrieved_populations}. If "{requested_population}" is \
 not "mixed" and it differs from the retrieved population(s), you MUST explicitly flag this mismatch \
 before answering, and make clear the evidence may not generalize to the population actually asked \
 about. If "{requested_population}" is "mixed", just state plainly which population(s) the evidence \
-covers, with no mismatch to flag.
-5. If the excerpts do not contain enough information to answer the question, reply with exactly this \
-sentence and nothing else: "{refusal}"
-6. Never fabricate a PMID, a statistic, a study finding, or a population.
-7. If the question or the evidence concerns diabetes medications, discuss them only in general, \
+covers, with no mismatch to flag. Do not report this as a contradiction under rule 3 — population \
+mismatch is a distinct thing from two studies disagreeing.
+6. If the excerpts do not contain enough information to answer the question, reply with exactly this \
+sentence and nothing else (no contradiction preamble): "{refusal}"
+7. Never fabricate a PMID, a statistic, a study finding, or a population.
+8. If the question or the evidence concerns diabetes medications, discuss them only in general, \
 informational, mechanistic terms (e.g., how a drug class interacts with diet or nutrition). NEVER give \
 dosing instructions, prescribing guidance, or advice to start, stop, or adjust a medication.
-8. Be precise: prefer specific numbers, effect sizes, and study populations stated in the excerpts \
+9. Be precise: prefer specific numbers, effect sizes, and study populations stated in the excerpts \
 over vague language.
 
 Source excerpts:
@@ -146,6 +171,69 @@ def _score_distribution_payload(decision: RetrievalDecision) -> Dict[str, Any]:
     }
 
 
+def _resolve_contradiction_pmids(contradictions: List[Dict[str, Any]], chunks: List[RetrievedChunk]) -> List[Dict[str, Any]]:
+    """
+    Attach the actual PMIDs behind each [Excerpt N] reference, and drop any
+    entry with malformed or out-of-range indices rather than letting a
+    non-compliant model response propagate garbage to the frontend.
+    """
+    resolved = []
+    for entry in contradictions:
+        if not isinstance(entry, dict):
+            continue
+        indices = entry.get("excerpt_indices")
+        if not isinstance(indices, list) or not indices:
+            continue
+        pmids = []
+        valid = True
+        for idx in indices:
+            if not isinstance(idx, int) or not (1 <= idx <= len(chunks)):
+                valid = False
+                break
+            pmids.append((chunks[idx - 1].metadata or {}).get("pmid", ""))
+        if not valid:
+            continue
+        resolved.append({
+            "excerpt_indices": indices,
+            "pmids": pmids,
+            "claim": entry.get("claim", ""),
+            "position_a": entry.get("position_a", ""),
+            "position_b": entry.get("position_b", ""),
+            "differs_by": entry.get("differs_by", ""),
+        })
+    return resolved
+
+
+def extract_contradiction_block(buffer: str) -> Optional[Tuple[List[Dict[str, Any]], str]]:
+    """
+    Pure parser over a streaming text buffer. Returns None if the buffer
+    doesn't yet contain a complete CONTRA_START...CONTRA_END block (caller
+    should keep buffering). Once complete, returns (contradictions, rest)
+    where `rest` is everything after the end marker (the start of the prose
+    answer) — never crashes on malformed JSON, just returns [] for it.
+    """
+    end_idx = buffer.find(CONTRA_END)
+    if end_idx == -1:
+        return None
+
+    start_idx = buffer.find(CONTRA_START)
+    rest = buffer[end_idx + len(CONTRA_END):]
+
+    if start_idx == -1:
+        return [], rest
+
+    json_str = buffer[start_idx + len(CONTRA_START):end_idx].strip()
+    if not json_str:
+        return [], rest
+
+    try:
+        parsed = json.loads(json_str)
+    except json.JSONDecodeError:
+        return [], rest
+
+    return (parsed if isinstance(parsed, list) else []), rest
+
+
 def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     """
     Run the grounded RAG pipeline for one question, yielding a sequence of
@@ -154,7 +242,9 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     - "sources": retrieved chunks + population info + retrieval state
       ("answered" or "answered_low_confidence") + score distribution, sent
       once, before generation
-    - "token": one text delta of the streaming answer
+    - "contradictions": conflicting findings detected across excerpts (an
+      empty list if none), sent once, before any "token" events
+    - "token": one text delta of the streaming prose answer
     - "done": generation finished, carries the disclaimer
     - "refusal": nothing cleared the similarity floor — refusal message,
       closest scores found, what the system covers, and the score
@@ -219,12 +309,24 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
         requested_population=requested_population,
         retrieved_populations=retrieved_populations_str,
         refusal=REFUSAL_TEXT,
+        contra_start=CONTRA_START,
+        contra_end=CONTRA_END,
         context=context_str,
     )
 
     print_prompt_estimate(f"query: {question[:60]!r}", system_prompt, question)
 
     full_answer = ""
+    preamble_buffer = ""
+    contradictions_resolved = False
+
+    def _flush_preamble_as_prose():
+        nonlocal full_answer
+        if preamble_buffer:
+            full_answer += preamble_buffer
+            return {"event": "token", "data": {"text": preamble_buffer}}
+        return None
+
     try:
         with client.messages.stream(
             model=get_model(),
@@ -233,8 +335,42 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
             messages=[{"role": "user", "content": question}],
         ) as stream:
             for text in stream.text_stream:
-                full_answer += text
-                yield {"event": "token", "data": {"text": text}}
+                if contradictions_resolved:
+                    full_answer += text
+                    yield {"event": "token", "data": {"text": text}}
+                    continue
+
+                preamble_buffer += text
+                result = extract_contradiction_block(preamble_buffer)
+                if result is not None:
+                    contradictions, remainder = result
+                    yield {
+                        "event": "contradictions",
+                        "data": {"contradictions": _resolve_contradiction_pmids(contradictions, chunks)},
+                    }
+                    contradictions_resolved = True
+                    preamble_buffer = ""
+                    if remainder:
+                        full_answer += remainder
+                        yield {"event": "token", "data": {"text": remainder}}
+                elif len(preamble_buffer) > MAX_PREAMBLE_BUFFER:
+                    # Model didn't emit the expected format — stop waiting,
+                    # treat everything buffered so far as prose (e.g. a
+                    # refusal-sentence response), no contradictions.
+                    yield {"event": "contradictions", "data": {"contradictions": []}}
+                    contradictions_resolved = True
+                    flushed = _flush_preamble_as_prose()
+                    preamble_buffer = ""
+                    if flushed:
+                        yield flushed
+
+        if not contradictions_resolved:
+            # Stream ended entirely within the buffering window (very short
+            # response, e.g. exactly the refusal sentence).
+            yield {"event": "contradictions", "data": {"contradictions": []}}
+            flushed = _flush_preamble_as_prose()
+            if flushed:
+                yield flushed
     except anthropic.APIError as e:
         # A partial answer may already have streamed — surface the failure
         # explicitly rather than letting the connection die silently.

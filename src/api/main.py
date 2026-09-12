@@ -90,6 +90,8 @@ async def query_rag(request: QueryRequest):
     - "sources" — retrieved chunks + population info + retrieval state
       ("answered" or "answered_low_confidence") + score distribution
       (sent once, before generation)
+    - "contradictions" — conflicting findings detected across excerpts (an
+      empty list if none), sent once, before any "token" events
     - "token"   — one text delta of the streaming answer
     - "done"    — generation finished, carries the disclaimer
     - "refusal" — nothing cleared the similarity floor: closest scores found,

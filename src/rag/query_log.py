@@ -33,6 +33,8 @@ def log_query_event(
     answer: str,
     path: str = QUERY_LOG_PATH,
     state: Optional[str] = None,
+    sentences: Optional[List[Dict[str, Any]]] = None,
+    groundedness: Optional[float] = None,
 ) -> None:
     event = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -41,6 +43,8 @@ def log_query_event(
         "state": state,
         "retrieved_chunks": [_chunk_summary(chunk) for chunk in chunks],
         "answer": answer,
+        "sentences": sentences,
+        "groundedness": groundedness,
     }
 
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)

@@ -289,12 +289,75 @@ def test_resolve_contradiction_pmids_maps_indices_and_drops_invalid():
     assert resolved[0]["claim"] == "c"
 
 
-def test_stream_answer_emits_contradictions_before_tokens():
+def test_find_complete_json_objects_incremental():
+    from src.rag.chain import find_complete_json_objects
+
+    # Nothing complete yet — scan stops at the start of the incomplete
+    # object (position 1, past the leading "["), ready to re-scan from
+    # there once more text streams in.
+    objs, pos = find_complete_json_objects('[{"sentence": "a"', 0)
+    assert objs == []
+    assert pos == 1
+
+    # One complete object, resume position lands right after it.
+    buf = '[{"sentence": "a"}'
+    objs, pos = find_complete_json_objects(buf, 0)
+    assert objs == ['{"sentence": "a"}']
+    assert pos == len(buf)
+
+    # Braces inside a quoted string must not confuse depth tracking.
+    buf2 = '{"sentence": "a { fake brace } and \\"quote\\""}'
+    objs2, pos2 = find_complete_json_objects(buf2, 0)
+    assert objs2 == [buf2]
+
+    # Resuming from a prior position only finds the new object.
+    buf3 = '[{"sentence": "a"},{"sentence": "b"}]'
+    first_objs, mid_pos = find_complete_json_objects(buf3, 0)
+    assert len(first_objs) == 2
+    more_objs, _ = find_complete_json_objects(buf3, mid_pos)
+    assert more_objs == []
+
+
+def test_validate_sentence_coerces_and_rejects():
+    from src.rag.chain import _validate_sentence
+
+    assert _validate_sentence({"sentence": "  x  ", "chunk_ids": [1, 2], "supported": True}) == {
+        "sentence": "x", "chunk_ids": [1, 2], "supported": True,
+    }
+    # Missing supported -> derived from chunk_ids presence.
+    assert _validate_sentence({"sentence": "x", "chunk_ids": [1]})["supported"] is True
+    assert _validate_sentence({"sentence": "x", "chunk_ids": []})["supported"] is False
+    # Non-list chunk_ids -> coerced to [].
+    assert _validate_sentence({"sentence": "x", "chunk_ids": "bad"})["chunk_ids"] == []
+    # No sentence text at all -> rejected.
+    assert _validate_sentence({"chunk_ids": [1]}) is None
+    assert _validate_sentence({"sentence": "   "}) is None
+    assert _validate_sentence("not a dict") is None
+
+
+def test_compute_groundedness():
+    from src.rag.chain import compute_groundedness
+
+    sentences = [
+        {"sentence": "a", "chunk_ids": [1], "supported": True},
+        {"sentence": "b", "chunk_ids": [], "supported": False},
+        {"sentence": "c", "chunk_ids": [2, 3], "supported": True},
+    ]
+    result = compute_groundedness(sentences)
+    assert result["supported_sentences"] == 2
+    assert result["total_sentences"] == 3
+    assert result["groundedness"] == round(2 / 3, 4)
+
+    assert compute_groundedness([])["groundedness"] is None
+
+
+def test_stream_answer_emits_contradictions_then_sentences():
     """
     Full stream_answer flow with a mocked Claude stream that emits the
-    contradiction preamble first: contradictions must be parsed off and
-    sent as their own event before any prose reaches "token" events, and
-    the parsed contradiction must carry the resolved PMIDs.
+    contradiction preamble, then a JSON array of sentences: contradictions
+    must be parsed off and sent as their own event before any "sentence"
+    events, each sentence must carry resolved PMIDs, and "done" must carry
+    the groundedness summary.
     """
     from unittest.mock import MagicMock
 
@@ -325,11 +388,17 @@ def test_stream_answer_emits_contradictions_before_tokens():
         "position_b": "no effect on HbA1c",
         "differs_by": "study duration",
     }
+    sentence_1 = {"sentence": "One study found Diet A improved HbA1c.", "chunk_ids": [1], "supported": True}
+    sentence_2 = {"sentence": "Another found no effect.", "chunk_ids": [2], "supported": True}
+    sentence_3 = {"sentence": "In short, the evidence disagrees.", "chunk_ids": [], "supported": False}
+
     stream_chunks = [
         "<<<CONTRADICTIONS>>>\n",
         json.dumps([contradiction_entry]),
-        "\n<<<END_CONTRADICTIONS>>>\n\nThe evidence disagrees ",
-        "on this point [PMID: 111][PMID: 222].",
+        "\n<<<END_CONTRADICTIONS>>>\n[",
+        json.dumps(sentence_1) + ",",
+        json.dumps(sentence_2) + ",",
+        json.dumps(sentence_3) + "]",
     ]
 
     mock_stream_cm = MagicMock()
@@ -348,27 +417,37 @@ def test_stream_answer_emits_contradictions_before_tokens():
     event_types = [e["event"] for e in events]
     assert event_types[0] == "sources"
     assert event_types[1] == "contradictions"
-    assert "token" in event_types
+    assert event_types.count("sentence") == 3
     assert event_types[-1] == "done"
 
     contradictions = events[1]["data"]["contradictions"]
     assert len(contradictions) == 1
     assert contradictions[0]["pmids"] == ["111", "222"]
-    assert contradictions[0]["claim"] == "effect of Diet A on HbA1c"
 
-    token_events = [e for e in events if e["event"] == "token"]
-    full_text = "".join(e["data"]["text"] for e in token_events)
-    assert "CONTRADICTIONS" not in full_text
-    assert "The evidence disagrees on this point" in full_text
+    sentence_events = [e["data"] for e in events if e["event"] == "sentence"]
+    assert sentence_events[0]["pmids"] == ["111"]
+    assert sentence_events[1]["pmids"] == ["222"]
+    assert sentence_events[2]["supported"] is False
+    assert sentence_events[2]["pmids"] == []
+
+    done_data = events[-1]["data"]
+    assert done_data["groundedness"]["total_sentences"] == 3
+    assert done_data["groundedness"]["supported_sentences"] == 2
 
 
-def test_stream_answer_emits_empty_contradictions_when_none_found():
+def test_stream_answer_bare_refusal_becomes_single_unsupported_sentence():
+    """
+    Per the prompt's rule 6 exception, a refusal skips the contradiction
+    preamble and the JSON array entirely — the stream must still degrade
+    gracefully into the documented {sentence, chunk_ids, supported} shape.
+    """
     from unittest.mock import MagicMock
 
+    from src.rag.chain import REFUSAL_TEXT
     from src.rag.types import RetrievalDecision, RetrievedChunk
 
     chunk = RetrievedChunk(
-        text="Diet A improved HbA1c.",
+        text="Some unrelated excerpt.",
         metadata={"pmid": "111", "title": "t1", "journal": "j", "year": "2024", "publication_type": "RCT", "population": "type2"},
         score=0.9,
     )
@@ -376,10 +455,8 @@ def test_stream_answer_emits_empty_contradictions_when_none_found():
         state="answered", surviving_chunks=[chunk], candidate_scores=[0.9], floor=0.5, low_confidence_margin=0.05,
     )
 
-    stream_chunks = ["<<<CONTRADICTIONS>>>\n[]\n<<<END_CONTRADICTIONS>>>\n\nDiet A improved HbA1c [PMID: 111]."]
-
     mock_stream_cm = MagicMock()
-    mock_stream_cm.__enter__.return_value.text_stream = iter(stream_chunks)
+    mock_stream_cm.__enter__.return_value.text_stream = iter([REFUSAL_TEXT])
     mock_stream_cm.__exit__.return_value = False
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
@@ -389,10 +466,15 @@ def test_stream_answer_emits_empty_contradictions_when_none_found():
 
                 from src.rag.chain import stream_answer
 
-                events = list(stream_answer("Does Diet A improve HbA1c?"))
+                events = list(stream_answer("An unanswerable question."))
 
-    assert events[1]["event"] == "contradictions"
-    assert events[1]["data"]["contradictions"] == []
+    event_types = [e["event"] for e in events]
+    assert event_types == ["sources", "contradictions", "sentence", "done"]
+
+    sentence_data = [e for e in events if e["event"] == "sentence"][0]["data"]
+    assert sentence_data["sentence"] == REFUSAL_TEXT
+    assert sentence_data["chunk_ids"] == []
+    assert sentence_data["supported"] is False
 
 
 @pytest.mark.skipif(

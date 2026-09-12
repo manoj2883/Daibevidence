@@ -91,9 +91,12 @@ async def query_rag(request: QueryRequest):
       ("answered" or "answered_low_confidence") + score distribution
       (sent once, before generation)
     - "contradictions" — conflicting findings detected across excerpts (an
-      empty list if none), sent once, before any "token" events
-    - "token"   — one text delta of the streaming answer
-    - "done"    — generation finished, carries the disclaimer
+      empty list if none), sent once, before any "sentence" events
+    - "sentence" — one {sentence, chunk_ids, pmids, supported} object, sent
+      as soon as it completes in the stream (citation attribution is
+      structural, not inline text markup)
+    - "done"    — generation finished, carries the disclaimer and the
+      groundedness summary (share of sentences with a supporting chunk)
     - "refusal" — nothing cleared the similarity floor: closest scores found,
       what the system covers, and the score distribution. No Claude call made.
     - "error"   — misconfiguration or generation failure

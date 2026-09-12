@@ -8,6 +8,7 @@ attribution is structural (chunk_ids) rather than text markup.
 """
 import json
 import os
+import time
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
 import anthropic
@@ -380,6 +381,8 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     fixed top-k. Never sends more than RETRIEVAL_CANDIDATE_K chunks to
     Claude — enforced by a hard assertion, not just a printed warning.
     """
+    t_start = time.monotonic()
+
     try:
         client = get_client()
     except ValueError as e:
@@ -394,6 +397,9 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
         yield {"event": "error", "data": {"message": str(e)}}
         return
 
+    t_after_retrieval = time.monotonic()
+    retrieval_ms = round((t_after_retrieval - t_start) * 1000, 1)
+
     assert_chunk_cap(decision.surviving_chunks, RETRIEVAL_CANDIDATE_K)
 
     if decision.state == "refused":
@@ -407,6 +413,7 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
                 "closest_scores": closest_scores,
                 "score_distribution": _score_distribution_payload(decision),
                 "disclaimer": DISCLAIMER,
+                "timing_ms": {"retrieval": retrieval_ms},
             },
         }
         return
@@ -424,6 +431,7 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
             "mismatch": mismatch,
             "score_distribution": _score_distribution_payload(decision),
             "sources": [_source_payload(c) for c in chunks],
+            "timing_ms": {"retrieval": retrieval_ms},
         },
     }
 
@@ -482,7 +490,10 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
                     contradictions, remainder = result
                     yield {
                         "event": "contradictions",
-                        "data": {"contradictions": _resolve_contradiction_pmids(contradictions, chunks)},
+                        "data": {
+                            "contradictions": _resolve_contradiction_pmids(contradictions, chunks),
+                            "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
+                        },
                     }
                     contradictions_resolved = True
                     preamble_buffer = ""
@@ -494,7 +505,13 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
                     # Model didn't emit the expected format — stop waiting,
                     # treat everything buffered so far as the start of its
                     # answer content (e.g. a bare refusal-sentence response).
-                    yield {"event": "contradictions", "data": {"contradictions": []}}
+                    yield {
+                        "event": "contradictions",
+                        "data": {
+                            "contradictions": [],
+                            "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
+                        },
+                    }
                     contradictions_resolved = True
                     sentence_buffer += preamble_buffer
                     preamble_buffer = ""
@@ -504,7 +521,13 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
         if not contradictions_resolved:
             # Stream ended entirely within the buffering window (very short
             # response, e.g. exactly the refusal sentence).
-            yield {"event": "contradictions", "data": {"contradictions": []}}
+            yield {
+                "event": "contradictions",
+                "data": {
+                    "contradictions": [],
+                    "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
+                },
+            }
             sentence_buffer += preamble_buffer
             for ev in _emit_new_sentences():
                 yield ev
@@ -527,10 +550,16 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
 
     full_answer = " ".join(s["sentence"] for s in full_sentences)
     groundedness = compute_groundedness(full_sentences)
+    t_end = time.monotonic()
+    timing_ms = {
+        "retrieval": retrieval_ms,
+        "generation": round((t_end - t_after_retrieval) * 1000, 1),
+        "total": round((t_end - t_start) * 1000, 1),
+    }
 
     log_query_event(
         question, requested_population, chunks, full_answer,
         state=decision.state, sentences=full_sentences, groundedness=groundedness["groundedness"],
     )
 
-    yield {"event": "done", "data": {"disclaimer": DISCLAIMER, "groundedness": groundedness}}
+    yield {"event": "done", "data": {"disclaimer": DISCLAIMER, "groundedness": groundedness, "timing_ms": timing_ms}}

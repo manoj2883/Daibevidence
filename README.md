@@ -116,9 +116,21 @@ uvicorn src.api.main:app --reload
 ```
 
 - `GET /health` — reports whether Claude and Pinecone are configured
-- `POST /query` — `{"question": "..."}` → `text/event-stream` of `sources` / `token` / `done` / `refusal` / `error` events (see above; also logged to `data/query_log.jsonl`)
+- `POST /query` — `{"question": "..."}` → `text/event-stream` of `sources` / `contradictions` / `sentence` / `done` / `refusal` / `error` events (see "Query" above; also logged to `data/query_log.jsonl`)
 
 There is no live ingestion endpoint — the frontend is chat-only, and ingestion is CLI-only (`python -m src.ingest.run_ingest`), per the offline ingestion pipeline above.
+
+## Frontend
+
+`src/api/index.html` — a single vanilla HTML/CSS/JS file, no build step, no external dependencies (system fonts, hand-written SVG icons). Built for patients, not clinicians, but designed to survive being demoed to a researcher — evidence is visible by default, not hidden behind a toggle.
+
+- **Per-sentence answer rendering**: each `sentence` event becomes its own `<span>`, color-coded by the population of its first supporting source. Hovering or focusing (keyboard-accessible) a sentence highlights the matching source card(s) in the evidence panel. Unsupported sentences (no `chunk_ids`) render muted/italic with a dashed underline — visually distinct, never presented as equivalent to a cited claim.
+- **Evidence panel**: beside the answer on desktop, below it on mobile (a per-exchange two-column row, not a single global sidebar) — source cards (title, journal, year, PMID link, population chip, similarity bar) are visible immediately, not behind a toggle.
+- **Retrieval log**: a collapsible `<details>` inside the evidence panel — every candidate score with a cleared/dropped marker against the floor, plus the timing breakdown (retrieval / contradiction check / generation / total) from each event's `timing_ms`.
+- **Confidence indicator**: a plain-language badge for `answered` ("Grounded in N sources") and `answered_low_confidence` ("Limited evidence — this answer may be less reliable"). A `refused` response gets a fully designed empty state — heading, the scope description, the closest scores found, and clickable example in-scope questions — not an error message. The same designed state also covers the case where the model itself declines mid-answer (a single unsupported sentence) even though the floor let some weak candidates through, so the two refusal paths (Task 1's floor and the model's own Rule 6 check) read identically to the user.
+- **Contradiction display**: when the `contradictions` event is non-empty, each conflict renders as its own two-column panel — position A and position B side by side (stacked only below ~560px), with the "differs by" explanation underneath.
+- **Design system**: a deliberately restrained base (off-white/near-black, a single deep-indigo accent for UI chrome, serif for reading content) with color spent in exactly one place — population-coded accents on sentences, source-card borders, and chips — so the evidence layer is the visually bold, memorable part of the page and everything else stays quiet.
+- Light/dark mode (`prefers-color-scheme` + a manual toggle persisted in `localStorage`), responsive down to mobile, `prefers-reduced-motion` respected, and every interactive element is a real focusable control with a visible `:focus-visible` ring.
 
 ## Tests
 

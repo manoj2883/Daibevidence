@@ -6,67 +6,84 @@
 <title>DiabEvidence — Diabetes Research Evidence Assistant</title>
 <style>
   :root {
-    --bg: #f5f8f2;
+    --bg: #f7f6f2;
     --surface: #ffffff;
-    --surface-alt: #edf3e8;
-    --border: #dbe5d3;
-    --text: #1f2b22;
-    --text-muted: #5b6b5d;
-    --accent: #1f6b4a;
-    --accent-hover: #185a3d;
+    --surface-alt: #f0eee8;
+    --border: #e3e0d8;
+    --ink: #1c1b1a;
+    --ink-muted: #66605a;
+    --accent: #3d2f7a;
+    --accent-hover: #2f2460;
     --accent-contrast: #ffffff;
-    --user-bubble-bg: #1f6b4a;
+    --accent-wash: #ece9f8;
+    --user-bubble-bg: #3d2f7a;
     --user-bubble-text: #ffffff;
-    --warning-bg: #fdf3e3;
-    --warning-border: #d99a2b;
-    --warning-text: #6b4a0a;
-    --info-bg: #eef3ea;
-    --info-border: #c3d2bb;
-    --info-text: #435548;
-    --focus-ring: #1f6b4a;
-    --radius: 16px;
-    --radius-sm: 10px;
+    --warn-bg: #fdf3e0;
+    --warn-border: #c98a1f;
+    --warn-text: #5c3d05;
+    --danger-wash: #fbeceb;
+
+    --pop-type1: #a83226;
+    --pop-type2: #1a4d7a;
+    --pop-gestational: #7d215f;
+    --pop-prediabetes: #8a5a00;
+    --pop-mixed: #4a4458;
+
+    --radius: 6px;
+    --radius-lg: 10px;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #10160f;
-      --surface: #17211b;
-      --surface-alt: #1c2820;
-      --border: #2a3a30;
-      --text: #e9efe9;
-      --text-muted: #9db09f;
-      --accent: #55b587;
-      --accent-hover: #6cc79b;
-      --accent-contrast: #08130d;
-      --user-bubble-bg: #2c6b4a;
-      --user-bubble-text: #eafff1;
-      --warning-bg: #2e2410;
-      --warning-border: #caa14a;
-      --warning-text: #f0cf8e;
-      --info-bg: #1c2820;
-      --info-border: #33453a;
-      --info-text: #b7c7ba;
+      --bg: #17161b;
+      --surface: #201f26;
+      --surface-alt: #26252c;
+      --border: #37353e;
+      --ink: #ece9e3;
+      --ink-muted: #a39d93;
+      --accent: #a996ff;
+      --accent-hover: #c2b3ff;
+      --accent-contrast: #14101f;
+      --accent-wash: #2a2540;
+      --user-bubble-bg: #4c3d94;
+      --user-bubble-text: #f2efff;
+      --warn-bg: #332608;
+      --warn-border: #c98a1f;
+      --warn-text: #f0cf8e;
+      --danger-wash: #3a1f1d;
+
+      --pop-type1: #e0685a;
+      --pop-type2: #4f96d6;
+      --pop-gestational: #c463a2;
+      --pop-prediabetes: #d9a53d;
+      --pop-mixed: #9089a6;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #10160f;
-    --surface: #17211b;
-    --surface-alt: #1c2820;
-    --border: #2a3a30;
-    --text: #e9efe9;
-    --text-muted: #9db09f;
-    --accent: #55b587;
-    --accent-hover: #6cc79b;
-    --accent-contrast: #08130d;
-    --user-bubble-bg: #2c6b4a;
-    --user-bubble-text: #eafff1;
-    --warning-bg: #2e2410;
-    --warning-border: #caa14a;
-    --warning-text: #f0cf8e;
-    --info-bg: #1c2820;
-    --info-border: #33453a;
-    --info-text: #b7c7ba;
+    --bg: #17161b;
+    --surface: #201f26;
+    --surface-alt: #26252c;
+    --border: #37353e;
+    --ink: #ece9e3;
+    --ink-muted: #a39d93;
+    --accent: #a996ff;
+    --accent-hover: #c2b3ff;
+    --accent-contrast: #14101f;
+    --accent-wash: #2a2540;
+    --user-bubble-bg: #4c3d94;
+    --user-bubble-text: #f2efff;
+    --warn-bg: #332608;
+    --warn-border: #c98a1f;
+    --warn-text: #f0cf8e;
+    --danger-wash: #3a1f1d;
+
+    --pop-type1: #e0685a;
+    --pop-type2: #4f96d6;
+    --pop-gestational: #c463a2;
+    --pop-prediabetes: #d9a53d;
+    --pop-mixed: #9089a6;
   }
 
   * { box-sizing: border-box; }
@@ -75,31 +92,26 @@
     margin: 0;
     padding: 0;
     background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    font-family: var(--sans);
     font-size: 17px;
-    line-height: 1.7;
+    line-height: 1.6;
   }
   @media (min-width: 480px) {
     html, body { font-size: 18px; }
   }
 
   a { color: var(--accent); }
-
-  button {
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-  }
+  button { font: inherit; color: inherit; cursor: pointer; }
 
   :focus-visible {
-    outline: 3px solid var(--focus-ring);
+    outline: 3px solid var(--accent);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 4px;
   }
 
   .app-shell {
-    max-width: 720px;
+    max-width: 1240px;
     margin: 0 auto;
     min-height: 100dvh;
     display: flex;
@@ -114,7 +126,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 14px 20px;
+    padding: 16px 20px;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
   }
@@ -122,242 +134,302 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    font-family: var(--serif);
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
   }
-  .brand svg { flex-shrink: 0; }
-
+  .brand .mark {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
   .theme-toggle {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 999px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
   }
   .theme-toggle:hover { border-color: var(--accent); }
 
   main#chat {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 24px 20px 8px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 36px;
   }
 
   /* Empty state */
   #empty-state {
     margin: auto 0;
-    text-align: center;
+    max-width: 640px;
     padding: 24px 8px;
   }
   #empty-state h1 {
-    font-size: 1.4rem;
-    margin: 0 0 10px;
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    line-height: 1.3;
+    margin: 0 0 12px;
   }
   #empty-state p.scope {
-    color: var(--text-muted);
-    max-width: 46ch;
-    margin: 0 auto 28px;
+    color: var(--ink-muted);
+    margin: 0 0 28px;
   }
   .starters {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    text-align: left;
   }
   .starter-btn {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
     padding: 14px 16px;
     text-align: left;
     font-size: 0.95em;
     line-height: 1.5;
   }
-  .starter-btn:hover { border-color: var(--accent); }
+  .starter-btn:hover { background: var(--accent-wash); }
 
-  /* Messages */
-  .msg-row { display: flex; }
-  .msg-row.user { justify-content: flex-end; }
-  .msg-row.assistant { justify-content: flex-start; }
+  /* One exchange = user question + answer/evidence pair */
+  .exchange { display: flex; flex-direction: column; gap: 14px; }
 
+  .user-row { display: flex; justify-content: flex-end; }
   .bubble-user {
     background: var(--user-bubble-bg);
     color: var(--user-bubble-text);
-    border-radius: var(--radius);
-    border-bottom-right-radius: 4px;
+    border-radius: var(--radius-lg);
+    border-bottom-right-radius: 3px;
     padding: 12px 16px;
-    max-width: 85%;
+    max-width: 80%;
+    font-size: 0.97em;
   }
 
-  .assistant-block {
-    width: 100%;
-  }
-
-  .mismatch-banner {
+  .answer-row {
     display: flex;
-    gap: 10px;
+    gap: 24px;
     align-items: flex-start;
-    background: var(--warning-bg);
-    border: 1px solid var(--warning-border);
-    color: var(--warning-text);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
+  }
+  .answer-column {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 680px;
+  }
+  .evidence-column {
+    flex: 0 0 340px;
+    width: 340px;
+  }
+  @media (max-width: 960px) {
+    .answer-row { flex-direction: column; }
+    .evidence-column { width: 100%; flex-basis: auto; }
+  }
+
+  /* Status line while waiting */
+  .status-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-size: 0.9em;
+    padding: 4px 0;
+  }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* Confidence badge */
+  .confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82em;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
     margin-bottom: 12px;
-    font-size: 0.92em;
+    width: fit-content;
+  }
+  .confidence-badge.answered { background: var(--accent-wash); color: var(--accent); }
+  .confidence-badge.low { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-border); }
+  .confidence-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Refusal — a designed state, not an error */
+  .refusal-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ink-muted);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    max-width: 680px;
+  }
+  .refusal-block h3 {
+    font-family: var(--serif);
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+  }
+  .refusal-block p { margin: 0 0 12px; color: var(--ink-muted); }
+  .refusal-scope {
+    font-size: 0.9em;
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 14px;
+  }
+  .refusal-closest {
+    font-size: 0.82em;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+  }
+  .refusal-try { font-size: 0.85em; font-weight: 600; margin-bottom: 8px; }
+
+  /* Population mismatch banner */
+  .mismatch-banner {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    color: var(--warn-text);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 0.9em;
+    max-width: 680px;
   }
   .mismatch-banner svg { flex-shrink: 0; margin-top: 2px; }
 
-  .info-banner {
-    background: var(--info-bg);
-    border: 1px solid var(--info-border);
-    color: var(--info-text);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    font-size: 0.92em;
+  /* Contradiction panels */
+  .contradiction-panel {
+    border: 1px solid var(--warn-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    overflow: hidden;
+    max-width: 680px;
   }
-
-  .answer-text {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    border-bottom-left-radius: 4px;
-    padding: 16px 18px;
-  }
-  .answer-text p { margin: 0 0 0.9em; }
-  .answer-text p:last-child { margin-bottom: 0; }
-
-  .answer-text.refusal {
-    color: var(--text-muted);
-  }
-
-  sup.citation {
-    font-size: 0.75em;
-  }
-  a.citation-marker {
-    text-decoration: none;
-    background: var(--surface-alt);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 0 4px;
-    color: var(--accent);
+  .contradiction-head {
+    background: var(--warn-bg);
+    color: var(--warn-text);
+    padding: 10px 14px;
+    font-size: 0.85em;
     font-weight: 600;
   }
-  a.citation-marker:hover { border-color: var(--accent); }
+  .contradiction-body {
+    display: flex;
+  }
+  .contradiction-side {
+    flex: 1;
+    padding: 14px;
+    font-size: 0.92em;
+  }
+  .contradiction-side + .contradiction-side { border-left: 1px solid var(--border); }
+  .contradiction-side .label { font-weight: 600; font-size: 0.82em; color: var(--ink-muted); margin-bottom: 4px; }
+  .contradiction-differs {
+    padding: 10px 14px;
+    font-size: 0.85em;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+    background: var(--surface-alt);
+  }
+  @media (max-width: 560px) {
+    .contradiction-body { flex-direction: column; }
+    .contradiction-side + .contradiction-side { border-left: none; border-top: 1px solid var(--border); }
+  }
+
+  /* Sentences */
+  .answer-text { max-width: 680px; }
+  .sentence {
+    cursor: default;
+    border-radius: 3px;
+    padding: 0 1px;
+  }
+  .sentence.supported {
+    box-shadow: inset 0 -2px 0 0 var(--sentence-color, var(--accent));
+  }
+  .sentence.unsupported {
+    color: var(--ink-muted);
+    font-style: italic;
+    border-bottom: 1px dashed var(--ink-muted);
+  }
+  .sentence.highlight {
+    background: var(--accent-wash);
+  }
+  .answer-text p { margin: 0 0 0.9em; font-family: var(--serif); }
+  .answer-text p:last-child { margin-bottom: 0; }
 
   .disclaimer {
-    color: var(--text-muted);
-    font-size: 0.8em;
-    margin-top: 10px;
+    color: var(--ink-muted);
+    font-size: 0.78em;
+    margin-top: 12px;
+    max-width: 680px;
   }
 
-  /* Source cards */
-  .sources-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  @media (min-width: 560px) {
-    .sources-grid { grid-template-columns: 1fr 1fr; }
-  }
-  .source-card {
-    background: var(--surface-alt);
+  /* Evidence column */
+  .evidence-section {
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+  }
+  .evidence-section-head {
+    padding: 10px 14px;
     font-size: 0.85em;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
   }
-  .source-card.highlight {
-    border-color: var(--accent);
+  .source-list { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .source-card {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--card-color, var(--ink-muted));
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 0.82em;
+    scroll-margin-top: 20px;
   }
-  .source-card .idx {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--accent-contrast);
-    border-radius: 999px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    font-size: 0.8em;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .source-card .title { font-weight: 600; margin: 0 0 4px; }
-  .source-card .meta { color: var(--text-muted); margin: 0 0 6px; }
-  .source-card .pmid-link { font-size: 0.9em; }
+  .source-card.highlight { background: var(--accent-wash); border-color: var(--accent); }
+  .source-card .title { font-weight: 600; margin: 0 0 4px; line-height: 1.35; }
+  .source-card .meta { color: var(--ink-muted); margin: 0 0 6px; }
+  .source-card .pmid-link { font-size: 0.95em; }
   .pop-chip {
     display: inline-block;
     margin-top: 6px;
     padding: 2px 8px;
     border-radius: 999px;
-    font-size: 0.8em;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
+    font-size: 0.85em;
+    color: #fff;
+    background: var(--card-color, var(--ink-muted));
   }
-  .pop-chip.mismatched {
-    background: var(--warning-bg);
-    border-color: var(--warning-border);
-    color: var(--warning-text);
-  }
+  .score-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .score-bar-track { flex: 1; background: var(--surface-alt); border-radius: 999px; height: 5px; overflow: hidden; }
+  .score-bar-fill { height: 100%; background: var(--card-color, var(--accent)); }
+  .score-label { font-size: 0.85em; color: var(--ink-muted); white-space: nowrap; }
 
-  /* Retrieval inspector */
-  details.inspector {
-    margin-top: 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-  }
+  /* Retrieval log */
   details.inspector summary {
     cursor: pointer;
     padding: 10px 14px;
     font-size: 0.85em;
-    color: var(--text-muted);
+    font-weight: 600;
     list-style: none;
   }
   details.inspector summary::-webkit-details-marker { display: none; }
-  details.inspector summary::before {
-    content: "▸ ";
-  }
-  details.inspector[open] summary::before {
-    content: "▾ ";
-  }
-  .inspector-body {
-    padding: 0 14px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .chunk-card {
-    border-top: 1px solid var(--border);
-    padding-top: 10px;
-    font-size: 0.85em;
-  }
-  .chunk-card .excerpt {
-    color: var(--text-muted);
-    margin: 4px 0 8px;
-  }
-  .score-bar-track {
-    background: var(--border);
-    border-radius: 999px;
-    height: 6px;
-    overflow: hidden;
-  }
-  .score-bar-fill {
-    background: var(--accent);
-    height: 100%;
-  }
-  .score-label {
-    font-size: 0.8em;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
+  details.inspector summary::before { content: "▸ "; }
+  details.inspector[open] summary::before { content: "▾ "; }
+  .inspector-body { padding: 0 14px 14px; font-size: 0.82em; }
+  .inspector-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .inspector-row .idx { width: 18px; color: var(--ink-muted); }
+  .inspector-row .bar-track { flex: 1; background: var(--surface-alt); border-radius: 999px; height: 5px; overflow: hidden; }
+  .inspector-row .bar-fill { height: 100%; }
+  .inspector-row.cleared .bar-fill { background: var(--accent); }
+  .inspector-row.dropped .bar-fill { background: var(--border); }
+  .inspector-row.dropped { color: var(--ink-muted); }
+  .inspector-row .score-num { width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
+  .inspector-floor-line { font-size: 0.8em; color: var(--ink-muted); margin: 6px 0 10px; }
+  .timing-list { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .timing-row { display: flex; justify-content: space-between; font-size: 0.85em; color: var(--ink-muted); padding: 2px 0; }
+  .timing-row span:last-child { font-variant-numeric: tabular-nums; }
 
   /* Composer */
   .composer-wrap {
@@ -368,12 +440,14 @@
     padding: 14px 20px;
   }
   .composer {
+    max-width: 680px;
+    margin: 0 auto;
     display: flex;
     align-items: flex-end;
     gap: 10px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     padding: 8px;
   }
   .composer:focus-within { border-color: var(--accent); }
@@ -383,7 +457,7 @@
     border: none;
     outline: none;
     background: transparent;
-    color: var(--text);
+    color: var(--ink);
     font: inherit;
     padding: 8px;
     max-height: 140px;
@@ -393,48 +467,30 @@
     color: var(--accent-contrast);
     border: none;
     border-radius: 999px;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
   button#send-btn:hover { background: var(--accent-hover); }
   button#send-btn:disabled { opacity: 0.5; cursor: default; }
 
-  .typing-indicator {
-    display: inline-flex;
-    gap: 4px;
-    padding: 4px 0;
-  }
-  .typing-indicator span {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-muted);
+  .info-banner {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 0.9em;
+    max-width: 680px;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .starter-btn, .theme-toggle, button#send-btn, a.citation-marker, .source-card {
-      transition: border-color 0.15s ease, background-color 0.15s ease;
+    .starter-btn, .theme-toggle, button#send-btn, .source-card, .sentence {
+      transition: background-color 0.15s ease, border-color 0.15s ease;
     }
-    .typing-indicator span {
-      animation: blink 1.2s infinite ease-in-out both;
-    }
-    .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
-    .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
-    @keyframes blink {
-      0%, 80%, 100% { opacity: 0.25; }
-      40% { opacity: 1; }
-    }
-    .source-card.highlight {
-      animation: flash-highlight 1.6s ease-out;
-    }
-    @keyframes flash-highlight {
-      0% { background: var(--accent); }
-      100% { background: var(--surface-alt); }
-    }
+    .status-dot { animation: pulse 1.4s infinite ease-in-out; }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    .source-card.highlight { animation: flash 1.4s ease-out; }
+    @keyframes flash { 0% { background: var(--accent); } 100% { background: var(--accent-wash); } }
   }
 
   [hidden] { display: none !important; }
@@ -444,13 +500,7 @@
 
 <div class="app-shell">
   <header class="app-header">
-    <div class="brand">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2C8 6 5 10.5 5 14.5C5 18.6 8.1 22 12 22C15.9 22 19 18.6 19 14.5C19 10.5 16 6 12 2Z" fill="var(--accent)"/>
-        <path d="M12 22C12 22 9 19 9 15.5" stroke="var(--surface)" stroke-width="1.4" stroke-linecap="round" fill="none"/>
-      </svg>
-      <span>DiabEvidence</span>
-    </div>
+    <div class="brand"><span class="mark" aria-hidden="true"></span><span>DiabEvidence</span></div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
       <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
@@ -459,13 +509,13 @@
     </button>
   </header>
 
-  <main id="chat" aria-live="off">
+  <main id="chat">
     <div id="empty-state">
       <h1>Diabetes research, only from the evidence.</h1>
       <p class="scope">
         Diet &amp; nutrition, glycemic control, body composition &amp; weight, and diet–medication
-        interactions — across type 1, type 2, gestational, and prediabetes. Every answer is grounded
-        in retrieved PubMed evidence and cited by PMID, or it declines to answer.
+        interactions — across type 1, type 2, gestational, and prediabetes. Every answer shows exactly
+        which studies it's built from, right beside it — not hidden behind a toggle.
       </p>
       <div class="starters">
         <button class="starter-btn" type="button" data-question="What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?">
@@ -497,52 +547,47 @@
 (function () {
   "use strict";
 
+  var POP_LABELS = { type1: "Type 1", type2: "Type 2", gestational: "Gestational", prediabetes: "Prediabetes", mixed: "Mixed" };
+  function popColorVar(pop) {
+    var known = ["type1", "type2", "gestational", "prediabetes", "mixed"];
+    return "var(--pop-" + (known.indexOf(pop) !== -1 ? pop : "mixed") + ")";
+  }
+  function popLabel(pop) { return POP_LABELS[pop] || (pop || "Unknown"); }
+
   // ---------- Theme ----------
-  const THEME_KEY = "diabevidence-theme";
+  var THEME_KEY = "diabevidence-theme";
   function applyTheme(theme) {
-    if (theme === "light" || theme === "dark") {
-      document.documentElement.setAttribute("data-theme", theme);
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-    }
+    if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
+    else document.documentElement.removeAttribute("data-theme");
   }
   function currentEffectiveTheme() {
-    const attr = document.documentElement.getAttribute("data-theme");
+    var attr = document.documentElement.getAttribute("data-theme");
     if (attr) return attr;
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   (function initTheme() {
-    let stored = null;
+    var stored = null;
     try { stored = localStorage.getItem(THEME_KEY); } catch (e) {}
     if (stored) applyTheme(stored);
   })();
   document.getElementById("theme-toggle").addEventListener("click", function () {
-    const next = currentEffectiveTheme() === "dark" ? "light" : "dark";
+    var next = currentEffectiveTheme() === "dark" ? "light" : "dark";
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
   });
 
   // ---------- Helpers ----------
   function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
+    var div = document.createElement("div");
+    div.textContent = text == null ? "" : String(text);
     return div.innerHTML;
   }
 
-  function renderParagraphs(escapedText) {
-    return escapedText
-      .split(/\n\s*\n/)
-      .map(function (p) { return p.trim(); })
-      .filter(Boolean)
-      .map(function (p) { return "<p>" + p.replace(/\n/g, "<br>") + "</p>"; })
-      .join("");
-  }
-
-  let msgCounter = 0;
+  var msgCounter = 0;
 
   // ---------- SSE streaming ----------
   async function streamQuery(question, handlers) {
-    let response;
+    var response;
     try {
       response = await fetch("/query", {
         method: "POST",
@@ -553,46 +598,40 @@
       handlers.onError({ message: "Could not reach the server. Check your connection and try again." });
       return;
     }
-
     if (!response.ok || !response.body) {
       handlers.onError({ message: "Could not reach the server. Check your connection and try again." });
       return;
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
+    var reader = response.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = "";
 
     while (true) {
-      let chunk;
-      try {
-        chunk = await reader.read();
-      } catch (err) {
-        handlers.onError({ message: "The connection was interrupted." });
-        return;
-      }
+      var chunk;
+      try { chunk = await reader.read(); }
+      catch (err) { handlers.onError({ message: "The connection was interrupted." }); return; }
       if (chunk.done) break;
       buffer += decoder.decode(chunk.value, { stream: true });
 
-      let idx;
+      var idx;
       while ((idx = buffer.indexOf("\n\n")) !== -1) {
-        const rawEvent = buffer.slice(0, idx);
+        var rawEvent = buffer.slice(0, idx);
         buffer = buffer.slice(idx + 2);
         if (!rawEvent.trim()) continue;
 
-        let eventType = "message";
-        let dataStr = "";
+        var eventType = "message", dataStr = "";
         rawEvent.split("\n").forEach(function (line) {
           if (line.startsWith("event:")) eventType = line.slice(6).trim();
           else if (line.startsWith("data:")) dataStr += line.slice(5).trim();
         });
         if (!dataStr) continue;
-
-        let data;
+        var data;
         try { data = JSON.parse(dataStr); } catch (e) { continue; }
 
         if (eventType === "sources" && handlers.onSources) handlers.onSources(data);
-        else if (eventType === "token" && handlers.onToken) handlers.onToken(data);
+        else if (eventType === "contradictions" && handlers.onContradictions) handlers.onContradictions(data);
+        else if (eventType === "sentence" && handlers.onSentence) handlers.onSentence(data);
         else if (eventType === "done" && handlers.onDone) handlers.onDone(data);
         else if (eventType === "refusal" && handlers.onRefusal) handlers.onRefusal(data);
         else if (eventType === "error" && handlers.onError) handlers.onError(data);
@@ -600,208 +639,325 @@
     }
   }
 
-  // ---------- Message rendering ----------
-  const chatEl = document.getElementById("chat");
-  const emptyStateEl = document.getElementById("empty-state");
+  // ---------- Rendering ----------
+  var chatEl = document.getElementById("chat");
+  var emptyStateEl = document.getElementById("empty-state");
 
-  function scrollToBottom() {
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
+  function scrollToBottom() { chatEl.scrollTop = chatEl.scrollHeight; }
 
-  function addUserMessage(text) {
-    const row = document.createElement("div");
-    row.className = "msg-row user";
-    const bubble = document.createElement("div");
-    bubble.className = "bubble-user";
-    bubble.textContent = text;
-    row.appendChild(bubble);
+  function addUserRow(text) {
+    var row = document.createElement("div");
+    row.className = "exchange";
+    row.innerHTML = '<div class="user-row"><div class="bubble-user"></div></div>';
+    row.querySelector(".bubble-user").textContent = text;
     chatEl.appendChild(row);
     scrollToBottom();
+    return row;
   }
 
-  function popChip(pop, mismatched) {
-    return '<span class="pop-chip' + (mismatched ? " mismatched" : "") + '">' + escapeHtml(pop || "unknown") + "</span>";
+  function buildSourceCard(source, index, msgId) {
+    var colorVar = popColorVar(source.population);
+    var pct = Math.max(0, Math.min(100, Math.round((source.score || 0) * 100)));
+    var el = document.createElement("div");
+    el.className = "source-card";
+    el.style.setProperty("--card-color", colorVar);
+    el.setAttribute("data-chunk-index", String(index));
+    el.id = "source-" + msgId + "-" + index;
+    el.innerHTML =
+      '<p class="title">' + escapeHtml(source.title || "Untitled") + "</p>" +
+      '<p class="meta">' + escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || "")) + "</p>" +
+      (source.pmid ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(source.pmid) + '/" target="_blank" rel="noopener">PMID: ' + escapeHtml(source.pmid) + "</a>" : "PMID: unknown") +
+      '<span class="pop-chip" style="background:' + colorVar + '">' + escapeHtml(popLabel(source.population)) + "</span>" +
+      '<div class="score-row"><div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%;background:' + colorVar + '"></div></div><span class="score-label">' + pct + "%</span></div>";
+    return el;
   }
 
-  function buildSourceCards(sources, requestedPopulation, msgId) {
-    if (!sources || !sources.length) return "";
-    const cards = sources.map(function (s, i) {
-      const idx = i + 1;
-      const mismatched = requestedPopulation !== "mixed" && s.population && s.population !== requestedPopulation;
-      const pmidLink = s.pmid
-        ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(s.pmid) + '/" target="_blank" rel="noopener">PMID: ' + escapeHtml(s.pmid) + "</a>"
-        : "PMID: unknown";
-      return (
-        '<div class="source-card" id="source-' + msgId + "-" + idx + '">' +
-        '<span class="idx">' + idx + "</span>" +
-        '<p class="title">' + escapeHtml(s.title || "Untitled") + "</p>" +
-        '<p class="meta">' + escapeHtml(s.journal || "") + (s.journal && s.year ? ", " : "") + escapeHtml(String(s.year || "")) + "</p>" +
-        pmidLink +
-        popChip(s.population, mismatched) +
-        "</div>"
-      );
-    }).join("");
-    return '<div class="sources-grid">' + cards + "</div>";
+  function buildInspectorBody(scoreDist, timing) {
+    var wrap = document.createElement("div");
+    wrap.className = "inspector-body";
+    var floor = scoreDist.floor;
+    var html = '<div class="inspector-floor-line">Similarity floor: ' + (floor * 100).toFixed(0) + "% — candidates below this line are dropped</div>";
+    (scoreDist.candidate_scores || []).forEach(function (score, i) {
+      var cleared = score >= floor;
+      var pct = Math.max(0, Math.min(100, Math.round(score * 100)));
+      html += '<div class="inspector-row ' + (cleared ? "cleared" : "dropped") + '">' +
+        '<span class="idx">' + (i + 1) + "</span>" +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="score-num">' + pct + "%</span></div>";
+    });
+    wrap.innerHTML = html;
+    return wrap;
   }
 
-  function buildInspector(sources) {
-    if (!sources || !sources.length) return "";
-    const chunks = sources.map(function (s, i) {
-      const pct = Math.max(0, Math.min(100, Math.round((s.score || 0) * 100)));
-      return (
-        '<div class="chunk-card">' +
-        "<strong>[" + (i + 1) + "] PMID " + escapeHtml(s.pmid || "unknown") + "</strong>" +
-        '<p class="excerpt">' + escapeHtml((s.excerpt || "").slice(0, 320)) + ((s.excerpt || "").length > 320 ? "…" : "") + "</p>" +
-        '<div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%"></div></div>' +
-        '<div class="score-label">Similarity: ' + pct + "%</div>" +
-        "</div>"
-      );
-    }).join("");
+  function renderTimingList(timing) {
+    var rows = [
+      ["Retrieval", timing.retrieval],
+      ["Contradiction check", timing.contradiction_check],
+      ["Answer generation", timing.generation],
+      ["Total", timing.total],
+    ];
+    var html = "";
+    rows.forEach(function (r) {
+      if (r[1] == null) return;
+      html += '<div class="timing-row"><span>' + r[0] + "</span><span>" + r[1] + " ms</span></div>";
+    });
+    if (!html) return null;
+    var div = document.createElement("div");
+    div.className = "timing-list";
+    div.innerHTML = html;
+    return div;
+  }
+
+  var GENERIC_REFUSAL_SCOPE = "This system answers questions on four topics, across all diabetes types: diet and nutrition, glycemic control, body composition and weight, and how diet interacts with diabetes medication.";
+
+  function buildRefusalBlockHtml(message, scopeText, closestScores) {
+    var starterQuestions = [];
+    document.querySelectorAll("#empty-state .starter-btn").forEach(function (btn) {
+      starterQuestions.push(btn.getAttribute("data-question"));
+    });
+    var suggestionsHtml = "";
+    starterQuestions.forEach(function (q) {
+      suggestionsHtml += '<button type="button" class="starter-btn refusal-starter" data-question="' + escapeHtml(q) + '" style="margin-bottom:6px;">' + escapeHtml(q) + "</button>";
+    });
     return (
-      '<details class="inspector">' +
-      "<summary>Show retrieved evidence (" + sources.length + " chunks)</summary>" +
-      '<div class="inspector-body">' + chunks + "</div>" +
-      "</details>"
+      '<div class="refusal-block">' +
+      "<h3>No evidence found for this question</h3>" +
+      "<p>" + escapeHtml(message) + "</p>" +
+      '<div class="refusal-scope">' + escapeHtml(scopeText || GENERIC_REFUSAL_SCOPE) + "</div>" +
+      (closestScores && closestScores.length
+        ? '<div class="refusal-closest">Closest matches found were only ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + ' similar — below the threshold this system requires to answer.</div>'
+        : "") +
+      '<div class="refusal-try">Try asking about:</div>' +
+      suggestionsHtml +
+      "</div>"
     );
   }
 
-  function finalizeAnswerHtml(rawText, sources, msgId) {
-    const pmidIndex = {};
-    (sources || []).forEach(function (s, i) {
-      if (s.pmid && !(s.pmid in pmidIndex)) pmidIndex[s.pmid] = i + 1;
+  function wireRefusalStarters(container) {
+    container.querySelectorAll(".refusal-starter").forEach(function (btn) {
+      btn.addEventListener("click", function () { sendQuestion(btn.getAttribute("data-question")); });
     });
-
-    let escaped = escapeHtml(rawText);
-    escaped = escaped.replace(/\[PMID:\s*(\d+)\]/g, function (match, pmid) {
-      const idx = pmidIndex[pmid];
-      if (!idx) return match;
-      return '<sup class="citation"><a href="#source-' + msgId + "-" + idx + '" class="citation-marker" data-target="source-' + msgId + "-" + idx + '">' + idx + "</a></sup>";
-    });
-
-    return renderParagraphs(escaped);
   }
 
-  function wireCitationClicks(container) {
-    container.querySelectorAll("a.citation-marker").forEach(function (link) {
-      link.addEventListener("click", function (e) {
-        const targetId = link.getAttribute("data-target");
-        const target = document.getElementById(targetId);
-        if (!target) return;
-        e.preventDefault();
-        target.scrollIntoView({ block: "center" });
-        target.classList.add("highlight");
-        setTimeout(function () { target.classList.remove("highlight"); }, 1600);
+  function buildContradictionPanel(c) {
+    var el = document.createElement("div");
+    el.className = "contradiction-panel";
+    el.innerHTML =
+      '<div class="contradiction-head">These sources disagree: ' + escapeHtml(c.claim || "") + "</div>" +
+      '<div class="contradiction-body">' +
+        '<div class="contradiction-side"><div class="label">PMID ' + escapeHtml((c.pmids && c.pmids[0]) || "?") + '</div>' + escapeHtml(c.position_a || "") + "</div>" +
+        '<div class="contradiction-side"><div class="label">PMID ' + escapeHtml((c.pmids && c.pmids[1]) || "?") + '</div>' + escapeHtml(c.position_b || "") + "</div>" +
+      "</div>" +
+      (c.differs_by ? '<div class="contradiction-differs">Likely explanation: ' + escapeHtml(c.differs_by) + "</div>" : "");
+    return el;
+  }
+
+  function wireSentenceHover(sentenceEl, chunkIds, msgId) {
+    function setHighlight(on) {
+      chunkIds.forEach(function (idx) {
+        var card = document.getElementById("source-" + msgId + "-" + idx);
+        if (card) card.classList.toggle("highlight", on);
       });
+      sentenceEl.classList.toggle("highlight", on && chunkIds.length > 0);
+    }
+    sentenceEl.addEventListener("mouseenter", function () { setHighlight(true); });
+    sentenceEl.addEventListener("mouseleave", function () { setHighlight(false); });
+    sentenceEl.addEventListener("focus", function () { setHighlight(true); });
+    sentenceEl.addEventListener("blur", function () { setHighlight(false); });
+    sentenceEl.addEventListener("click", function () {
+      if (chunkIds.length) {
+        var card = document.getElementById("source-" + msgId + "-" + chunkIds[0]);
+        if (card) card.scrollIntoView({ block: "nearest" });
+      }
     });
   }
 
-  function addAssistantMessage() {
+  function addAssistantExchange() {
     msgCounter += 1;
-    const msgId = "m" + msgCounter;
+    var msgId = "m" + msgCounter;
 
-    const row = document.createElement("div");
-    row.className = "msg-row assistant";
-    const block = document.createElement("div");
-    block.className = "assistant-block";
-    block.innerHTML =
-      '<div class="mismatch-banner-slot"></div>' +
-      '<div class="answer-text" aria-live="polite"><span class="typing-indicator"><span></span><span></span><span></span></span></div>' +
-      '<div class="disclaimer-slot"></div>' +
-      '<div class="sources-slot"></div>' +
-      '<div class="inspector-slot"></div>';
-    row.appendChild(block);
+    var row = document.createElement("div");
+    row.className = "exchange";
+    row.innerHTML =
+      '<div class="answer-row">' +
+        '<div class="answer-column">' +
+          '<div class="status-line"><span class="status-dot"></span><span class="status-text">Searching evidence…</span></div>' +
+          '<div class="confidence-slot"></div>' +
+          '<div class="mismatch-slot"></div>' +
+          '<div class="contradictions-slot"></div>' +
+          '<div class="answer-text" aria-live="polite"></div>' +
+          '<div class="disclaimer-slot"></div>' +
+        "</div>" +
+        '<div class="evidence-column" hidden></div>' +
+      "</div>";
     chatEl.appendChild(row);
     scrollToBottom();
 
-    const els = {
+    var els = {
       msgId: msgId,
-      banner: block.querySelector(".mismatch-banner-slot"),
-      answer: block.querySelector(".answer-text"),
-      disclaimer: block.querySelector(".disclaimer-slot"),
-      sources: block.querySelector(".sources-slot"),
-      inspector: block.querySelector(".inspector-slot"),
+      status: row.querySelector(".status-text"),
+      statusLine: row.querySelector(".status-line"),
+      confidence: row.querySelector(".confidence-slot"),
+      mismatch: row.querySelector(".mismatch-slot"),
+      contradictions: row.querySelector(".contradictions-slot"),
+      answerText: row.querySelector(".answer-text"),
+      disclaimer: row.querySelector(".disclaimer-slot"),
+      evidenceColumn: row.querySelector(".evidence-column"),
+      inspectorBody: null,
     };
 
-    let rawText = "";
-    let sourcesData = [];
-    let requestedPopulation = "mixed";
-    let firstToken = true;
+    var sourcesData = [];
+    var timing = {};
+    var para = null;
+    var sentenceRecords = [];
 
     return {
       onSources: function (data) {
         sourcesData = data.sources || [];
-        requestedPopulation = data.requested_population || "mixed";
+        timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
+        els.status.textContent = "Checking for contradictions…";
+
+        if (data.state === "answered_low_confidence") {
+          els.confidence.innerHTML = '<span class="confidence-badge low"><span class="confidence-dot"></span>Limited evidence — this answer may be less reliable</span>';
+        } else {
+          els.confidence.innerHTML = '<span class="confidence-badge answered"><span class="confidence-dot"></span>Grounded in ' + sourcesData.length + " source" + (sourcesData.length === 1 ? "" : "s") + "</span>";
+        }
+
         if (data.mismatch) {
-          const retrievedStr = (data.retrieved_populations || []).join(", ") || "a different population";
-          els.banner.innerHTML =
+          var retrievedStr = (data.retrieved_populations || []).join(", ") || "a different population";
+          els.mismatch.innerHTML =
             '<div class="mismatch-banner">' +
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-            "<span>The retrieved evidence covers <strong>" + escapeHtml(retrievedStr) + "</strong>, which differs from the <strong>" + escapeHtml(requestedPopulation) + "</strong> population asked about — it may not generalize.</span>" +
+            "<span>The evidence found covers <strong>" + escapeHtml(retrievedStr) + "</strong>, which differs from the <strong>" + escapeHtml(data.requested_population || "") + "</strong> population asked about — it may not generalize.</span>" +
             "</div>";
         }
+
+        els.evidenceColumn.hidden = false;
+
+        var sourcesSection = document.createElement("div");
+        sourcesSection.className = "evidence-section";
+        sourcesSection.innerHTML = '<div class="evidence-section-head">Sources (' + sourcesData.length + ")</div>";
+        var list = document.createElement("div");
+        list.className = "source-list";
+        sourcesData.forEach(function (s, i) { list.appendChild(buildSourceCard(s, i + 1, els.msgId)); });
+        sourcesSection.appendChild(list);
+        els.evidenceColumn.appendChild(sourcesSection);
+
+        var inspectorSection = document.createElement("div");
+        inspectorSection.className = "evidence-section";
+        var details = document.createElement("details");
+        details.className = "inspector";
+        var summary = document.createElement("summary");
+        summary.textContent = "Retrieval log";
+        details.appendChild(summary);
+        var body = buildInspectorBody(data.score_distribution, timing);
+        details.appendChild(body);
+        inspectorSection.appendChild(details);
+        els.evidenceColumn.appendChild(inspectorSection);
+        els.inspectorBody = body;
+
+        scrollToBottom();
       },
-      onToken: function (data) {
-        if (firstToken) {
-          els.answer.innerHTML = "";
-          firstToken = false;
+      onContradictions: function (data) {
+        timing.contradiction_check = data.timing_ms && data.timing_ms.contradiction_check;
+        var list = data.contradictions || [];
+        if (list.length) {
+          var frag = document.createDocumentFragment();
+          list.forEach(function (c) { frag.appendChild(buildContradictionPanel(c)); });
+          els.contradictions.appendChild(frag);
         }
-        rawText += data.text;
-        els.answer.textContent = rawText;
+        els.status.textContent = "Writing answer…";
+        scrollToBottom();
+      },
+      onSentence: function (data) {
+        els.statusLine.hidden = true;
+        sentenceRecords.push(data);
+        var span = document.createElement("span");
+        var supported = !!(data.chunk_ids && data.chunk_ids.length);
+        span.className = "sentence " + (supported ? "supported" : "unsupported");
+        span.tabIndex = 0;
+        span.textContent = data.sentence + " ";
+        if (supported) {
+          var firstPop = (sourcesData[data.chunk_ids[0] - 1] || {}).population;
+          span.style.setProperty("--sentence-color", popColorVar(firstPop));
+        }
+        if (!para) {
+          para = document.createElement("p");
+          els.answerText.appendChild(para);
+        }
+        para.appendChild(span);
+        wireSentenceHover(span, data.chunk_ids || [], els.msgId);
         scrollToBottom();
       },
       onDone: function (data) {
-        els.answer.innerHTML = finalizeAnswerHtml(rawText, sourcesData, msgId);
-        wireCitationClicks(els.answer);
         if (data.disclaimer) {
           els.disclaimer.innerHTML = '<p class="disclaimer">' + escapeHtml(data.disclaimer) + "</p>";
         }
-        els.sources.innerHTML = buildSourceCards(sourcesData, requestedPopulation, msgId);
-        els.inspector.innerHTML = buildInspector(sourcesData);
+        if (data.timing_ms) {
+          timing.generation = data.timing_ms.generation;
+          timing.total = data.timing_ms.total;
+          if (els.inspectorBody) {
+            var existing = els.inspectorBody.querySelector(".timing-list");
+            if (existing) existing.remove();
+            var timingList = renderTimingList(timing);
+            if (timingList) els.inspectorBody.appendChild(timingList);
+          }
+        }
+        // The model can itself decline (its own grounding check) even when
+        // the similarity floor let some weak candidates through — that
+        // shows up as a single unsupported sentence rather than the
+        // dedicated "refusal" event. Give it the same designed treatment
+        // instead of leaving a lone italic line: still patient-facing,
+        // still explains what the system covers. The evidence column stays
+        // visible here (unlike a real floor-based refusal) since something
+        // genuinely was retrieved — that's worth being transparent about.
+        if (sentenceRecords.length === 1 && !sentenceRecords[0].supported) {
+          els.confidence.innerHTML = "";
+          els.answerText.innerHTML = buildRefusalBlockHtml(sentenceRecords[0].sentence, null, null);
+          wireRefusalStarters(els.answerText);
+        }
         scrollToBottom();
       },
       onRefusal: function (data) {
-        els.answer.classList.add("refusal");
-        els.answer.textContent = data.message;
+        els.statusLine.hidden = true;
+        els.evidenceColumn.hidden = true;
+        els.answerText.innerHTML = buildRefusalBlockHtml(data.message, data.scope_description, data.closest_scores);
         if (data.disclaimer) {
           els.disclaimer.innerHTML = '<p class="disclaimer">' + escapeHtml(data.disclaimer) + "</p>";
         }
+        wireRefusalStarters(els.answerText);
         scrollToBottom();
       },
       onError: function (data) {
-        els.answer.innerHTML =
-          '<div class="info-banner">' + escapeHtml(data.message || "Something went wrong.") + "</div>";
+        els.statusLine.hidden = true;
+        els.answerText.innerHTML = '<div class="info-banner">' + escapeHtml(data.message || "Something went wrong.") + "</div>";
         scrollToBottom();
       },
     };
   }
 
   // ---------- Composer ----------
-  const form = document.getElementById("composer-form");
-  const input = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");
-  let isSending = false;
+  var form = document.getElementById("composer-form");
+  var input = document.getElementById("user-input");
+  var sendBtn = document.getElementById("send-btn");
+  var isSending = false;
 
   input.addEventListener("input", function () {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 140) + "px";
   });
   input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      form.requestSubmit();
-    }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
   });
 
   async function sendQuestion(question) {
     if (!question || isSending) return;
     isSending = true;
     sendBtn.disabled = true;
-
     emptyStateEl.setAttribute("hidden", "");
 
-    addUserMessage(question);
-    const handlers = addAssistantMessage();
-
+    addUserRow(question);
+    var handlers = addAssistantExchange();
     await streamQuery(question, handlers);
 
     isSending = false;
@@ -811,7 +967,7 @@
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    const question = input.value.trim();
+    var question = input.value.trim();
     if (!question) return;
     input.value = "";
     input.style.height = "auto";
@@ -819,9 +975,7 @@
   });
 
   document.querySelectorAll(".starter-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      sendQuestion(btn.getAttribute("data-question"));
-    });
+    btn.addEventListener("click", function () { sendQuestion(btn.getAttribute("data-question")); });
   });
 
   input.focus();

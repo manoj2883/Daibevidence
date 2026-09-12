@@ -24,7 +24,10 @@ Thumbs.db
 test_output.txt
 
 # Cached raw PubMed pulls, chunk exports, and query logs (regenerable via
-# src.ingest.run_ingest) — but keep the corpus freeze manifest, since it's
-# the provenance record for whatever corpus is currently in Pinecone.
+# src.ingest.run_ingest) — but keep the corpus freeze manifest (provenance
+# record for whatever corpus is currently in Pinecone) and evaluation
+# artifacts that go in the paper (threshold sweep, eval run results).
 data/*
 !data/corpus_manifest.json
+!data/threshold_sweep.csv
+!data/eval_results.csv

@@ -8,7 +8,7 @@ ones used for a formal eval run.
 import json
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from src.ingest.config import QUERY_LOG_PATH
 from src.rag.types import RetrievedChunk
@@ -32,11 +32,13 @@ def log_query_event(
     chunks: List[RetrievedChunk],
     answer: str,
     path: str = QUERY_LOG_PATH,
+    state: Optional[str] = None,
 ) -> None:
     event = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "question": question,
         "requested_population": requested_population,
+        "state": state,
         "retrieved_chunks": [_chunk_summary(chunk) for chunk in chunks],
         "answer": answer,
     }

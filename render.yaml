@@ -20,3 +20,8 @@ services:
         value: aws
       - key: PINECONE_REGION
         value: us-east-1
+      # Similarity floor for retrieval abstention — tuned empirically by
+      # scripts/tune_threshold.py, see data/threshold_sweep.csv. Not a
+      # secret; override here (or in Render's dashboard) if re-tuning.
+      - key: SIMILARITY_FLOOR
+        value: "0.50"

@@ -1,0 +1,25 @@
+{
+  "_note": "Deliberately unrelated-to-diabetes questions for tuning SIMILARITY_FLOOR (scripts/tune_threshold.py) — distinct from eval/test_questions.json's out_of_scope_refusal category, which tests diabetes-adjacent-but-outside-the-4-topics questions. These test the other failure mode: nearest-neighbor search always returns *something*, even for content with no real relationship to the corpus at all, so the floor must reject these regardless of how 'close' the top match superficially looks.",
+  "questions": [
+    {"id": 1, "category": "unrelated_condition", "question": "What is the standard treatment for plaque psoriasis?"},
+    {"id": 2, "category": "unrelated_condition", "question": "How is bacterial pneumonia diagnosed in adults?"},
+    {"id": 3, "category": "unrelated_condition", "question": "What are the surgical options for a torn ACL?"},
+    {"id": 4, "category": "unrelated_condition", "question": "What causes migraines and how are they treated?"},
+    {"id": 5, "category": "unrelated_condition", "question": "What is the prognosis for stage 2 melanoma?"},
+    {"id": 6, "category": "general_trivia", "question": "What is the capital of France?"},
+    {"id": 7, "category": "general_trivia", "question": "Who won the FIFA World Cup in 2022?"},
+    {"id": 8, "category": "general_trivia", "question": "How many moons does Jupiter have?"},
+    {"id": 9, "category": "general_trivia", "question": "What year did the Berlin Wall fall?"},
+    {"id": 10, "category": "general_trivia", "question": "What is the tallest mountain in the world?"},
+    {"id": 11, "category": "general_trivia", "question": "How do I convert Celsius to Fahrenheit?"},
+    {"id": 12, "category": "nonsense", "question": "purple elephant seventeen Tuesday algorithm"},
+    {"id": 13, "category": "nonsense", "question": "asdkfjh alskdjf laksjdf laksjdflkasjdf"},
+    {"id": 14, "category": "nonsense", "question": "the moon whispers backward through the fence"},
+    {"id": 15, "category": "nonsense", "question": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"},
+    {"id": 16, "category": "unrelated_lifestyle", "question": "What's the best way to train for a marathon?"},
+    {"id": 17, "category": "unrelated_lifestyle", "question": "How do I fix a leaking kitchen faucet?"},
+    {"id": 18, "category": "unrelated_lifestyle", "question": "What's a good beginner recipe for sourdough bread?"},
+    {"id": 19, "category": "unrelated_finance", "question": "How does compound interest work on a savings account?"},
+    {"id": 20, "category": "unrelated_finance", "question": "What's the difference between a Roth IRA and a 401k?"}
+  ]
+}

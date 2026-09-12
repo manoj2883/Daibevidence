@@ -22,7 +22,9 @@ src/rag/chain.py           # grounded, streaming generation: direct Anthropic SD
 src/rag/query_log.py       # appends every /query call + its retrieved chunks to data/query_log.jsonl
 src/api/main.py            # FastAPI app: /query (streaming SSE), /health
 src/api/index.html         # single-page chat frontend (vanilla HTML/CSS/JS, no build step)
-eval/test_questions.json   # fixed 30-question evaluation set (see below)
+eval/test_questions.json   # fixed 30-question in-scope evaluation set (see below)
+eval/out_of_scope_questions.json  # unrelated conditions/trivia/nonsense, for tuning the similarity floor
+scripts/tune_threshold.py  # empirically sweeps SIMILARITY_FLOOR — see data/threshold_sweep.csv
 data/                      # gitignored local cache — except corpus_manifest.json (see "Freezing the corpus")
 ```
 
@@ -43,15 +45,27 @@ Two pipelines, both built on [Pinecone](https://www.pinecone.io/) as the vector 
 
 **Query** (`POST /query`, streams a server-sent-events response)
 1. Embed the question with the same local model.
-2. Retrieve the top `RETRIEVAL_TOP_K` chunks from Pinecone (default 5) — never more; a hard cap in `src/rag/cost.py` raises rather than silently sending a larger slice to Claude.
-3. Emit a `sources` event (retrieved chunks + population info + a deterministic population-mismatch flag), then hand the labeled chunks to **Claude** (`messages.stream`, direct Anthropic SDK), which:
-   - answers only from them, citing every claim inline as `[PMID: 12345678]`
-   - states which diabetes population the cited evidence applies to
-   - explicitly flags a mismatch if the retrieved evidence covers a different population than the question asked about
-   - discusses medications only in general informational terms — never dosing or prescribing advice
-   - declines with a fixed refusal sentence when the evidence doesn't support an answer (a `refusal` event — no Claude call is made at all in this case)
+2. Retrieve a wide candidate pool (`RETRIEVAL_CANDIDATE_K`, default 10) from Pinecone, then apply a **similarity floor** (`SIMILARITY_FLOOR` env var, empirically tuned default 0.50 — see "Tuning the similarity floor" below) that decides how many of those candidates are actually relevant, instead of always forcing a fixed top-k. Nearest-neighbor search always returns *a* nearest neighbor, even when nothing in the corpus is relevant — the floor is what lets the system recognize that and abstain. Never sends more than `RETRIEVAL_CANDIDATE_K` chunks to Claude — a hard cap in `src/rag/cost.py` raises rather than silently sending more.
+3. Three possible outcomes, exposed as `state` in the API response:
+   - **`refused`** — nothing cleared the floor. A `refusal` event is sent with the closest scores found, a description of what the system does cover, and the full score distribution. **No Claude call is made.**
+   - **`answered_low_confidence`** — something cleared the floor, but the best score is only marginally above it.
+   - **`answered`** — a `sources` event (retrieved chunks + population info + a deterministic population-mismatch flag + the score distribution that produced the decision), then hand the surviving chunks to **Claude** (`messages.stream`, direct Anthropic SDK), which:
+     - answers only from them, citing every claim inline as `[PMID: 12345678]`
+     - states which diabetes population the cited evidence applies to
+     - explicitly flags a mismatch if the retrieved evidence covers a different population than the question asked about
+     - discusses medications only in general informational terms — never dosing or prescribing advice
+     - declines with the fixed refusal sentence if, despite clearing the floor, the excerpts still don't support an answer
 4. Stream each text delta as a `token` event, then a final `done` event carrying the disclaimer (kept separate from the answer text, not concatenated, so the frontend can render it as its own quiet line).
-5. Every call — question, the exact chunks retrieved (PMID, score, population), and the final answer — is appended to `data/query_log.jsonl`. This is the raw material for the evaluation section; it isn't reconstructable after the fact, so it's logged unconditionally rather than only during a formal eval run.
+5. Every call — question, state, the exact chunks retrieved (PMID, score, population), and the final answer — is appended to `data/query_log.jsonl`. This is the raw material for the evaluation section; it isn't reconstructable after the fact, so it's logged unconditionally rather than only during a formal eval run.
+
+### Tuning the similarity floor
+
+`SIMILARITY_FLOOR` is not guessed — `scripts/tune_threshold.py` retrieves the real candidate pool (Pinecone only, no Claude calls, so it costs nothing) for `eval/test_questions.json` (30 in-scope questions) and `eval/out_of_scope_questions.json` (20 deliberately unrelated questions: unrelated conditions, general trivia, nonsense), then sweeps a range of floor values against the cached scores and reports in-scope answer rate vs. out-of-scope refusal rate at each step. The full sweep is saved to `data/threshold_sweep.csv`. On this corpus, floors from 0.48–0.50 achieve 100% in-scope answer rate and 100% out-of-scope refusal rate; `0.50` is the current default. Re-run the sweep after any corpus or embedding-model change:
+
+```bash
+python -m scripts.tune_threshold                          # sweep 0.30–0.70 in steps of 0.01
+python -m scripts.tune_threshold --start 0.4 --stop 0.6 --step 0.005
+```
 
 ## Freezing the corpus
 

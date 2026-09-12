@@ -4,10 +4,15 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from pinecone import Pinecone
 
-from src.ingest.config import RETRIEVAL_TOP_K
+from src.ingest.config import (
+    LOW_CONFIDENCE_MARGIN,
+    RETRIEVAL_CANDIDATE_K,
+    RETRIEVAL_TOP_K,
+    SIMILARITY_FLOOR_DEFAULT,
+)
 from src.ingest.local_embeddings import LocalSentenceTransformerEmbeddings
 from src.ingest.uploader import TEXT_METADATA_KEY
-from src.rag.types import RetrievedChunk
+from src.rag.types import RetrievalDecision, RetrievedChunk
 
 # Load environment variables
 load_dotenv()
@@ -41,6 +46,14 @@ def get_retriever_k() -> int:
     return int(os.environ.get("RETRIEVER_TOP_K", str(RETRIEVAL_TOP_K)))
 
 
+def get_candidate_k() -> int:
+    return int(os.environ.get("RETRIEVAL_CANDIDATE_K", str(RETRIEVAL_CANDIDATE_K)))
+
+
+def get_similarity_floor() -> float:
+    return float(os.environ.get("SIMILARITY_FLOOR", str(SIMILARITY_FLOOR_DEFAULT)))
+
+
 def retrieve(question: str, k: Optional[int] = None) -> List[RetrievedChunk]:
     """
     Embed the question locally and query Pinecone for the top-k most similar
@@ -63,3 +76,47 @@ def retrieve(question: str, k: Optional[int] = None) -> List[RetrievedChunk]:
         text = metadata.pop(TEXT_METADATA_KEY, "")
         chunks.append(RetrievedChunk(text=text, metadata=metadata, score=float(match.get("score", 0.0))))
     return chunks
+
+
+def decide_retrieval_state(
+    candidates: List[RetrievedChunk],
+    floor: float,
+    low_confidence_margin: float = LOW_CONFIDENCE_MARGIN,
+) -> RetrievalDecision:
+    """
+    Pure decision logic over an already-retrieved candidate pool — no I/O,
+    so it's directly unit-testable and reusable by scripts/tune_threshold.py
+    without re-querying Pinecone per floor value.
+
+    Candidates are assumed sorted descending by score (as Pinecone returns
+    them). A chunk survives if its score >= floor. If nothing survives,
+    "refused". If the best surviving score is within low_confidence_margin
+    of the floor, "answered_low_confidence". Otherwise "answered".
+    """
+    candidate_scores = [c.score for c in candidates]
+    surviving = [c for c in candidates if c.score >= floor]
+
+    if not surviving:
+        state = "refused"
+    elif surviving[0].score < floor + low_confidence_margin:
+        state = "answered_low_confidence"
+    else:
+        state = "answered"
+
+    return RetrievalDecision(
+        state=state,
+        surviving_chunks=surviving,
+        candidate_scores=candidate_scores,
+        floor=floor,
+        low_confidence_margin=low_confidence_margin,
+    )
+
+
+def retrieve_with_floor(question: str) -> RetrievalDecision:
+    """
+    The Task 1 retrieval path: pull a wide candidate pool and let the
+    similarity floor decide how many (if any) are relevant enough to use,
+    instead of always forcing a fixed top-k.
+    """
+    candidates = retrieve(question, k=get_candidate_k())
+    return decide_retrieval_state(candidates, get_similarity_floor())

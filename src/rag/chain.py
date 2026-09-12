@@ -9,17 +9,23 @@ from typing import Any, Dict, Generator, List, Set
 import anthropic
 from dotenv import load_dotenv
 
-from src.ingest.config import RETRIEVAL_TOP_K
+from src.ingest.config import RETRIEVAL_CANDIDATE_K
 from src.ingest.population import classify_population
 from src.rag.cost import assert_chunk_cap, print_prompt_estimate
 from src.rag.query_log import log_query_event
-from src.rag.retriever import retrieve
-from src.rag.types import RetrievedChunk
+from src.rag.retriever import retrieve_with_floor
+from src.rag.types import RetrievalDecision, RetrievedChunk
 
 # Load environment variables
 load_dotenv()
 
 REFUSAL_TEXT = "The retrieved literature does not contain sufficient evidence to answer this question."
+
+SCOPE_DESCRIPTION = (
+    "This system answers questions on four topics, across all diabetes types (type 1, "
+    "type 2, gestational, and prediabetes): diet and nutrition, glycemic control, body "
+    "composition and weight, and how diet interacts with diabetes medication."
+)
 
 DISCLAIMER = (
     "This is a summary of published research literature, not medical advice. "
@@ -130,19 +136,35 @@ def _source_payload(chunk: RetrievedChunk) -> Dict[str, Any]:
     }
 
 
+def _score_distribution_payload(decision: RetrievalDecision) -> Dict[str, Any]:
+    return {
+        "floor": decision.floor,
+        "low_confidence_margin": decision.low_confidence_margin,
+        "candidate_scores": decision.candidate_scores,
+        "surviving_count": len(decision.surviving_chunks),
+        "top_score": decision.top_score,
+    }
+
+
 def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     """
     Run the grounded RAG pipeline for one question, yielding a sequence of
     event dicts: {"event": ..., "data": ...}. Possible events:
 
-    - "sources": retrieved chunks + population info, sent once, before generation
+    - "sources": retrieved chunks + population info + retrieval state
+      ("answered" or "answered_low_confidence") + score distribution, sent
+      once, before generation
     - "token": one text delta of the streaming answer
     - "done": generation finished, carries the disclaimer
-    - "refusal": no chunks retrieved — refusal message, no Claude call made
+    - "refusal": nothing cleared the similarity floor — refusal message,
+      closest scores found, what the system covers, and the score
+      distribution. No Claude call made.
     - "error": something is misconfigured (e.g. missing API key)
 
-    Never sends more than RETRIEVAL_TOP_K chunks to Claude — enforced by a
-    hard assertion, not just a printed warning.
+    Retrieves a wide candidate pool (RETRIEVAL_CANDIDATE_K) and lets the
+    similarity floor decide how many survive, rather than always sending a
+    fixed top-k. Never sends more than RETRIEVAL_CANDIDATE_K chunks to
+    Claude — enforced by a hard assertion, not just a printed warning.
     """
     try:
         client = get_client()
@@ -153,30 +175,40 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     requested_population = classify_population(question)
 
     try:
-        chunks = retrieve(question)
+        decision = retrieve_with_floor(question)
     except ValueError as e:
         yield {"event": "error", "data": {"message": str(e)}}
         return
 
-    assert_chunk_cap(chunks, RETRIEVAL_TOP_K)
+    assert_chunk_cap(decision.surviving_chunks, RETRIEVAL_CANDIDATE_K)
 
-    if not chunks:
-        log_query_event(question, requested_population, [], REFUSAL_TEXT)
+    if decision.state == "refused":
+        closest_scores = decision.candidate_scores[:3]
+        log_query_event(question, requested_population, [], REFUSAL_TEXT, state="refused")
         yield {
             "event": "refusal",
-            "data": {"message": REFUSAL_TEXT, "disclaimer": DISCLAIMER},
+            "data": {
+                "message": REFUSAL_TEXT,
+                "scope_description": SCOPE_DESCRIPTION,
+                "closest_scores": closest_scores,
+                "score_distribution": _score_distribution_payload(decision),
+                "disclaimer": DISCLAIMER,
+            },
         }
         return
 
+    chunks = decision.surviving_chunks
     retrieved = retrieved_population_set(chunks)
     mismatch = is_population_mismatch(requested_population, retrieved)
 
     yield {
         "event": "sources",
         "data": {
+            "state": decision.state,
             "requested_population": requested_population,
             "retrieved_populations": sorted(retrieved),
             "mismatch": mismatch,
+            "score_distribution": _score_distribution_payload(decision),
             "sources": [_source_payload(c) for c in chunks],
         },
     }
@@ -209,6 +241,6 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
         yield {"event": "error", "data": {"message": f"Generation failed: {e}"}}
         return
 
-    log_query_event(question, requested_population, chunks, full_answer)
+    log_query_event(question, requested_population, chunks, full_answer, state=decision.state)
 
     yield {"event": "done", "data": {"disclaimer": DISCLAIMER}}

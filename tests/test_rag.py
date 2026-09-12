@@ -45,12 +45,24 @@ def test_split_pubmed_documents():
         assert meta["chunk_index"] == i
 
 
-def test_refuses_when_no_evidence_retrieved():
+def test_refuses_when_nothing_clears_the_floor():
     """
-    When retrieval returns nothing, the chain must refuse without ever calling Claude.
+    When nothing in the candidate pool clears the similarity floor, the
+    chain must refuse without ever calling Claude, and surface the closest
+    scores + scope description + score distribution.
     """
+    from src.rag.types import RetrievalDecision
+
+    decision = RetrievalDecision(
+        state="refused",
+        surviving_chunks=[],
+        candidate_scores=[0.31, 0.28, 0.20],
+        floor=0.5,
+        low_confidence_margin=0.05,
+    )
+
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain.retrieve", return_value=[]):
+        with patch("src.rag.chain.retrieve_with_floor", return_value=decision):
             with patch("src.rag.chain.get_client") as mock_get_client:
                 from src.rag.chain import REFUSAL_TEXT, stream_answer
 
@@ -58,8 +70,13 @@ def test_refuses_when_no_evidence_retrieved():
 
                 assert len(events) == 1
                 assert events[0]["event"] == "refusal"
-                assert events[0]["data"]["message"] == REFUSAL_TEXT
-                assert "medical advice" in events[0]["data"]["disclaimer"].lower()
+                data = events[0]["data"]
+                assert data["message"] == REFUSAL_TEXT
+                assert data["closest_scores"] == [0.31, 0.28, 0.20]
+                assert "diet and nutrition" in data["scope_description"]
+                assert data["score_distribution"]["floor"] == 0.5
+                assert data["score_distribution"]["surviving_count"] == 0
+                assert "medical advice" in data["disclaimer"].lower()
                 mock_get_client.return_value.messages.stream.assert_not_called()
 
 
@@ -72,16 +89,23 @@ def test_generation_failure_yields_error_event_not_silent_death():
     import anthropic
     import httpx2
 
-    from src.rag.types import RetrievedChunk
+    from src.rag.types import RetrievalDecision, RetrievedChunk
 
     chunk = RetrievedChunk(
         text="Some evidence text.",
         metadata={"pmid": "123", "title": "t", "journal": "j", "year": "2024", "publication_type": "Review", "population": "type2"},
         score=0.9,
     )
+    decision = RetrievalDecision(
+        state="answered",
+        surviving_chunks=[chunk],
+        candidate_scores=[0.9],
+        floor=0.5,
+        low_confidence_margin=0.05,
+    )
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain.retrieve", return_value=[chunk]):
+        with patch("src.rag.chain.retrieve_with_floor", return_value=decision):
             with patch("src.rag.chain.get_client") as mock_get_client:
                 mock_client = mock_get_client.return_value
                 fake_request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
@@ -159,6 +183,43 @@ def test_assert_chunk_cap_allows_at_limit():
 
     chunks = [RetrievedChunk(text="x") for _ in range(5)]
     assert_chunk_cap(chunks, max_chunks=5)  # should not raise
+
+
+def test_decide_retrieval_state_refuses_when_nothing_clears_floor():
+    from src.rag.retriever import decide_retrieval_state
+    from src.rag.types import RetrievedChunk
+
+    candidates = [RetrievedChunk(text="x", score=s) for s in [0.4, 0.3, 0.2]]
+    decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05)
+
+    assert decision.state == "refused"
+    assert decision.surviving_chunks == []
+    assert decision.candidate_scores == [0.4, 0.3, 0.2]
+    assert decision.top_score is None
+
+
+def test_decide_retrieval_state_low_confidence_near_floor():
+    from src.rag.retriever import decide_retrieval_state
+    from src.rag.types import RetrievedChunk
+
+    candidates = [RetrievedChunk(text="x", score=s) for s in [0.52, 0.40]]
+    decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05)
+
+    assert decision.state == "answered_low_confidence"
+    assert len(decision.surviving_chunks) == 1
+    assert decision.top_score == 0.52
+
+
+def test_decide_retrieval_state_answered_well_above_floor():
+    from src.rag.retriever import decide_retrieval_state
+    from src.rag.types import RetrievedChunk
+
+    candidates = [RetrievedChunk(text="x", score=s) for s in [0.72, 0.65, 0.30]]
+    decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05)
+
+    assert decision.state == "answered"
+    assert len(decision.surviving_chunks) == 2
+    assert decision.top_score == 0.72
 
 
 @pytest.mark.skipif(

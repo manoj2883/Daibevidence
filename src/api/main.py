@@ -87,10 +87,13 @@ async def query_rag(request: QueryRequest):
     """
     Submit a query to the RAG pipeline. Streams a server-sent-events response:
 
-    - "sources" — retrieved chunks + population info (sent once, before generation)
+    - "sources" — retrieved chunks + population info + retrieval state
+      ("answered" or "answered_low_confidence") + score distribution
+      (sent once, before generation)
     - "token"   — one text delta of the streaming answer
     - "done"    — generation finished, carries the disclaimer
-    - "refusal" — no chunks retrieved, no Claude call made
-    - "error"   — misconfiguration (e.g. missing API key)
+    - "refusal" — nothing cleared the similarity floor: closest scores found,
+      what the system covers, and the score distribution. No Claude call made.
+    - "error"   — misconfiguration or generation failure
     """
     return StreamingResponse(_sse_stream(request.question), media_type="text/event-stream")

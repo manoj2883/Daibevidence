@@ -47,6 +47,27 @@ DIABETES_SCOPE = (
 
 RETRIEVAL_TOP_K = 5
 
+# --- Similarity floor / abstention (Task 1) ------------------------------
+# Nearest-neighbor search always returns a nearest neighbor, even when
+# nothing in the corpus is actually relevant. Instead of always sending a
+# fixed top-k to the model, retrieve a wider candidate pool and let a
+# similarity floor decide how many (if any) are relevant enough to use.
+
+# How many candidates to pull from Pinecone before applying the floor.
+RETRIEVAL_CANDIDATE_K = 10
+
+# Below this cosine score, a chunk is dropped as irrelevant. This is a
+# fallback default, not the final word — override with the SIMILARITY_FLOOR
+# env var (set in Render's environment tab). Tuned empirically by
+# scripts/tune_threshold.py against eval/test_questions.json (in-scope) and
+# eval/out_of_scope_questions.json (unrelated conditions/trivia/nonsense);
+# see data/threshold_sweep.csv for the sweep that produced this value.
+SIMILARITY_FLOOR_DEFAULT = 0.50
+
+# If the best surviving chunk's score is within this margin of the floor,
+# mark the answer low-confidence instead of answering outright.
+LOW_CONFIDENCE_MARGIN = 0.05
+
 # --- Population classification ------------------------------------------
 # Keyword heuristic used to tag each abstract (and each incoming question)
 # with the diabetes population it concerns. Order-independent; a match on

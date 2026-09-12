@@ -152,12 +152,52 @@ def test_format_context_and_retrieved_populations():
     ]
 
     context = format_context(chunks)
+    assert "SOURCE TYPE: evidence" in context
     assert "PMID 11111111" in context
     assert "PMID 22222222" in context
     assert "Population: type2" in context
     assert "Population: gestational" in context
 
     assert retrieved_populations_summary(chunks) == "gestational, type2"
+
+
+def test_format_context_labels_background_chunks_distinctly():
+    from src.rag.chain import format_context
+    from src.rag.types import RetrievedChunk
+
+    chunks = [
+        RetrievedChunk(
+            text="Type 2 diabetes is when the body doesn't use insulin properly.",
+            metadata={
+                "source_type": "background",
+                "publisher": "ADA",
+                "title": "Type 2 Diabetes",
+                "source_url": "https://diabetes.org/about-diabetes/type-2",
+                "population": "type2",
+            },
+            score=0.7,
+        ),
+    ]
+    context = format_context(chunks)
+    assert "SOURCE TYPE: background" in context
+    assert "Publisher: ADA" in context
+    assert "PMID" not in context  # background excerpts have no PMID at all
+
+
+def test_source_payload_includes_source_type_and_publisher():
+    from src.rag.chain import _source_payload
+    from src.rag.types import RetrievedChunk
+
+    evidence_chunk = RetrievedChunk(text="x", metadata={"pmid": "1"}, score=0.9)
+    assert _source_payload(evidence_chunk)["source_type"] == "evidence"
+
+    background_chunk = RetrievedChunk(
+        text="x", metadata={"source_type": "background", "publisher": "CDC", "source_url": "https://cdc.gov/x"}, score=0.6,
+    )
+    payload = _source_payload(background_chunk)
+    assert payload["source_type"] == "background"
+    assert payload["publisher"] == "CDC"
+    assert payload["source_url"] == "https://cdc.gov/x"
 
 
 def test_population_mismatch_flag():

@@ -2,7 +2,14 @@ import csv
 import os
 from typing import Dict, List
 
-from src.ingest.config import CHUNK_OVERLAP_WORDS, CHUNK_SIZE_WORDS, CHUNKS_CSV_PATH
+from src.ingest.config import (
+    BACKGROUND_CHUNK_OVERLAP_WORDS,
+    BACKGROUND_CHUNK_SIZE_WORDS,
+    BACKGROUND_CHUNKS_CSV_PATH,
+    CHUNK_OVERLAP_WORDS,
+    CHUNK_SIZE_WORDS,
+    CHUNKS_CSV_PATH,
+)
 
 
 def split_text_by_words(text: str, chunk_size_words: int = 300, overlap_words: int = 50) -> List[str]:
@@ -62,6 +69,56 @@ def write_chunks_csv(chunks: List[Dict], path: str = CHUNKS_CSV_PATH) -> None:
     """
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     fieldnames = CHUNK_METADATA_FIELDS + ["chunk_index", "text"]
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for chunk in chunks:
+            row = dict(chunk["metadata"])
+            row["text"] = chunk["text"]
+            writer.writerow(row)
+
+
+# --- Background tier (patient-education reference layer) -------------------
+# A small, separate class of source alongside the PubMed evidence: definitions,
+# diagnostic criteria, and general mechanism from ADA/NIDDK/CDC patient pages.
+# Chunked smaller than evidence (these pages are already dense per paragraph;
+# smaller chunks give better retrieval granularity — e.g. a "symptoms"
+# question shouldn't have to pull in an entire page's worth of unrelated
+# "risk factors" and "management" text as one blob).
+
+BACKGROUND_METADATA_FIELDS = ["source_type", "publisher", "title", "source_url", "population"]
+
+
+def split_background_documents(
+    documents: List[Dict],
+    chunk_size_words: int = BACKGROUND_CHUNK_SIZE_WORDS,
+    overlap_words: int = BACKGROUND_CHUNK_OVERLAP_WORDS,
+) -> List[Dict]:
+    """
+    Chunk background patient-education documents (publisher/title/source_url/
+    population/text dicts) into word-based chunks, tagging every chunk
+    source_type="background" alongside the usual population/chunk_index.
+    """
+    chunked_docs = []
+    for doc in documents:
+        text = doc.get("text", "")
+        chunks = split_text_by_words(text, chunk_size_words=chunk_size_words, overlap_words=overlap_words)
+
+        for i, chunk in enumerate(chunks):
+            metadata = {field: doc.get(field, "") for field in BACKGROUND_METADATA_FIELDS if field != "source_type"}
+            metadata["source_type"] = "background"
+            metadata["chunk_index"] = i
+            chunked_docs.append({
+                "text": chunk,
+                "metadata": metadata,
+            })
+
+    return chunked_docs
+
+
+def write_background_chunks_csv(chunks: List[Dict], path: str = BACKGROUND_CHUNKS_CSV_PATH) -> None:
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    fieldnames = BACKGROUND_METADATA_FIELDS + ["chunk_index", "text"]
     with open(path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()

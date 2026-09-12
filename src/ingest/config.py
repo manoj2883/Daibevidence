@@ -97,7 +97,19 @@ FETCH_META_PATH = "data/pubmed_fetch_meta.json"
 CORPUS_MANIFEST_PATH = "data/corpus_manifest.json"
 QUERY_LOG_PATH = "data/query_log.jsonl"
 
+BACKGROUND_RAW_JSON_PATH = "data/background_raw.json"
+BACKGROUND_RAW_CSV_PATH = "data/background_raw.csv"
+BACKGROUND_CHUNKS_JSON_PATH = "data/background_chunks.json"
+BACKGROUND_CHUNKS_CSV_PATH = "data/background_chunks.csv"
+
 # --- Chunking ---------------------------------------------------------
 
 CHUNK_SIZE_WORDS = 300
 CHUNK_OVERLAP_WORDS = 50
+
+# Background patient-education pages are already dense per paragraph — a
+# smaller chunk size gives better retrieval granularity than reusing the
+# evidence corpus's 300-word chunks (e.g. a "symptoms" question shouldn't
+# have to pull in a whole page's "risk factors" and "management" text too).
+BACKGROUND_CHUNK_SIZE_WORDS = 120
+BACKGROUND_CHUNK_OVERLAP_WORDS = 20

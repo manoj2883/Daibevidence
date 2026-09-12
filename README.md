@@ -15,6 +15,8 @@ src/ingest/local_embeddings.py  # fastembed (ONNX) wrapper (shared by ingestion 
 src/ingest/uploader.py     # Pinecone index creation + idempotent upsert
 src/ingest/freeze.py       # corpus freeze manifest (provenance + stats)
 src/ingest/run_ingest.py   # ingestion pipeline entrypoint (CLI)
+src/ingest/background_sources.py    # curated ADA/NIDDK/CDC patient-education seed content
+src/ingest/run_background_ingest.py # background-tier ingestion entrypoint (CLI)
 src/rag/types.py           # RetrievedChunk — plain chunk type shared by retrieval and generation
 src/rag/cost.py            # prompt-size estimate + hard chunk-count safety cap before any Claude call
 src/rag/retriever.py       # query embedding + direct Pinecone index.query()
@@ -76,6 +78,16 @@ PubMed's result set for the same query shifts over time as new articles are inde
 - `data/corpus_manifest.json` — written at the end of every ingestion run (unless `--no-manifest`): the fetch info above, plus corpus-level stats (population/topic/publication-type breakdowns, chunk count), the embedding model + dimension, the Pinecone index name, and the current git commit. **This is the only `data/` file that isn't gitignored** — commit it once you're happy with a corpus, so the exact evidence base behind a set of results is on record for reviewers.
 
 Current corpus (frozen 2026-09-02, see `data/corpus_manifest.json` for full detail): **264 abstracts / 319 chunks** — population split `type2: 166, mixed: 57, type1: 28, gestational: 9, prediabetes: 4`; topic split `diet_nutrition: 75, diet_medication_interaction: 69, glycemic_control: 61, body_composition_weight: 59`. Note the thin gestational/prediabetes coverage — that's expected from the topic queries as written, not a bug, and it's exactly the kind of gap the eval set below is designed to surface (via refusals or explicit population-mismatch flags, not silent extrapolation from type 2 evidence).
+
+## Background tier
+
+The evidence corpus is ~300 PubMed trial/review abstracts on diet, glycemic control, body composition, and diet–medication interaction — written for readers who already know what type 1, type 2, or gestational diabetes *is*. A patient asking "what is type 2 diabetes?" would retrieve nothing above the similarity floor and get refused: technically correct, but a bad product for the system's most basic question about its own subject.
+
+`src/ingest/background_sources.py` holds a curated, checked-in set of patient-education documents fetched from live ADA, NIDDK, and CDC pages — definitions, diagnostic criteria (A1C/fasting-glucose/OGTT thresholds), and general disease mechanism, split by population. `python -m src.ingest.run_background_ingest` chunks it smaller than the evidence corpus (`BACKGROUND_CHUNK_SIZE_WORDS=120` vs. 300 — these pages are already dense per paragraph, so smaller chunks give better retrieval granularity) and upserts into the **same** Pinecone index, tagged `source_type: "background"` (existing vectors were backfilled to `source_type: "evidence"` via `scripts/backfill_source_type.py`, a metadata-only Pinecone update — no re-embedding needed). Currently 27 chunks across 10 source pages.
+
+**Background chunks may only support definitional/explanatory sentences — never a claim about whether an intervention works, an effect size, or anything comparative.** This is enforced in `SYSTEM_PROMPT` (`src/rag/chain.py`), not just by convention: `format_context()` labels every excerpt's `SOURCE TYPE` (`evidence` or `background`) in its header, and a dedicated rule tells the model a `background` excerpt can never be the sole or partial support for a research-style claim — split a sentence that mixes both into separate sentences if needed. Background excerpts are also excluded from contradiction-checking (rule 4) — they don't report findings, so they can't contradict one.
+
+Verified live: "What is type 2 diabetes?" now scores 0.75 against a background chunk (well above the 0.50 floor) instead of refusing. Out-of-scope questions (capital of France, psoriasis treatment, nonsense strings) still score below the floor with the enlarged candidate pool — re-running `scripts/tune_threshold.py` after adding the background tier showed the same 100%/100% in-scope-answered / out-of-scope-refused result at floor 0.50, confirming the tiers aren't bleeding into each other (yet — see the per-tier floor tuning planned for the question-routing work).
 
 ## Evaluation
 

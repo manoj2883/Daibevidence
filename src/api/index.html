@@ -389,9 +389,22 @@
     scroll-margin-top: 20px;
   }
   .source-card.highlight { background: var(--accent-wash); border-color: var(--accent); }
+  .source-card--background { border-left-style: dashed; }
   .source-card .title { font-weight: 600; margin: 0 0 4px; line-height: 1.35; }
   .source-card .meta { color: var(--ink-muted); margin: 0 0 6px; }
   .source-card .pmid-link { font-size: 0.95em; }
+  .tier-chip {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.72em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .tier-chip--evidence { background: var(--accent-wash); color: var(--accent); }
+  .tier-chip--background { background: var(--border); color: var(--ink-muted); }
   .pop-chip {
     display: inline-block;
     margin-top: 6px;
@@ -524,7 +537,7 @@
         <button class="starter-btn" type="button" data-question="In gestational diabetes, how effective is a ketogenic diet for glycemic control?">
           In gestational diabetes, how effective is a ketogenic diet for glycemic control?
         </button>
-        <button class="starter-btn" type="button" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
+        <button class="starter-btn" type="button" data-demo-refusal="true" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
           What's the best marathon training plan for a healthy adult with no diabetes risk factors? <em>(out of scope — watch it decline)</em>
         </button>
       </div>
@@ -658,15 +671,37 @@
   function buildSourceCard(source, index, msgId) {
     var colorVar = popColorVar(source.population);
     var pct = Math.max(0, Math.min(100, Math.round((source.score || 0) * 100)));
+    var isBackground = source.source_type === "background";
     var el = document.createElement("div");
-    el.className = "source-card";
+    el.className = "source-card" + (isBackground ? " source-card--background" : "");
     el.style.setProperty("--card-color", colorVar);
     el.setAttribute("data-chunk-index", String(index));
     el.id = "source-" + msgId + "-" + index;
+
+    var tierChipHtml = '<span class="tier-chip tier-chip--' + (isBackground ? "background" : "evidence") + '">' +
+      (isBackground ? "Background" : "Evidence") + "</span>";
+
+    var metaLine = escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || ""));
+
+    var attributionHtml;
+    if (isBackground) {
+      // Background chunks (ADA/NIDDK/CDC patient education) never have a
+      // PMID — that's expected, not missing data, so never show "PMID:
+      // unknown" for them. Link to the publisher page when we have one.
+      attributionHtml = source.source_url
+        ? '<a class="pmid-link" href="' + escapeHtml(source.source_url) + '" target="_blank" rel="noopener">' + escapeHtml(source.publisher || "Source") + "</a>"
+        : '<span class="meta">' + escapeHtml(source.publisher || "Patient education source") + "</span>";
+    } else {
+      attributionHtml = source.pmid
+        ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(source.pmid) + '/" target="_blank" rel="noopener">PMID: ' + escapeHtml(source.pmid) + "</a>"
+        : '<span class="meta">PMID: unknown</span>';
+    }
+
     el.innerHTML =
+      tierChipHtml +
       '<p class="title">' + escapeHtml(source.title || "Untitled") + "</p>" +
-      '<p class="meta">' + escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || "")) + "</p>" +
-      (source.pmid ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(source.pmid) + '/" target="_blank" rel="noopener">PMID: ' + escapeHtml(source.pmid) + "</a>" : "PMID: unknown") +
+      (metaLine ? '<p class="meta">' + metaLine + "</p>" : "") +
+      attributionHtml +
       '<span class="pop-chip" style="background:' + colorVar + '">' + escapeHtml(popLabel(source.population)) + "</span>" +
       '<div class="score-row"><div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%;background:' + colorVar + '"></div></div><span class="score-label">' + pct + "%</span></div>";
     return el;
@@ -712,7 +747,10 @@
 
   function buildRefusalBlockHtml(message, scopeText, closestScores) {
     var starterQuestions = [];
-    document.querySelectorAll("#empty-state .starter-btn").forEach(function (btn) {
+    // Exclude the marathon starter — it's a deliberate out-of-scope demo
+    // button, not something we'd ever want to suggest as a way to recover
+    // from a refusal.
+    document.querySelectorAll("#empty-state .starter-btn:not([data-demo-refusal])").forEach(function (btn) {
       starterQuestions.push(btn.getAttribute("data-question"));
     });
     var suggestionsHtml = "";

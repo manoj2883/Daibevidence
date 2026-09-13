@@ -32,5 +32,7 @@ data/*
 !data/corpus_manifest_v1_300.json
 !data/corpus_manifest_v2_5k.json
 !data/threshold_sweep.csv
+!data/threshold_sweep_*.csv
 !data/eval_results.csv
 !data/eval_summary_*.json
+!data/corpus_comparison_v1_300_vs_v2_5k.csv

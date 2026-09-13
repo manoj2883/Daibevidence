@@ -49,7 +49,7 @@ def load_questions():
     return in_scope + out_of_scope
 
 
-def estimate_batch_cost(questions):
+def estimate_batch_cost(questions, namespace=None):
     """
     Pinecone-only pre-pass: for each question, run real retrieval (free)
     and estimate the prompt size it would produce, without calling Claude.
@@ -58,7 +58,7 @@ def estimate_batch_cost(questions):
     total_tokens = 0
     would_call = 0
     for q in questions:
-        decision = retrieve_with_floor(q["question"])
+        decision = retrieve_with_floor(q["question"], namespace=namespace)
         if decision.state == "out_of_scope":
             continue
         chunks = decision.surviving_chunks
@@ -76,11 +76,12 @@ def estimate_batch_cost(questions):
     return total_tokens, would_call
 
 
-def run_one_question(q):
+def run_one_question(q, namespace=None):
     """
     Consume stream_answer() fully for one question and reduce it to a flat
     result record. Runs the real pipeline — a real Claude call unless the
-    question refuses pre-generation.
+    question refuses pre-generation. `namespace` (Phase 4) lets the same
+    question set run against v1_300 or v2_5k for a side-by-side comparison.
     """
     t0 = time.monotonic()
     sources = []
@@ -93,7 +94,7 @@ def run_one_question(q):
     error = None
     refusal_message = None
 
-    for ev in stream_answer(q["question"]):
+    for ev in stream_answer(q["question"], namespace=namespace):
         event, data = ev["event"], ev["data"]
         if event == "sources":
             sources = data.get("sources", [])
@@ -202,6 +203,7 @@ def summarize(results):
 def main():
     parser = argparse.ArgumentParser(description="Run the domain evaluation against the live pipeline.")
     parser.add_argument("--out", default="baseline", help="Label for output files, e.g. v1_300 or v2_5k.")
+    parser.add_argument("--namespace", default=None, help="Pinecone namespace to evaluate against, e.g. v1_300 or v2_5k. Defaults to the production namespace (PINECONE_NAMESPACE env var, or \"\").")
     parser.add_argument("--dry-run", action="store_true", help="Print the cost estimate only; no Claude calls.")
     parser.add_argument("--resume", action="store_true", help="Skip questions already present in the checkpoint file.")
     args = parser.parse_args()
@@ -210,10 +212,10 @@ def main():
 
     questions = load_questions()
     print(f"Loaded {len(questions)} questions ({sum(1 for q in questions if q['expected_scope']=='in_scope')} in-scope, "
-          f"{sum(1 for q in questions if q['expected_scope']=='out_of_scope')} out-of-scope).")
+          f"{sum(1 for q in questions if q['expected_scope']=='out_of_scope')} out-of-scope). Namespace: {args.namespace!r}")
 
     print("\nEstimating batch cost (Pinecone-only, zero Claude calls)...")
-    est_tokens, would_call = estimate_batch_cost(questions)
+    est_tokens, would_call = estimate_batch_cost(questions, namespace=args.namespace)
     print(f"[cost] ~{est_tokens} estimated input tokens across {would_call} questions expected to reach generation "
           f"({len(questions) - would_call} expected to refuse pre-generation, free).")
 
@@ -233,7 +235,7 @@ def main():
             if key in results_by_id:
                 continue
             print(f"  [{q['expected_scope']:13s}] id={q['id']} {q['question'][:70]!r}")
-            record = run_one_question(q)
+            record = run_one_question(q, namespace=args.namespace)
             results_by_id[key] = record
             checkpoint_f.write(json.dumps(record, ensure_ascii=False) + "\n")
             checkpoint_f.flush()

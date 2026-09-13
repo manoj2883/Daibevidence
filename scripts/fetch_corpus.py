@@ -32,6 +32,7 @@ from dotenv import load_dotenv
 
 from src.ingest.chunker import split_pubmed_documents_sectioned, write_sectioned_chunks_csv
 from src.ingest.config import (
+    BACKGROUND_CHUNKS_JSON_PATH,
     NAMESPACE_V2_5K,
     TOPICS,
     V2_5K_CHUNKS_CSV_PATH,
@@ -51,6 +52,7 @@ from src.ingest.pubmed import (
     fetch_pubmed_abstracts,
     search_pubmed,
 )
+from src.ingest.run_background_ingest import _stable_id as _background_stable_id
 from src.ingest.uploader import upload_chunks
 
 
@@ -228,6 +230,26 @@ def main():
         ids = [f"{c['metadata']['pmid']}_{c['metadata']['chunk_index']}" for c in chunks]
         print(f"Embedding and upserting {len(chunks)} chunks into Pinecone namespace {args.namespace!r} (stable IDs — safe to re-run)...")
         upload_chunks(chunks, ids=ids, namespace=args.namespace)
+
+        # The background tier (ADA/NIDDK/CDC patient education) doesn't
+        # change with corpus size — it's the same fixed set of curated
+        # documents regardless of how many PubMed abstracts are in scope —
+        # but each Pinecone namespace is a fully separate keyspace, so it
+        # has to be copied into v2_5k too. Without this, evaluating v2_5k
+        # would conflate "more evidence data" with "lost the background
+        # tier entirely."
+        if os.path.exists(BACKGROUND_CHUNKS_JSON_PATH):
+            with open(BACKGROUND_CHUNKS_JSON_PATH, encoding="utf-8") as bf:
+                background_chunks = json.load(bf)
+            background_ids = [
+                _background_stable_id(c["metadata"]["publisher"], c["metadata"]["title"], c["metadata"]["chunk_index"])
+                for c in background_chunks
+            ]
+            print(f"Embedding and upserting {len(background_chunks)} background chunks into namespace {args.namespace!r} (parity with v1_300)...")
+            upload_chunks(background_chunks, ids=background_ids, namespace=args.namespace)
+        else:
+            print(f"Warning: {BACKGROUND_CHUNKS_JSON_PATH} not found — namespace {args.namespace!r} will have no background tier.")
+
         uploaded = True
         print("Upload complete.")
 

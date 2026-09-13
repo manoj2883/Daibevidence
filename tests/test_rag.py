@@ -264,6 +264,57 @@ def test_decide_retrieval_state_answered_well_above_floor():
     assert decision.top_score == 0.72
 
 
+def test_decide_retrieval_state_per_tier_floor_lets_background_survive_below_evidence_floor():
+    """
+    Phase 4: background_floor lets a lower-scoring background chunk clear
+    retrieval even when the evidence floor wouldn't have let it through —
+    the two tiers embed with different score distributions and are tuned
+    independently.
+    """
+    from src.rag.retriever import decide_retrieval_state
+    from src.rag.types import RetrievedChunk
+
+    candidates = [
+        RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.55),
+        RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.35),
+    ]
+    decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05, background_floor=0.30)
+
+    assert decision.state == "answered"
+    assert len(decision.surviving_chunks) == 2
+    assert decision.floor == 0.5
+    assert decision.background_floor == 0.30
+
+
+def test_decide_retrieval_state_per_tier_floor_drops_background_below_its_own_floor():
+    from src.rag.retriever import decide_retrieval_state
+    from src.rag.types import RetrievedChunk
+
+    candidates = [
+        RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.55),
+        RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.35),
+    ]
+    decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05, background_floor=0.40)
+
+    assert len(decision.surviving_chunks) == 1
+    assert decision.surviving_chunks[0].metadata["source_type"] == "evidence"
+
+
+def test_decide_retrieval_state_background_floor_none_matches_uniform_floor():
+    """background_floor=None (the default) preserves the original single-floor behavior."""
+    from src.rag.retriever import decide_retrieval_state
+    from src.rag.types import RetrievedChunk
+
+    candidates = [
+        RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.55),
+        RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.35),
+    ]
+    decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05)
+
+    assert len(decision.surviving_chunks) == 1
+    assert decision.background_floor is None
+
+
 def test_extract_contradiction_block_not_yet_complete():
     from src.rag.chain import extract_contradiction_block
 

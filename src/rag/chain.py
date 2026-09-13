@@ -210,6 +210,7 @@ def _source_payload(chunk: RetrievedChunk) -> Dict[str, Any]:
 def _score_distribution_payload(decision: RetrievalDecision) -> Dict[str, Any]:
     return {
         "floor": decision.floor,
+        "background_floor": decision.background_floor if decision.background_floor is not None else decision.floor,
         "low_confidence_margin": decision.low_confidence_margin,
         "candidate_scores": decision.candidate_scores,
         "surviving_count": len(decision.surviving_chunks),
@@ -486,7 +487,7 @@ def compute_groundedness(sentences: List[Dict[str, Any]], chunks: List[Retrieved
     }
 
 
-def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
+def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[Dict[str, Any], None, None]:
     """
     Run the grounded RAG pipeline for one question, yielding a sequence of
     event dicts: {"event": ..., "data": ...}. Possible events:
@@ -539,7 +540,7 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     requested_population = classify_population(question)
 
     try:
-        decision = retrieve_with_floor(question)
+        decision = retrieve_with_floor(question, namespace=namespace)
     except ValueError as e:
         yield {"event": "error", "data": {"message": str(e)}}
         return

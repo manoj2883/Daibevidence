@@ -18,14 +18,15 @@ class RetrievedChunk:
 class RetrievalDecision:
     """
     Result of applying the similarity floor to a candidate pool. `state` is
-    one of "answered", "answered_low_confidence", or "refused" — computed
-    from scores alone, before any model call.
+    one of "answered", "answered_low_confidence", or "out_of_scope" —
+    computed from scores alone, before any model call.
     """
     state: str
     surviving_chunks: List[RetrievedChunk]
     candidate_scores: List[float]  # every candidate's score, descending
-    floor: float
+    floor: float  # the evidence-tier floor
     low_confidence_margin: float
+    background_floor: Optional[float] = None  # Phase 4: tuned independently; None means "same as floor"
 
     @property
     def top_score(self) -> Optional[float]:

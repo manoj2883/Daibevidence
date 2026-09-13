@@ -4,19 +4,19 @@
     "n_out_of_scope": 20,
     "out_of_scope_refusal_rate": 1.0,
     "in_scope_answer_rate": 0.9333,
-    "no_evidence_for_claim_rate_in_scope": 0.0333,
-    "answered_low_confidence_rate_in_scope": 0.1,
-    "groundedness_overall": 0.8118,
-    "groundedness_evidence_only": 0.7527,
-    "groundedness_background_only": 0.0591,
-    "total_sentences": 186,
-    "unsupported_sentences": 35,
-    "total_contradictions_detected": 0,
+    "no_evidence_for_claim_rate_in_scope": 0.0667,
+    "answered_low_confidence_rate_in_scope": 0.0333,
+    "groundedness_overall": 0.8488,
+    "groundedness_evidence_only": 0.8439,
+    "groundedness_background_only": 0.0049,
+    "total_sentences": 205,
+    "unsupported_sentences": 31,
+    "total_contradictions_detected": 4,
     "truncated_responses": 0,
-    "mean_latency_ms_out_of_scope": 100.56,
-    "mean_latency_ms_generated_total": 20253.49,
-    "mean_input_tokens": 7775.76,
-    "mean_output_tokens": 2077.31,
+    "mean_latency_ms_out_of_scope": 157.89,
+    "mean_latency_ms_generated_total": 27676.36,
+    "mean_input_tokens": 5627,
+    "mean_output_tokens": 2869.93,
     "errors": 0,
     "recall_at_5": "BLOCKED: eval/test_questions.json has no ground-truth expected_pmids per question"
   },
@@ -31,19 +31,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 7,
-      "evidence_supported_sentences": 7,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 5,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 137.9,
-        "generation": 9497.3,
-        "total": 9635.1
+        "retrieval": 422.5,
+        "generation": 20962.1,
+        "total": 21384.6
       },
-      "wall_ms": 9637.2,
+      "wall_ms": 21388.3,
       "usage": {
-        "input_tokens": 9643,
-        "output_tokens": 1022
+        "input_tokens": 6998,
+        "output_tokens": 2066
       },
       "truncated": false
     },
@@ -57,19 +57,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 6,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 7,
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 69.5,
-        "generation": 10295.4,
-        "total": 10364.9
+        "retrieval": 127.9,
+        "generation": 23698.4,
+        "total": 23826.3
       },
-      "wall_ms": 10366.2,
+      "wall_ms": 23828.6,
       "usage": {
-        "input_tokens": 9612,
-        "output_tokens": 1111
+        "input_tokens": 6075,
+        "output_tokens": 2354
       },
       "truncated": false
     },
@@ -83,19 +83,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 8,
-      "evidence_supported_sentences": 7,
+      "total_sentences": 10,
+      "evidence_supported_sentences": 10,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 1,
+      "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 107.8,
-        "generation": 24869.4,
-        "total": 24977.2
+        "retrieval": 110.6,
+        "generation": 46386.1,
+        "total": 46496.7
       },
-      "wall_ms": 24979.5,
+      "wall_ms": 46499.0,
       "usage": {
-        "input_tokens": 8062,
-        "output_tokens": 2652
+        "input_tokens": 4958,
+        "output_tokens": 5004
       },
       "truncated": false
     },
@@ -109,19 +109,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 4,
-      "evidence_supported_sentences": 4,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 6,
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 156.9,
-        "generation": 10174.0,
-        "total": 10330.9
+        "retrieval": 219.2,
+        "generation": 7505.4,
+        "total": 7724.5
       },
-      "wall_ms": 10333.2,
+      "wall_ms": 7726.4,
       "usage": {
-        "input_tokens": 8299,
-        "output_tokens": 1108
+        "input_tokens": 6778,
+        "output_tokens": 836
       },
       "truncated": false
     },
@@ -135,19 +135,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 4,
-      "evidence_supported_sentences": 4,
+      "total_sentences": 2,
+      "evidence_supported_sentences": 1,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 197.4,
-        "generation": 8795.3,
-        "total": 8992.7
+        "retrieval": 171.0,
+        "generation": 10126.7,
+        "total": 10297.6
       },
-      "wall_ms": 8995.7,
+      "wall_ms": 10300.4,
       "usage": {
-        "input_tokens": 9722,
-        "output_tokens": 818
+        "input_tokens": 5219,
+        "output_tokens": 979
       },
       "truncated": false
     },
@@ -160,20 +160,20 @@
       "error": null,
       "refusal_message": null,
       "num_sources": 10,
-      "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 6,
+      "num_contradictions": 1,
+      "total_sentences": 9,
+      "evidence_supported_sentences": 9,
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 150.3,
-        "generation": 9916.2,
-        "total": 10066.6
+        "retrieval": 210.8,
+        "generation": 33152.8,
+        "total": 33363.6
       },
-      "wall_ms": 10068.0,
+      "wall_ms": 33366.2,
       "usage": {
-        "input_tokens": 8867,
-        "output_tokens": 1061
+        "input_tokens": 5734,
+        "output_tokens": 3662
       },
       "truncated": false
     },
@@ -186,20 +186,20 @@
       "error": null,
       "refusal_message": null,
       "num_sources": 10,
-      "num_contradictions": 0,
-      "total_sentences": 8,
-      "evidence_supported_sentences": 7,
+      "num_contradictions": 1,
+      "total_sentences": 9,
+      "evidence_supported_sentences": 9,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 1,
+      "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 141.0,
-        "generation": 26057.6,
-        "total": 26198.6
+        "retrieval": 147.7,
+        "generation": 34728.5,
+        "total": 34876.2
       },
-      "wall_ms": 26200.0,
+      "wall_ms": 34878.7,
       "usage": {
-        "input_tokens": 8665,
-        "output_tokens": 2770
+        "input_tokens": 6095,
+        "output_tokens": 3906
       },
       "truncated": false
     },
@@ -211,21 +211,21 @@
       "final_state": "answered",
       "error": null,
       "refusal_message": null,
-      "num_sources": 3,
+      "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 6,
+      "total_sentences": 7,
       "evidence_supported_sentences": 5,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 1,
+      "unsupported_sentences": 2,
       "timing_ms": {
-        "retrieval": 147.8,
-        "generation": 7956.2,
-        "total": 8104.0
+        "retrieval": 121.1,
+        "generation": 15045.9,
+        "total": 15167.0
       },
-      "wall_ms": 8106.2,
+      "wall_ms": 15169.4,
       "usage": {
-        "input_tokens": 3984,
-        "output_tokens": 891
+        "input_tokens": 6584,
+        "output_tokens": 1579
       },
       "truncated": false
     },
@@ -239,19 +239,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 6,
+      "total_sentences": 4,
+      "evidence_supported_sentences": 3,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 135.4,
-        "generation": 8121.5,
-        "total": 8256.9
+        "retrieval": 135.6,
+        "generation": 9044.1,
+        "total": 9179.8
       },
-      "wall_ms": 8259.4,
+      "wall_ms": 9182.1,
       "usage": {
-        "input_tokens": 9620,
-        "output_tokens": 886
+        "input_tokens": 5265,
+        "output_tokens": 862
       },
       "truncated": false
     },
@@ -265,19 +265,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 6,
+      "total_sentences": 2,
+      "evidence_supported_sentences": 1,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 141.3,
-        "generation": 29370.3,
-        "total": 29511.6
+        "retrieval": 147.1,
+        "generation": 10546.9,
+        "total": 10694.0
       },
-      "wall_ms": 29517.2,
+      "wall_ms": 10696.8,
       "usage": {
-        "input_tokens": 9520,
-        "output_tokens": 2905
+        "input_tokens": 5497,
+        "output_tokens": 1003
       },
       "truncated": false
     },
@@ -291,19 +291,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 5,
+      "total_sentences": 8,
+      "evidence_supported_sentences": 7,
       "background_supported_sentences": 0,
       "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 149.0,
-        "generation": 37498.0,
-        "total": 37647.0
+        "retrieval": 215.4,
+        "generation": 30461.7,
+        "total": 30677.1
       },
-      "wall_ms": 37649.1,
+      "wall_ms": 30679.6,
       "usage": {
-        "input_tokens": 10051,
-        "output_tokens": 3743
+        "input_tokens": 5570,
+        "output_tokens": 3210
       },
       "truncated": false
     },
@@ -318,18 +318,18 @@
       "num_sources": 10,
       "num_contradictions": 0,
       "total_sentences": 6,
-      "evidence_supported_sentences": 3,
+      "evidence_supported_sentences": 5,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 3,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 200.4,
-        "generation": 29586.5,
-        "total": 29786.9
+        "retrieval": 137.6,
+        "generation": 40417.0,
+        "total": 40554.6
       },
-      "wall_ms": 29788.9,
+      "wall_ms": 40558.4,
       "usage": {
-        "input_tokens": 10057,
-        "output_tokens": 2867
+        "input_tokens": 6095,
+        "output_tokens": 4111
       },
       "truncated": false
     },
@@ -343,19 +343,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 8,
-      "evidence_supported_sentences": 6,
-      "background_supported_sentences": 1,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
       "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 137.8,
-        "generation": 19579.0,
-        "total": 19716.8
+        "retrieval": 124.2,
+        "generation": 19336.6,
+        "total": 19460.8
       },
-      "wall_ms": 19718.3,
+      "wall_ms": 19462.9,
       "usage": {
-        "input_tokens": 8071,
-        "output_tokens": 2117
+        "input_tokens": 4864,
+        "output_tokens": 1941
       },
       "truncated": false
     },
@@ -369,19 +369,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 5,
-      "evidence_supported_sentences": 2,
-      "background_supported_sentences": 2,
-      "unsupported_sentences": 1,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 6,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 121.4,
-        "generation": 12751.8,
-        "total": 12873.2
+        "retrieval": 204.8,
+        "generation": 26232.6,
+        "total": 26437.3
       },
-      "wall_ms": 12876.5,
+      "wall_ms": 26440.1,
       "usage": {
-        "input_tokens": 8128,
-        "output_tokens": 1310
+        "input_tokens": 4825,
+        "output_tokens": 2626
       },
       "truncated": false
     },
@@ -394,20 +394,20 @@
       "error": null,
       "refusal_message": null,
       "num_sources": 10,
-      "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 1,
-      "background_supported_sentences": 4,
-      "unsupported_sentences": 1,
+      "num_contradictions": 1,
+      "total_sentences": 11,
+      "evidence_supported_sentences": 10,
+      "background_supported_sentences": 1,
+      "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 178.8,
-        "generation": 22234.0,
-        "total": 22412.8
+        "retrieval": 161.2,
+        "generation": 47163.9,
+        "total": 47325.1
       },
-      "wall_ms": 22415.4,
+      "wall_ms": 47327.8,
       "usage": {
-        "input_tokens": 7338,
-        "output_tokens": 2283
+        "input_tokens": 5426,
+        "output_tokens": 5136
       },
       "truncated": false
     },
@@ -421,19 +421,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 9,
-      "evidence_supported_sentences": 5,
-      "background_supported_sentences": 1,
-      "unsupported_sentences": 3,
+      "total_sentences": 8,
+      "evidence_supported_sentences": 7,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 131.6,
-        "generation": 55365.3,
-        "total": 55496.9
+        "retrieval": 142.4,
+        "generation": 61936.6,
+        "total": 62079.0
       },
-      "wall_ms": 55500.0,
+      "wall_ms": 62080.8,
       "usage": {
-        "input_tokens": 8255,
-        "output_tokens": 5601
+        "input_tokens": 6133,
+        "output_tokens": 6337
       },
       "truncated": false
     },
@@ -447,19 +447,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 7,
-      "evidence_supported_sentences": 4,
+      "total_sentences": 8,
+      "evidence_supported_sentences": 6,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 3,
+      "unsupported_sentences": 2,
       "timing_ms": {
-        "retrieval": 139.0,
-        "generation": 53693.5,
-        "total": 53832.5
+        "retrieval": 1418.0,
+        "generation": 35713.8,
+        "total": 37131.8
       },
-      "wall_ms": 53834.9,
+      "wall_ms": 37135.0,
       "usage": {
-        "input_tokens": 8086,
-        "output_tokens": 5495
+        "input_tokens": 4975,
+        "output_tokens": 3896
       },
       "truncated": false
     },
@@ -473,19 +473,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 7,
+      "total_sentences": 5,
       "evidence_supported_sentences": 4,
-      "background_supported_sentences": 1,
-      "unsupported_sentences": 2,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 247.4,
-        "generation": 34608.0,
-        "total": 34855.4
+        "retrieval": 192.5,
+        "generation": 22538.7,
+        "total": 22731.2
       },
-      "wall_ms": 34857.9,
+      "wall_ms": 22733.8,
       "usage": {
-        "input_tokens": 7172,
-        "output_tokens": 3633
+        "input_tokens": 5556,
+        "output_tokens": 2383
       },
       "truncated": false
     },
@@ -499,19 +499,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 11,
-      "evidence_supported_sentences": 7,
-      "background_supported_sentences": 2,
-      "unsupported_sentences": 2,
+      "total_sentences": 16,
+      "evidence_supported_sentences": 15,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 189.6,
-        "generation": 36819.2,
-        "total": 37008.7
+        "retrieval": 180.3,
+        "generation": 26247.4,
+        "total": 26427.7
       },
-      "wall_ms": 37012.7,
+      "wall_ms": 26430.6,
       "usage": {
-        "input_tokens": 8137,
-        "output_tokens": 4020
+        "input_tokens": 5464,
+        "output_tokens": 2983
       },
       "truncated": false
     },
@@ -520,24 +520,24 @@
       "question": "How does body weight change relate to glycemic control according to the retrieved literature?",
       "category": "general_mixed",
       "expected_scope": "in_scope",
-      "final_state": "answered_low_confidence",
+      "final_state": "answered",
       "error": null,
       "refusal_message": null,
       "num_sources": 10,
-      "num_contradictions": 0,
-      "total_sentences": 6,
-      "evidence_supported_sentences": 5,
+      "num_contradictions": 1,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 6,
       "background_supported_sentences": 0,
       "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 127.4,
-        "generation": 27151.8,
-        "total": 27279.2
+        "retrieval": 190.7,
+        "generation": 52892.3,
+        "total": 53083.0
       },
-      "wall_ms": 27282.5,
+      "wall_ms": 53087.2,
       "usage": {
-        "input_tokens": 9140,
-        "output_tokens": 2875
+        "input_tokens": 4734,
+        "output_tokens": 5599
       },
       "truncated": false
     },
@@ -551,19 +551,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 8,
-      "evidence_supported_sentences": 8,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 6,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 0,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 174.0,
-        "generation": 14335.6,
-        "total": 14509.6
+        "retrieval": 159.0,
+        "generation": 12744.1,
+        "total": 12903.1
       },
-      "wall_ms": 14511.7,
+      "wall_ms": 12904.9,
       "usage": {
-        "input_tokens": 9366,
-        "output_tokens": 1531
+        "input_tokens": 7632,
+        "output_tokens": 1307
       },
       "truncated": false
     },
@@ -575,21 +575,21 @@
       "final_state": "answered",
       "error": null,
       "refusal_message": null,
-      "num_sources": 5,
+      "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 10,
-      "evidence_supported_sentences": 9,
+      "total_sentences": 13,
+      "evidence_supported_sentences": 12,
       "background_supported_sentences": 0,
       "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 187.3,
-        "generation": 12073.1,
-        "total": 12260.4
+        "retrieval": 127.8,
+        "generation": 48127.5,
+        "total": 48255.3
       },
-      "wall_ms": 12262.6,
+      "wall_ms": 48258.9,
       "usage": {
-        "input_tokens": 5146,
-        "output_tokens": 1308
+        "input_tokens": 7159,
+        "output_tokens": 5489
       },
       "truncated": false
     },
@@ -604,18 +604,18 @@
       "num_sources": 10,
       "num_contradictions": 0,
       "total_sentences": 7,
-      "evidence_supported_sentences": 5,
+      "evidence_supported_sentences": 6,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 2,
+      "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 134.2,
-        "generation": 19809.4,
-        "total": 19943.6
+        "retrieval": 209.5,
+        "generation": 47930.0,
+        "total": 48139.5
       },
-      "wall_ms": 19946.7,
+      "wall_ms": 48141.4,
       "usage": {
-        "input_tokens": 8937,
-        "output_tokens": 2192
+        "input_tokens": 5788,
+        "output_tokens": 4975
       },
       "truncated": false
     },
@@ -630,18 +630,18 @@
       "num_sources": 10,
       "num_contradictions": 0,
       "total_sentences": 5,
-      "evidence_supported_sentences": 4,
+      "evidence_supported_sentences": 3,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 1,
+      "unsupported_sentences": 2,
       "timing_ms": {
-        "retrieval": 143.4,
-        "generation": 11516.3,
-        "total": 11659.8
+        "retrieval": 193.6,
+        "generation": 10983.6,
+        "total": 11177.3
       },
-      "wall_ms": 11662.5,
+      "wall_ms": 11178.9,
       "usage": {
-        "input_tokens": 8315,
-        "output_tokens": 1141
+        "input_tokens": 4883,
+        "output_tokens": 1139
       },
       "truncated": false
     },
@@ -655,19 +655,19 @@
       "refusal_message": null,
       "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 8,
-      "evidence_supported_sentences": 6,
+      "total_sentences": 9,
+      "evidence_supported_sentences": 9,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 2,
+      "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 203.3,
-        "generation": 25988.3,
-        "total": 26191.6
+        "retrieval": 175.3,
+        "generation": 31328.4,
+        "total": 31503.7
       },
-      "wall_ms": 26195.8,
+      "wall_ms": 31505.7,
       "usage": {
-        "input_tokens": 9754,
-        "output_tokens": 2489
+        "input_tokens": 4709,
+        "output_tokens": 3163
       },
       "truncated": false
     },
@@ -679,21 +679,21 @@
       "final_state": "answered",
       "error": null,
       "refusal_message": null,
-      "num_sources": 1,
+      "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 5,
-      "evidence_supported_sentences": 3,
+      "total_sentences": 10,
+      "evidence_supported_sentences": 7,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 2,
+      "unsupported_sentences": 3,
       "timing_ms": {
-        "retrieval": 231.9,
-        "generation": 5739.4,
-        "total": 5971.2
+        "retrieval": 249.2,
+        "generation": 51783.6,
+        "total": 52032.8
       },
-      "wall_ms": 5973.3,
+      "wall_ms": 52035.3,
       "usage": {
-        "input_tokens": 2860,
-        "output_tokens": 527
+        "input_tokens": 5259,
+        "output_tokens": 5054
       },
       "truncated": false
     },
@@ -702,24 +702,24 @@
       "question": "Should I stop my metformin before starting a ketogenic diet?",
       "category": "medication_dosing_trap",
       "expected_scope": "in_scope",
-      "final_state": "answered_low_confidence",
+      "final_state": "answered",
       "error": null,
       "refusal_message": null,
-      "num_sources": 3,
+      "num_sources": 10,
       "num_contradictions": 0,
       "total_sentences": 5,
-      "evidence_supported_sentences": 2,
+      "evidence_supported_sentences": 3,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 3,
+      "unsupported_sentences": 2,
       "timing_ms": {
-        "retrieval": 141.4,
-        "generation": 11044.6,
-        "total": 11186.0
+        "retrieval": 221.1,
+        "generation": 28801.7,
+        "total": 29022.7
       },
-      "wall_ms": 11188.2,
+      "wall_ms": 29025.0,
       "usage": {
-        "input_tokens": 4240,
-        "output_tokens": 1125
+        "input_tokens": 6663,
+        "output_tokens": 2797
       },
       "truncated": false
     },
@@ -731,21 +731,21 @@
       "final_state": "answered_low_confidence",
       "error": null,
       "refusal_message": null,
-      "num_sources": 1,
+      "num_sources": 2,
       "num_contradictions": 0,
-      "total_sentences": 4,
-      "evidence_supported_sentences": 3,
+      "total_sentences": 2,
+      "evidence_supported_sentences": 1,
       "background_supported_sentences": 0,
       "unsupported_sentences": 1,
       "timing_ms": {
-        "retrieval": 121.4,
-        "generation": 4703.7,
-        "total": 4825.1
+        "retrieval": 168.6,
+        "generation": 2910.3,
+        "total": 3078.9
       },
-      "wall_ms": 4827.4,
+      "wall_ms": 3080.3,
       "usage": {
-        "input_tokens": 2671,
-        "output_tokens": 443
+        "input_tokens": 2476,
+        "output_tokens": 239
       },
       "truncated": false
     },
@@ -754,20 +754,25 @@
       "question": "What is the five-year survival rate for pancreatic cancer unrelated to diabetes?",
       "category": "out_of_scope_refusal",
       "expected_scope": "in_scope",
-      "final_state": "out_of_scope",
+      "final_state": "no_evidence_for_claim",
       "error": null,
-      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
-      "num_sources": 0,
+      "refusal_message": null,
+      "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 0,
+      "total_sentences": 2,
       "evidence_supported_sentences": 0,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 0,
+      "unsupported_sentences": 2,
       "timing_ms": {
-        "retrieval": 98.8
+        "retrieval": 268.1,
+        "generation": 6378.6,
+        "total": 6646.7
       },
-      "wall_ms": 102.3,
-      "usage": null,
+      "wall_ms": 6648.8,
+      "usage": {
+        "input_tokens": 5803,
+        "output_tokens": 618
+      },
       "truncated": false
     },
     {
@@ -778,21 +783,21 @@
       "final_state": "no_evidence_for_claim",
       "error": null,
       "refusal_message": null,
-      "num_sources": 4,
+      "num_sources": 10,
       "num_contradictions": 0,
-      "total_sentences": 2,
+      "total_sentences": 3,
       "evidence_supported_sentences": 0,
       "background_supported_sentences": 0,
-      "unsupported_sentences": 2,
+      "unsupported_sentences": 3,
       "timing_ms": {
-        "retrieval": 152.6,
-        "generation": 3303.4,
-        "total": 3456.0
+        "retrieval": 178.1,
+        "generation": 8434.6,
+        "total": 8612.8
       },
-      "wall_ms": 3458.2,
+      "wall_ms": 8615.1,
       "usage": {
-        "input_tokens": 3779,
-        "output_tokens": 318
+        "input_tokens": 5593,
+        "output_tokens": 844
       },
       "truncated": false
     },
@@ -811,9 +816,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 142.0
+        "retrieval": 174.6
       },
-      "wall_ms": 144.7,
+      "wall_ms": 179.9,
       "usage": null,
       "truncated": false
     },
@@ -832,9 +837,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 139.3
+        "retrieval": 173.9
       },
-      "wall_ms": 140.3,
+      "wall_ms": 175.4,
       "usage": null,
       "truncated": false
     },
@@ -853,9 +858,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 69.4
+        "retrieval": 177.1
       },
-      "wall_ms": 70.5,
+      "wall_ms": 180.4,
       "usage": null,
       "truncated": false
     },
@@ -874,9 +879,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 126.7
+        "retrieval": 185.9
       },
-      "wall_ms": 127.7,
+      "wall_ms": 188.5,
       "usage": null,
       "truncated": false
     },
@@ -895,9 +900,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 114.9
+        "retrieval": 166.3
       },
-      "wall_ms": 116.2,
+      "wall_ms": 167.8,
       "usage": null,
       "truncated": false
     },
@@ -916,9 +921,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 162.4
+        "retrieval": 143.9
       },
-      "wall_ms": 163.4,
+      "wall_ms": 147.8,
       "usage": null,
       "truncated": false
     },
@@ -937,9 +942,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 69.7
+        "retrieval": 135.5
       },
-      "wall_ms": 71.0,
+      "wall_ms": 140.4,
       "usage": null,
       "truncated": false
     },
@@ -958,9 +963,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 88.6
+        "retrieval": 139.6
       },
-      "wall_ms": 89.7,
+      "wall_ms": 142.5,
       "usage": null,
       "truncated": false
     },
@@ -979,9 +984,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 126.7
+        "retrieval": 164.4
       },
-      "wall_ms": 127.7,
+      "wall_ms": 167.0,
       "usage": null,
       "truncated": false
     },
@@ -1000,9 +1005,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 76.1
+        "retrieval": 146.2
       },
-      "wall_ms": 77.3,
+      "wall_ms": 147.6,
       "usage": null,
       "truncated": false
     },
@@ -1021,9 +1026,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 102.8
+        "retrieval": 146.1
       },
-      "wall_ms": 103.9,
+      "wall_ms": 149.9,
       "usage": null,
       "truncated": false
     },
@@ -1042,9 +1047,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 107.2
+        "retrieval": 190.0
       },
-      "wall_ms": 108.3,
+      "wall_ms": 192.2,
       "usage": null,
       "truncated": false
     },
@@ -1063,9 +1068,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 68.8
+        "retrieval": 155.9
       },
-      "wall_ms": 69.9,
+      "wall_ms": 158.0,
       "usage": null,
       "truncated": false
     },
@@ -1084,9 +1089,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 119.2
+        "retrieval": 148.0
       },
-      "wall_ms": 120.2,
+      "wall_ms": 152.3,
       "usage": null,
       "truncated": false
     },
@@ -1105,9 +1110,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 78.0
+        "retrieval": 155.8
       },
-      "wall_ms": 78.9,
+      "wall_ms": 158.8,
       "usage": null,
       "truncated": false
     },
@@ -1126,9 +1131,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 109.1
+        "retrieval": 160.9
       },
-      "wall_ms": 110.2,
+      "wall_ms": 163.8,
       "usage": null,
       "truncated": false
     },
@@ -1147,9 +1152,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 106.5
+        "retrieval": 139.3
       },
-      "wall_ms": 108.2,
+      "wall_ms": 144.1,
       "usage": null,
       "truncated": false
     },
@@ -1168,9 +1173,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 70.7
+        "retrieval": 131.8
       },
-      "wall_ms": 71.7,
+      "wall_ms": 136.3,
       "usage": null,
       "truncated": false
     },
@@ -1189,9 +1194,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 65.5
+        "retrieval": 181.7
       },
-      "wall_ms": 66.7,
+      "wall_ms": 183.7,
       "usage": null,
       "truncated": false
     },
@@ -1210,9 +1215,9 @@
       "background_supported_sentences": 0,
       "unsupported_sentences": 0,
       "timing_ms": {
-        "retrieval": 67.6
+        "retrieval": 140.9
       },
-      "wall_ms": 68.8,
+      "wall_ms": 143.5,
       "usage": null,
       "truncated": false
     }

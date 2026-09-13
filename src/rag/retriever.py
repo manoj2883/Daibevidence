@@ -54,6 +54,18 @@ def get_similarity_floor() -> float:
     return float(os.environ.get("SIMILARITY_FLOOR", str(SIMILARITY_FLOOR_DEFAULT)))
 
 
+def get_similarity_floor_background() -> Optional[float]:
+    """
+    Phase 4: the background tier can be tuned independently, since
+    background (patient-education) and evidence (PubMed) text embed with
+    different score distributions. Returns None (meaning "use the same
+    floor as evidence") unless SIMILARITY_FLOOR_BACKGROUND is explicitly
+    set, so nothing changes for existing deployments until it's tuned.
+    """
+    value = os.environ.get("SIMILARITY_FLOOR_BACKGROUND")
+    return float(value) if value is not None else None
+
+
 def get_namespace() -> str:
     """
     Which Pinecone namespace production queries hit. "" (the default
@@ -93,6 +105,7 @@ def decide_retrieval_state(
     candidates: List[RetrievedChunk],
     floor: float,
     low_confidence_margin: float = LOW_CONFIDENCE_MARGIN,
+    background_floor: Optional[float] = None,
 ) -> RetrievalDecision:
     """
     Pure decision logic over an already-retrieved candidate pool — no I/O,
@@ -100,18 +113,28 @@ def decide_retrieval_state(
     without re-querying Pinecone per floor value.
 
     Candidates are assumed sorted descending by score (as Pinecone returns
-    them). A chunk survives if its score >= floor. If nothing survives,
-    "out_of_scope" — nothing in either tier is relevant enough to answer
-    from, so no Claude call is made at all. If the best surviving score is
-    within low_confidence_margin of the floor, "answered_low_confidence".
-    Otherwise "answered". Note: "answered"/"answered_low_confidence" here
-    are a provisional, pre-generation signal across both tiers combined —
-    src.rag.chain determines the authoritative final state (which can
-    become "no_evidence_for_claim") after seeing which chunks the model
-    actually cites.
+    them). A chunk survives if its score clears its tier's floor: `floor`
+    for evidence-tier chunks, `background_floor` for background-tier ones
+    (Phase 4 — background and evidence text embed with different score
+    distributions, so they can be tuned independently). `background_floor`
+    defaults to `floor` itself, preserving the original single-floor
+    behavior when not given. If nothing survives in either tier,
+    "out_of_scope" — no Claude call is made at all. If the best surviving
+    score is within low_confidence_margin of the evidence floor,
+    "answered_low_confidence". Otherwise "answered". Note: "answered"/
+    "answered_low_confidence" here are a provisional, pre-generation
+    signal across both tiers combined — src.rag.chain determines the
+    authoritative final state (which can become "no_evidence_for_claim")
+    after seeing which chunks the model actually cites.
     """
+    effective_background_floor = floor if background_floor is None else background_floor
+
+    def _floor_for(chunk: RetrievedChunk) -> float:
+        is_background = (chunk.metadata or {}).get("source_type") == "background"
+        return effective_background_floor if is_background else floor
+
     candidate_scores = [c.score for c in candidates]
-    surviving = [c for c in candidates if c.score >= floor]
+    surviving = [c for c in candidates if c.score >= _floor_for(c)]
 
     if not surviving:
         state = "out_of_scope"
@@ -125,6 +148,7 @@ def decide_retrieval_state(
         surviving_chunks=surviving,
         candidate_scores=candidate_scores,
         floor=floor,
+        background_floor=background_floor,
         low_confidence_margin=low_confidence_margin,
     )
 
@@ -139,4 +163,6 @@ def retrieve_with_floor(question: str, namespace: Optional[str] = None) -> Retri
     (which stays on get_namespace()'s default unless overridden).
     """
     candidates = retrieve(question, k=get_candidate_k(), namespace=namespace)
-    return decide_retrieval_state(candidates, get_similarity_floor())
+    return decide_retrieval_state(
+        candidates, get_similarity_floor(), background_floor=get_similarity_floor_background()
+    )

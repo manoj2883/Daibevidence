@@ -1,5 +1,6 @@
 """
-Empirically tune SIMILARITY_FLOOR instead of guessing it.
+Empirically tune SIMILARITY_FLOOR (and, per Phase 4, SIMILARITY_FLOOR_BACKGROUND
+independently) instead of guessing them.
 
 Retrieves a wide candidate pool (RETRIEVAL_CANDIDATE_K) once per question —
 for both the in-scope evaluation set (eval/test_questions.json) and a
@@ -11,17 +12,28 @@ costs nothing but Pinecone queries.
 
 For each floor value, reports:
   - in-scope answer rate: fraction of the 30 in-scope questions where at
-    least one chunk clears the floor (state != "refused")
+    least one chunk clears its tier's floor (state != "out_of_scope")
   - out-of-scope refusal rate: fraction of the 20 out-of-scope questions
-    correctly refused (state == "refused")
+    correctly refused (state == "out_of_scope")
 
-Saves the full sweep to data/threshold_sweep.csv and prints a recommended
-floor: the value that maximizes out-of-scope refusal rate while keeping
-in-scope answer rate at its maximum observed level.
+Two tuning modes (--tune):
+  - "evidence" (default): sweeps the evidence-tier floor, applied uniformly
+    to both tiers (background_floor=None) — this is what SIMILARITY_FLOOR
+    has always meant.
+  - "background": Phase 4 — holds the evidence floor fixed at
+    --evidence-floor and sweeps SIMILARITY_FLOOR_BACKGROUND independently,
+    since background (patient-education) and evidence (PubMed) text embed
+    with different score distributions.
+
+Saves the full sweep to data/threshold_sweep_{namespace or 'default'}_{tune}.csv
+and prints a recommended floor: the value that maximizes out-of-scope
+refusal rate while keeping in-scope answer rate at its maximum observed
+level.
 
 Usage:
     python -m scripts.tune_threshold
-    python -m scripts.tune_threshold --start 0.30 --stop 0.70 --step 0.01
+    python -m scripts.tune_threshold --namespace v2_5k
+    python -m scripts.tune_threshold --tune background --evidence-floor 0.50 --start 0.30 --stop 0.70
 """
 import argparse
 import csv
@@ -34,7 +46,6 @@ from src.rag.retriever import decide_retrieval_state, get_candidate_k, retrieve
 
 IN_SCOPE_PATH = "eval/test_questions.json"
 OUT_OF_SCOPE_PATH = "eval/out_of_scope_questions.json"
-SWEEP_CSV_PATH = "data/threshold_sweep.csv"
 
 
 def load_questions(path: str):
@@ -42,30 +53,41 @@ def load_questions(path: str):
         return json.load(f)["questions"]
 
 
-def fetch_candidates(questions, k: int):
+def fetch_candidates(questions, k: int, namespace=None):
     """Retrieve once per question; every floor value below reuses these scores."""
     results = []
     for q in questions:
-        chunks = retrieve(q["question"], k=k)
+        chunks = retrieve(q["question"], k=k, namespace=namespace)
         results.append({"id": q["id"], "question": q["question"], "chunks": chunks})
         print(f"  fetched candidates for [{q.get('category', '?')}] {q['question'][:70]!r}")
     return results
 
 
-def sweep(in_scope_candidates, out_of_scope_candidates, floors, margin: float):
+def sweep(in_scope_candidates, out_of_scope_candidates, floors, margin: float, tune: str, fixed_floor: float = None):
+    """
+    tune="evidence": each value in `floors` is the evidence floor, applied
+    uniformly (background_floor=None).
+    tune="background": each value in `floors` is the background floor;
+    `fixed_floor` is the evidence floor, held constant.
+    """
     rows = []
-    for floor in floors:
+    for value in floors:
+        if tune == "background":
+            floor, background_floor = fixed_floor, value
+        else:
+            floor, background_floor = value, None
+
         in_scope_answered = sum(
             1 for r in in_scope_candidates
-            if decide_retrieval_state(r["chunks"], floor, margin).state != "refused"
+            if decide_retrieval_state(r["chunks"], floor, margin, background_floor=background_floor).state != "out_of_scope"
         )
         out_of_scope_refused = sum(
             1 for r in out_of_scope_candidates
-            if decide_retrieval_state(r["chunks"], floor, margin).state == "refused"
+            if decide_retrieval_state(r["chunks"], floor, margin, background_floor=background_floor).state == "out_of_scope"
         )
         n_in, n_out = len(in_scope_candidates), len(out_of_scope_candidates)
         rows.append({
-            "floor": round(floor, 3),
+            "floor": round(value, 3),
             "in_scope_answer_rate": round(in_scope_answered / n_in, 4),
             "in_scope_answered_count": in_scope_answered,
             "in_scope_total": n_in,
@@ -91,23 +113,29 @@ def recommend_floor(rows):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sweep SIMILARITY_FLOOR against real retrieval scores.")
+    parser = argparse.ArgumentParser(description="Sweep SIMILARITY_FLOOR (or SIMILARITY_FLOOR_BACKGROUND) against real retrieval scores.")
     parser.add_argument("--start", type=float, default=0.30)
     parser.add_argument("--stop", type=float, default=0.70)
     parser.add_argument("--step", type=float, default=0.01)
     parser.add_argument("--margin", type=float, default=0.05, help="LOW_CONFIDENCE_MARGIN (doesn't affect refusal, only answered vs low-confidence).")
+    parser.add_argument("--namespace", default=None, help="Pinecone namespace to sweep against, e.g. v1_300 or v2_5k. Defaults to the production namespace.")
+    parser.add_argument("--tune", choices=["evidence", "background"], default="evidence")
+    parser.add_argument("--evidence-floor", type=float, default=None, help="Required with --tune background: the fixed evidence floor to hold while sweeping the background floor.")
     args = parser.parse_args()
+
+    if args.tune == "background" and args.evidence_floor is None:
+        raise SystemExit("--tune background requires --evidence-floor (the fixed evidence floor to hold while sweeping).")
 
     load_dotenv()
 
     candidate_k = get_candidate_k()
-    print(f"Candidate pool size: {candidate_k}")
+    print(f"Candidate pool size: {candidate_k}, namespace: {args.namespace!r}, tuning: {args.tune}")
 
     print(f"\nFetching in-scope candidates from {IN_SCOPE_PATH} ...")
-    in_scope = fetch_candidates(load_questions(IN_SCOPE_PATH), candidate_k)
+    in_scope = fetch_candidates(load_questions(IN_SCOPE_PATH), candidate_k, namespace=args.namespace)
 
     print(f"\nFetching out-of-scope candidates from {OUT_OF_SCOPE_PATH} ...")
-    out_of_scope = fetch_candidates(load_questions(OUT_OF_SCOPE_PATH), candidate_k)
+    out_of_scope = fetch_candidates(load_questions(OUT_OF_SCOPE_PATH), candidate_k, namespace=args.namespace)
 
     floors = []
     f = args.start
@@ -116,14 +144,15 @@ def main():
         f += args.step
 
     print(f"\nSweeping {len(floors)} floor values from {args.start} to {args.stop} (step {args.step}) ...")
-    rows = sweep(in_scope, out_of_scope, floors, args.margin)
+    rows = sweep(in_scope, out_of_scope, floors, args.margin, args.tune, fixed_floor=args.evidence_floor)
 
-    os.makedirs(os.path.dirname(SWEEP_CSV_PATH) or ".", exist_ok=True)
-    with open(SWEEP_CSV_PATH, "w", newline="", encoding="utf-8") as f:
+    sweep_csv_path = f"data/threshold_sweep_{args.namespace or 'default'}_{args.tune}.csv"
+    os.makedirs(os.path.dirname(sweep_csv_path) or ".", exist_ok=True)
+    with open(sweep_csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         writer.writeheader()
         writer.writerows(rows)
-    print(f"\nSaved sweep to {SWEEP_CSV_PATH}")
+    print(f"\nSaved sweep to {sweep_csv_path}")
 
     print("\nfloor  | in-scope answer rate      | out-of-scope refusal rate")
     print("-------|---------------------------|---------------------------")
@@ -134,8 +163,9 @@ def main():
         )
 
     rec = recommend_floor(rows)
+    floor_name = "SIMILARITY_FLOOR_BACKGROUND" if args.tune == "background" else "SIMILARITY_FLOOR"
     print(
-        f"\nRecommended SIMILARITY_FLOOR = {rec['floor']}"
+        f"\nRecommended {floor_name} = {rec['floor']}"
         f"\n  in-scope answer rate:      {rec['in_scope_answer_rate']:.3f} ({rec['in_scope_answered_count']}/{rec['in_scope_total']})"
         f"\n  out-of-scope refusal rate: {rec['out_of_scope_refusal_rate']:.3f} ({rec['out_of_scope_refused_count']}/{rec['out_of_scope_total']})"
         f"\n  (highest floor that keeps in-scope answers at their best observed rate)"

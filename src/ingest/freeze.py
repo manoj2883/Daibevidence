@@ -37,6 +37,7 @@ def write_corpus_manifest(
     chunks: List[Dict],
     uploaded_to_pinecone: bool,
     pinecone_index_name: Optional[str] = None,
+    pinecone_namespace: Optional[str] = None,
     fetch_meta_path: str = FETCH_META_PATH,
     out_path: str = CORPUS_MANIFEST_PATH,
 ) -> Dict:
@@ -53,6 +54,7 @@ def write_corpus_manifest(
     fetch_meta = _load_fetch_meta(fetch_meta_path)
 
     population_counts = Counter(doc.get("population", "") for doc in documents)
+    population_confidence_counts = Counter(doc.get("population_confidence", "") for doc in documents if doc.get("population_confidence"))
     topic_counts = Counter(doc.get("topic", "") for doc in documents)
     publication_type_counts = Counter()
     for doc in documents:
@@ -69,12 +71,14 @@ def write_corpus_manifest(
             "num_abstracts": len(documents),
             "num_chunks": len(chunks),
             "population_counts": dict(population_counts),
+            "population_confidence_counts": dict(population_confidence_counts),
             "topic_counts": dict(topic_counts),
             "publication_type_counts": dict(publication_type_counts),
         },
         "embedding_model": MODEL_NAME,
         "embedding_dim": EMBEDDING_DIM,
         "pinecone_index": pinecone_index_name,
+        "pinecone_namespace": pinecone_namespace,
         "uploaded_to_pinecone": uploaded_to_pinecone,
     }
 

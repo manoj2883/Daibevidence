@@ -63,6 +63,64 @@ def split_pubmed_documents(
     return chunked_docs
 
 
+SECTIONED_CHUNK_METADATA_FIELDS = CHUNK_METADATA_FIELDS + ["population_confidence"]
+
+
+def split_pubmed_documents_sectioned(
+    documents: List[Dict],
+    chunk_size_words: int = CHUNK_SIZE_WORDS,
+    overlap_words: int = CHUNK_OVERLAP_WORDS,
+) -> List[Dict]:
+    """
+    Phase 3 section-aware chunking: split within each abstract *section*
+    (Background/Methods/Results/Conclusions, from doc["sections"], as
+    produced by src.ingest.pubmed._parse_article) rather than sliding a
+    word-window across the whole abstract regardless of structure — a
+    chunk can no longer straddle e.g. the Methods/Results boundary. A
+    short section becomes exactly one chunk; a long one is still split
+    with the same sliding window, but never crosses into the next
+    section. An unstructured abstract (doc["sections"] absent, or a
+    single section with label "") degrades to the same behavior as
+    split_pubmed_documents.
+
+    Each chunk's metadata records "section" (the label, "" if none) in
+    addition to the usual pmid/title/journal/year/publication_type/
+    population/chunk_index fields, plus population_confidence (Phase 3
+    two-pass tagging).
+    """
+    chunked_docs = []
+    for doc in documents:
+        sections = doc.get("sections") or [{"label": "", "text": doc.get("abstract", "")}]
+        chunk_index = 0
+        for section in sections:
+            section_text = section.get("text", "")
+            pieces = split_text_by_words(section_text, chunk_size_words=chunk_size_words, overlap_words=overlap_words)
+            for piece in pieces:
+                metadata = {field: doc.get(field, "") for field in SECTIONED_CHUNK_METADATA_FIELDS}
+                metadata["chunk_index"] = chunk_index
+                metadata["section"] = section.get("label", "")
+                chunked_docs.append({"text": piece, "metadata": metadata})
+                chunk_index += 1
+
+    return chunked_docs
+
+
+def write_sectioned_chunks_csv(chunks: List[Dict], path: str) -> None:
+    """
+    Export section-aware chunks (with the extra "section" and
+    "population_confidence" metadata fields) to CSV.
+    """
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    fieldnames = SECTIONED_CHUNK_METADATA_FIELDS + ["section", "chunk_index", "text"]
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for chunk in chunks:
+            row = dict(chunk["metadata"])
+            row["text"] = chunk["text"]
+            writer.writerow(row)
+
+
 def write_chunks_csv(chunks: List[Dict], path: str = CHUNKS_CSV_PATH) -> None:
     """
     Export chunks (with their full metadata) to CSV for spreadsheet use.

@@ -26,12 +26,15 @@ from src.ingest.config import (
     RAW_JSON_PATH,
     TOPICS,
 )
-from src.ingest.population import classify_population
+from src.ingest.population import classify_population_two_pass
 
 EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 EFETCH_BATCH_SIZE = 200
 
-RAW_FIELDS = ["pmid", "title", "journal", "year", "publication_type", "population", "topic", "abstract"]
+RAW_FIELDS = [
+    "pmid", "title", "journal", "year", "publication_type", "population",
+    "population_confidence", "mesh_terms", "topic", "abstract",
+]
 
 
 def _request_params(extra: Optional[Dict[str, str]] = None) -> Dict[str, str]:
@@ -108,7 +111,13 @@ def _text(el: Optional[ET.Element]) -> str:
 def _parse_article(article_el: ET.Element) -> Optional[Dict]:
     """
     Extract pmid, title, journal, year, abstract, publication_type, and a
-    heuristically-classified population.
+    population classification (two-pass: MeSH descriptor headings first,
+    keyword heuristic as fallback — see classify_population_two_pass).
+    Also extracts the abstract's own section structure (sections: a list
+    of {label, text}, label "" for an unstructured abstract) so
+    section-aware chunking can split on real Background/Methods/Results/
+    Conclusions boundaries instead of blindly sliding a word-window across
+    the whole abstract.
     """
     medline = article_el.find("MedlineCitation")
     if medline is None:
@@ -124,19 +133,27 @@ def _parse_article(article_el: ET.Element) -> Optional[Dict]:
 
     title = _text(article.find("ArticleTitle"))
 
+    sections = []
     abstract_parts = []
     abstract_el = article.find("Abstract")
     if abstract_el is not None:
         for chunk in abstract_el.findall("AbstractText"):
-            label = chunk.get("Label")
+            label = chunk.get("Label") or ""
             piece = _text(chunk)
             if not piece:
                 continue
+            sections.append({"label": label, "text": piece})
             abstract_parts.append(f"{label}: {piece}" if label else piece)
     abstract = "\n".join(abstract_parts)
 
     if not abstract:
         return None
+
+    mesh_terms = [
+        _text(descriptor)
+        for descriptor in medline.findall("MeshHeadingList/MeshHeading/DescriptorName")
+        if _text(descriptor)
+    ]
 
     journal = ""
     year = ""
@@ -154,7 +171,7 @@ def _parse_article(article_el: ET.Element) -> Optional[Dict]:
         _text(pt_el) for pt_el in article.findall("PublicationTypeList/PublicationType") if _text(pt_el)
     ]
 
-    population = classify_population(f"{title}\n{abstract}")
+    population, population_confidence = classify_population_two_pass(mesh_terms, f"{title}\n{abstract}")
 
     return {
         "pmid": pmid,
@@ -163,6 +180,9 @@ def _parse_article(article_el: ET.Element) -> Optional[Dict]:
         "year": year,
         "publication_type": "; ".join(publication_types),
         "population": population,
+        "population_confidence": population_confidence,
+        "mesh_terms": mesh_terms,
+        "sections": sections,
         "abstract": abstract,
     }
 
@@ -204,7 +224,9 @@ def _write_raw_csv(documents: List[Dict], path: str) -> None:
         writer = csv.DictWriter(f, fieldnames=RAW_FIELDS)
         writer.writeheader()
         for doc in documents:
-            writer.writerow({field: doc.get(field, "") for field in RAW_FIELDS})
+            row = {field: doc.get(field, "") for field in RAW_FIELDS}
+            row["mesh_terms"] = "; ".join(doc.get("mesh_terms") or [])
+            writer.writerow(row)
 
 
 def pull_and_cache_pubmed(
@@ -228,6 +250,7 @@ def pull_and_cache_pubmed(
     queries_run = {}
     seen_pmids = set()
     all_documents: List[Dict] = []
+    duplicate_pmids_skipped = 0
 
     for topic_key, topic_fragment in TOPICS.items():
         remaining = fetch_limit - len(all_documents)
@@ -238,7 +261,9 @@ def pull_and_cache_pubmed(
         queries_run[topic_key] = query
         retmax = min(per_topic_max, remaining)
         pmids = search_pubmed(query, retmax=retmax, mindate=mindate, maxdate=maxdate)
-        new_pmids = [p for p in pmids if p not in seen_pmids][:remaining]
+        unique_pmids = [p for p in pmids if p not in seen_pmids]
+        duplicate_pmids_skipped += len(pmids) - len(unique_pmids)
+        new_pmids = unique_pmids[:remaining]
         seen_pmids.update(new_pmids)
 
         if not new_pmids:
@@ -262,6 +287,7 @@ def pull_and_cache_pubmed(
         "publication_types": PUBLICATION_TYPES,
         "diabetes_scope": DIABETES_SCOPE,
         "topic_queries": queries_run,
+        "duplicate_pmids_skipped": duplicate_pmids_skipped,
         "pmids": [doc["pmid"] for doc in all_documents],
     }
     os.makedirs(os.path.dirname(out_meta) or ".", exist_ok=True)

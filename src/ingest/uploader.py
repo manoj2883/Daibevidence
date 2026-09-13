@@ -57,12 +57,19 @@ def upload_chunks(
     chunks: List[Dict[str, Any]],
     index_name: str = None,
     ids: Optional[List[str]] = None,
+    namespace: str = "",
 ) -> None:
     """
     Embed and upsert chunks into Pinecone. Each chunk should be a dict with
     'text' and optional 'metadata'. Pass `ids` (one per chunk) for a stable,
     idempotent upsert — re-running with the same ids overwrites rather than
     duplicates.
+
+    `namespace` (Phase 3) isolates a corpus version within the same index —
+    "" is the original default namespace (the live 300-abstract + background
+    corpus, untouched), "v1_300" / "v2_5k" are separate copies for a clean
+    side-by-side comparison. Never overwrites across namespaces even if IDs
+    collide, since Pinecone namespaces are fully separate keyspaces.
 
     Stores each chunk's text under the "text" metadata key (matching the
     convention already live on the existing index) so retrieval can read it
@@ -97,4 +104,4 @@ def upload_chunks(
         records.append({"id": chunk_id, "values": vector, "metadata": record_metadata})
 
     for start in range(0, len(records), UPSERT_BATCH_SIZE):
-        index.upsert(vectors=records[start : start + UPSERT_BATCH_SIZE])
+        index.upsert(vectors=records[start : start + UPSERT_BATCH_SIZE], namespace=namespace)

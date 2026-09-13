@@ -29,6 +29,8 @@ test_output.txt
 # artifacts that go in the paper (threshold sweep, eval run results).
 data/*
 !data/corpus_manifest.json
+!data/corpus_manifest_v1_300.json
+!data/corpus_manifest_v2_5k.json
 !data/threshold_sweep.csv
 !data/eval_results.csv
 !data/eval_summary_*.json

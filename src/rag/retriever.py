@@ -54,7 +54,17 @@ def get_similarity_floor() -> float:
     return float(os.environ.get("SIMILARITY_FLOOR", str(SIMILARITY_FLOOR_DEFAULT)))
 
 
-def retrieve(question: str, k: Optional[int] = None) -> List[RetrievedChunk]:
+def get_namespace() -> str:
+    """
+    Which Pinecone namespace production queries hit. "" (the default
+    namespace) is the original, untouched corpus — Phase 3's v1_300/v2_5k
+    copies are opt-in via this env var, so nothing changes for the live
+    app until it's explicitly pointed at one.
+    """
+    return os.environ.get("PINECONE_NAMESPACE", "")
+
+
+def retrieve(question: str, k: Optional[int] = None, namespace: Optional[str] = None) -> List[RetrievedChunk]:
     """
     Embed the question locally and query Pinecone for the top-k most similar
     chunks. Returns them ordered by descending similarity score, exactly as
@@ -65,10 +75,11 @@ def retrieve(question: str, k: Optional[int] = None) -> List[RetrievedChunk]:
         _embeddings_cache = LocalSentenceTransformerEmbeddings()
 
     k = k or get_retriever_k()
+    namespace = get_namespace() if namespace is None else namespace
     query_vector = _embeddings_cache.embed_query(question)
 
     index = get_index()
-    response = index.query(vector=query_vector, top_k=k, include_metadata=True)
+    response = index.query(vector=query_vector, top_k=k, include_metadata=True, namespace=namespace)
 
     chunks = []
     for match in response.get("matches", []):
@@ -118,11 +129,14 @@ def decide_retrieval_state(
     )
 
 
-def retrieve_with_floor(question: str) -> RetrievalDecision:
+def retrieve_with_floor(question: str, namespace: Optional[str] = None) -> RetrievalDecision:
     """
     The Task 1 retrieval path: pull a wide candidate pool and let the
     similarity floor decide how many (if any) are relevant enough to use,
-    instead of always forcing a fixed top-k.
+    instead of always forcing a fixed top-k. `namespace` lets Phase 4's
+    evaluation run the same question set against v1_300 and v2_5k
+    separately for a side-by-side comparison, without touching production
+    (which stays on get_namespace()'s default unless overridden).
     """
-    candidates = retrieve(question, k=get_candidate_k())
+    candidates = retrieve(question, k=get_candidate_k(), namespace=namespace)
     return decide_retrieval_state(candidates, get_similarity_floor())

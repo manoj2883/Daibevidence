@@ -1,4 +1,4 @@
-from src.ingest.population import classify_population
+from src.ingest.population import classify_population, classify_population_two_pass
 
 
 def test_classify_type1():
@@ -28,3 +28,35 @@ def test_classify_mixed_when_unclear():
 
 def test_classify_empty_text():
     assert classify_population("") == "mixed"
+
+
+def test_two_pass_mesh_match_is_high_confidence():
+    population, confidence = classify_population_two_pass(["Diabetes Mellitus, Type 2", "Humans"], "some abstract text")
+    assert population == "type2"
+    assert confidence == "high"
+
+
+def test_two_pass_multiple_mesh_types_is_mixed_high_confidence():
+    population, confidence = classify_population_two_pass(
+        ["Diabetes Mellitus, Type 1", "Diabetes Mellitus, Type 2"], "text"
+    )
+    assert population == "mixed"
+    assert confidence == "high"
+
+
+def test_two_pass_falls_back_to_keyword_heuristic_low_confidence():
+    population, confidence = classify_population_two_pass(["Humans", "Diet, Food, and Nutrition"], "Adults with prediabetes and impaired glucose tolerance...")
+    assert population == "prediabetes"
+    assert confidence == "low"
+
+
+def test_two_pass_no_mesh_and_no_keyword_match_is_mixed_low_confidence():
+    population, confidence = classify_population_two_pass([], "A general review of dietary patterns.")
+    assert population == "mixed"
+    assert confidence == "low"
+
+
+def test_two_pass_mesh_match_is_case_insensitive():
+    population, confidence = classify_population_two_pass(["diabetes, gestational"], "text")
+    assert population == "gestational"
+    assert confidence == "high"

@@ -87,6 +87,18 @@ POPULATION_KEYWORDS = {
     ],
 }
 
+# Pass 1 of two-pass population tagging (Phase 3): PubMed's own MeSH
+# indexing is a curated, expert-assigned signal — far more reliable than
+# matching keywords in free text — so a MeSH descriptor match is tagged
+# "high" confidence. Only falls back to the POPULATION_KEYWORDS heuristic
+# above ("low" confidence) when none of these descriptors are present.
+POPULATION_MESH_MAP = {
+    "diabetes mellitus, type 1": "type1",
+    "diabetes mellitus, type 2": "type2",
+    "diabetes, gestational": "gestational",
+    "prediabetic state": "prediabetes",
+}
+
 # --- File paths -----------------------------------------------------------
 
 RAW_JSON_PATH = "data/pubmed_raw.json"
@@ -101,6 +113,27 @@ BACKGROUND_RAW_JSON_PATH = "data/background_raw.json"
 BACKGROUND_RAW_CSV_PATH = "data/background_raw.csv"
 BACKGROUND_CHUNKS_JSON_PATH = "data/background_chunks.json"
 BACKGROUND_CHUNKS_CSV_PATH = "data/background_chunks.csv"
+
+# --- Phase 3: corpus expansion (v2_5k) -------------------------------------
+# Same TOPICS/DIABETES_SCOPE/PUBLICATION_TYPES/DATE_RANGE_YEARS as the
+# original 300-abstract corpus (verified live against PubMed: ~25k matches
+# available pre-dedup under this exact scope, comfortably more than 5k) —
+# only FETCH_LIMIT changes, so v2_5k is a clean "same scope, more data"
+# comparison against v1_300, not a scope change bundled in as well.
+V2_5K_FETCH_LIMIT = 5000
+V2_5K_RAW_JSON_PATH = "data/v2_5k_raw.json"
+V2_5K_RAW_CSV_PATH = "data/v2_5k_raw.csv"
+V2_5K_CHUNKS_JSON_PATH = "data/v2_5k_chunks.json"
+V2_5K_CHUNKS_CSV_PATH = "data/v2_5k_chunks.csv"
+V2_5K_FETCH_META_PATH = "data/v2_5k_fetch_meta.json"
+V2_5K_MANIFEST_PATH = "data/corpus_manifest_v2_5k.json"
+V2_5K_FETCH_CHECKPOINT_PATH = "data/v2_5k_fetch_checkpoint.json"
+V1_300_MANIFEST_PATH = "data/corpus_manifest_v1_300.json"
+
+# Pinecone namespaces for the Phase 3 side-by-side comparison. "" (the
+# default namespace, untouched) stays the original live corpus.
+NAMESPACE_V1_300 = "v1_300"
+NAMESPACE_V2_5K = "v2_5k"
 
 # --- Chunking ---------------------------------------------------------
 

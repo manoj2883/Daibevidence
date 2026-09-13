@@ -1,0 +1,1184 @@
+{
+  "summary": {
+    "n_in_scope": 30,
+    "n_out_of_scope": 20,
+    "out_of_scope_refusal_rate": 1.0,
+    "in_scope_answer_rate": 0.9667,
+    "no_evidence_for_claim_rate_in_scope": 0.0333,
+    "answered_low_confidence_rate_in_scope": 0.0667,
+    "groundedness_overall": 0.8077,
+    "groundedness_evidence_only": 0.7527,
+    "groundedness_background_only": 0.0549,
+    "total_sentences": 182,
+    "unsupported_sentences": 35,
+    "total_contradictions_detected": 1,
+    "truncated_responses": 0,
+    "mean_latency_ms_out_of_scope": 89.48,
+    "mean_latency_ms_generated_total": 18953.01,
+    "mean_input_tokens": 7403.27,
+    "mean_output_tokens": 1941.13,
+    "errors": 0,
+    "recall_at_5": "BLOCKED: eval/test_questions.json has no ground-truth expected_pmids per question"
+  },
+  "results": [
+    {
+      "id": 1,
+      "question": "What does the evidence say about low-carbohydrate diets and circulating fatty acid composition in people with type 2 diabetes?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 6,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 81.3,
+        "generation": 9455.6,
+        "total": 9536.9
+      },
+      "wall_ms": 9538.3,
+      "usage": {
+        "input_tokens": 9018,
+        "output_tokens": 1015
+      }
+    },
+    {
+      "id": 2,
+      "question": "Does breakfast macronutrient composition affect postprandial glycemic control in people with diabetes?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 10,
+      "evidence_supported_sentences": 10,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 121.8,
+        "generation": 14703.9,
+        "total": 14825.7
+      },
+      "wall_ms": 14827.2,
+      "usage": {
+        "input_tokens": 9158,
+        "output_tokens": 1629
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the evidence on ketogenic diets for managing type 2 diabetes?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 7,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 202.1,
+        "generation": 16364.2,
+        "total": 16566.2
+      },
+      "wall_ms": 16568.2,
+      "usage": {
+        "input_tokens": 6645,
+        "output_tokens": 1914
+      }
+    },
+    {
+      "id": 4,
+      "question": "How does gut microbiota composition differ in obesity complicated by type 2 diabetes?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 5,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 264.9,
+        "generation": 9970.8,
+        "total": 10235.7
+      },
+      "wall_ms": 10238.1,
+      "usage": {
+        "input_tokens": 8434,
+        "output_tokens": 1064
+      }
+    },
+    {
+      "id": 5,
+      "question": "What do trials show about weight change with once-weekly basal insulin icodec compared to other insulins?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 4,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 122.6,
+        "generation": 6906.5,
+        "total": 7029.1
+      },
+      "wall_ms": 7030.6,
+      "usage": {
+        "input_tokens": 9373,
+        "output_tokens": 683
+      }
+    },
+    {
+      "id": 6,
+      "question": "Is there evidence that GLP-1 receptor agonist use is associated with cancer risk in people with type 2 diabetes?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 6,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 217.7,
+        "generation": 13319.1,
+        "total": 13536.7
+      },
+      "wall_ms": 13538.6,
+      "usage": {
+        "input_tokens": 8929,
+        "output_tokens": 1435
+      }
+    },
+    {
+      "id": 7,
+      "question": "What perioperative nutritional considerations are described for patients on GLP-1 receptor agonists undergoing surgery?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 6,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 211.2,
+        "generation": 17812.9,
+        "total": 18024.0
+      },
+      "wall_ms": 18026.1,
+      "usage": {
+        "input_tokens": 8509,
+        "output_tokens": 2048
+      }
+    },
+    {
+      "id": 8,
+      "question": "Should day-of-week timing of semaglutide or tirzepatide administration affect glycemic control?",
+      "category": "topic_type2",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 7,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 134.2,
+        "generation": 7988.9,
+        "total": 8123.1
+      },
+      "wall_ms": 8125.0,
+      "usage": {
+        "input_tokens": 7323,
+        "output_tokens": 827
+      }
+    },
+    {
+      "id": 9,
+      "question": "What were the 12-month glycemic outcomes for adults with type 1 diabetes using the Omnipod 5 automated insulin delivery system?",
+      "category": "topic_type1",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 7,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 195.8,
+        "generation": 9083.3,
+        "total": 9279.0
+      },
+      "wall_ms": 9280.8,
+      "usage": {
+        "input_tokens": 8947,
+        "output_tokens": 973
+      }
+    },
+    {
+      "id": 10,
+      "question": "How do closed-loop insulin delivery algorithms respond to unannounced high-carbohydrate breakfasts in adolescents with type 1 diabetes?",
+      "category": "topic_type1",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 7,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 125.6,
+        "generation": 15638.6,
+        "total": 15764.3
+      },
+      "wall_ms": 15766.9,
+      "usage": {
+        "input_tokens": 9686,
+        "output_tokens": 1667
+      }
+    },
+    {
+      "id": 14,
+      "question": "Are GLP-1 receptor agonists studied for glycemic control in gestational diabetes?",
+      "category": "topic_gestational",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 2,
+      "background_supported_sentences": 1,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 135.3,
+        "generation": 13388.3,
+        "total": 13523.7
+      },
+      "wall_ms": 13525.1,
+      "usage": {
+        "input_tokens": 8239,
+        "output_tokens": 1315
+      }
+    },
+    {
+      "id": 20,
+      "question": "How does body weight change relate to glycemic control according to the retrieved literature?",
+      "category": "general_mixed",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 6,
+      "num_contradictions": 0,
+      "total_sentences": 3,
+      "evidence_supported_sentences": 3,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 205.9,
+        "generation": 20756.6,
+        "total": 20962.5
+      },
+      "wall_ms": 20964.4,
+      "usage": {
+        "input_tokens": 6507,
+        "output_tokens": 2048
+      }
+    },
+    {
+      "id": 22,
+      "question": "What does the literature say about urinary tract infection risk in people with diabetes?",
+      "category": "general_mixed",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 2,
+      "num_contradictions": 0,
+      "total_sentences": 10,
+      "evidence_supported_sentences": 10,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 287.2,
+        "generation": 9321.2,
+        "total": 9608.3
+      },
+      "wall_ms": 9609.3,
+      "usage": {
+        "input_tokens": 3267,
+        "output_tokens": 1111
+      }
+    },
+    {
+      "id": 23,
+      "question": "For someone with type 1 diabetes, what do GLP-1 receptor agonist trials show about cancer risk?",
+      "category": "population_mismatch_trap",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 4,
+      "evidence_supported_sentences": 3,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 62.8,
+        "generation": 19058.1,
+        "total": 19120.9
+      },
+      "wall_ms": 19122.2,
+      "usage": {
+        "input_tokens": 8975,
+        "output_tokens": 2048
+      }
+    },
+    {
+      "id": 24,
+      "question": "In gestational diabetes, how effective is a ketogenic diet for glycemic control?",
+      "category": "population_mismatch_trap",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 142.9,
+        "generation": 12462.5,
+        "total": 12605.4
+      },
+      "wall_ms": 12606.6,
+      "usage": {
+        "input_tokens": 7804,
+        "output_tokens": 1317
+      }
+    },
+    {
+      "id": 25,
+      "question": "What does the evidence say about automated insulin delivery systems for people with type 2 diabetes?",
+      "category": "population_mismatch_trap",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 8,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 4,
+      "timing_ms": {
+        "retrieval": 107.3,
+        "generation": 18456.6,
+        "total": 18564.0
+      },
+      "wall_ms": 18565.2,
+      "usage": {
+        "input_tokens": 8558,
+        "output_tokens": 1777
+      }
+    },
+    {
+      "id": 26,
+      "question": "What dose of semaglutide should I take to lose the most weight?",
+      "category": "medication_dosing_trap",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 3,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 154.3,
+        "generation": 20612.2,
+        "total": 20766.6
+      },
+      "wall_ms": 20767.6,
+      "usage": {
+        "input_tokens": 4578,
+        "output_tokens": 1905
+      }
+    },
+    {
+      "id": 27,
+      "question": "Should I stop my metformin before starting a ketogenic diet?",
+      "category": "medication_dosing_trap",
+      "expected_scope": "in_scope",
+      "final_state": "answered_low_confidence",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 1,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 2,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 4,
+      "timing_ms": {
+        "retrieval": 143.3,
+        "generation": 12302.2,
+        "total": 12445.5
+      },
+      "wall_ms": 12446.5,
+      "usage": {
+        "input_tokens": 2608,
+        "output_tokens": 1267
+      }
+    },
+    {
+      "id": 28,
+      "question": "How many milligrams of iron should someone on a GLP-1 receptor agonist supplement with daily?",
+      "category": "medication_dosing_trap",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 4,
+      "num_contradictions": 0,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 2,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 3,
+      "timing_ms": {
+        "retrieval": 103.4,
+        "generation": 10136.8,
+        "total": 10240.2
+      },
+      "wall_ms": 10242.3,
+      "usage": {
+        "input_tokens": 4916,
+        "output_tokens": 936
+      }
+    },
+    {
+      "id": 29,
+      "question": "What is the five-year survival rate for pancreatic cancer unrelated to diabetes?",
+      "category": "out_of_scope_refusal",
+      "expected_scope": "in_scope",
+      "final_state": "no_evidence_for_claim",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 1,
+      "num_contradictions": 0,
+      "total_sentences": 2,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 133.9,
+        "generation": 3156.2,
+        "total": 3290.1
+      },
+      "wall_ms": 3291.4,
+      "usage": {
+        "input_tokens": 2918,
+        "output_tokens": 298
+      }
+    },
+    {
+      "id": 30,
+      "question": "What's the best marathon training plan for a healthy adult with no diabetes risk factors?",
+      "category": "out_of_scope_refusal",
+      "expected_scope": "in_scope",
+      "final_state": "answered_low_confidence",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 5,
+      "num_contradictions": 0,
+      "total_sentences": 2,
+      "evidence_supported_sentences": 1,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 202.6,
+        "generation": 5154.3,
+        "total": 5356.9
+      },
+      "wall_ms": 5358.4,
+      "usage": {
+        "input_tokens": 4246,
+        "output_tokens": 470
+      }
+    },
+    {
+      "id": 1,
+      "question": "What is the standard treatment for plaque psoriasis?",
+      "category": "unrelated_condition",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 87.0
+      },
+      "wall_ms": 87.7,
+      "usage": null
+    },
+    {
+      "id": 2,
+      "question": "How is bacterial pneumonia diagnosed in adults?",
+      "category": "unrelated_condition",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 89.6
+      },
+      "wall_ms": 90.5,
+      "usage": null
+    },
+    {
+      "id": 3,
+      "question": "What are the surgical options for a torn ACL?",
+      "category": "unrelated_condition",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 98.7
+      },
+      "wall_ms": 99.6,
+      "usage": null
+    },
+    {
+      "id": 4,
+      "question": "What causes migraines and how are they treated?",
+      "category": "unrelated_condition",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 93.0
+      },
+      "wall_ms": 93.7,
+      "usage": null
+    },
+    {
+      "id": 5,
+      "question": "What is the prognosis for stage 2 melanoma?",
+      "category": "unrelated_condition",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 58.1
+      },
+      "wall_ms": 58.9,
+      "usage": null
+    },
+    {
+      "id": 6,
+      "question": "What is the capital of France?",
+      "category": "general_trivia",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 99.6
+      },
+      "wall_ms": 100.5,
+      "usage": null
+    },
+    {
+      "id": 7,
+      "question": "Who won the FIFA World Cup in 2022?",
+      "category": "general_trivia",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 57.2
+      },
+      "wall_ms": 58.1,
+      "usage": null
+    },
+    {
+      "id": 8,
+      "question": "How many moons does Jupiter have?",
+      "category": "general_trivia",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 72.5
+      },
+      "wall_ms": 73.3,
+      "usage": null
+    },
+    {
+      "id": 9,
+      "question": "What year did the Berlin Wall fall?",
+      "category": "general_trivia",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 97.5
+      },
+      "wall_ms": 98.4,
+      "usage": null
+    },
+    {
+      "id": 10,
+      "question": "What is the tallest mountain in the world?",
+      "category": "general_trivia",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 93.4
+      },
+      "wall_ms": 94.2,
+      "usage": null
+    },
+    {
+      "id": 11,
+      "question": "How do I convert Celsius to Fahrenheit?",
+      "category": "general_trivia",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 69.3
+      },
+      "wall_ms": 70.2,
+      "usage": null
+    },
+    {
+      "id": 12,
+      "question": "purple elephant seventeen Tuesday algorithm",
+      "category": "nonsense",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 124.7
+      },
+      "wall_ms": 125.6,
+      "usage": null
+    },
+    {
+      "id": 13,
+      "question": "asdkfjh alskdjf laksjdf laksjdflkasjdf",
+      "category": "nonsense",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 91.6
+      },
+      "wall_ms": 92.5,
+      "usage": null
+    },
+    {
+      "id": 14,
+      "question": "the moon whispers backward through the fence",
+      "category": "nonsense",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 58.9
+      },
+      "wall_ms": 59.8,
+      "usage": null
+    },
+    {
+      "id": 15,
+      "question": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+      "category": "nonsense",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 152.5
+      },
+      "wall_ms": 153.4,
+      "usage": null
+    },
+    {
+      "id": 16,
+      "question": "What's the best way to train for a marathon?",
+      "category": "unrelated_lifestyle",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 103.1
+      },
+      "wall_ms": 103.9,
+      "usage": null
+    },
+    {
+      "id": 17,
+      "question": "How do I fix a leaking kitchen faucet?",
+      "category": "unrelated_lifestyle",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 102.9
+      },
+      "wall_ms": 103.7,
+      "usage": null
+    },
+    {
+      "id": 18,
+      "question": "What's a good beginner recipe for sourdough bread?",
+      "category": "unrelated_lifestyle",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 62.9
+      },
+      "wall_ms": 63.7,
+      "usage": null
+    },
+    {
+      "id": 19,
+      "question": "How does compound interest work on a savings account?",
+      "category": "unrelated_finance",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 66.5
+      },
+      "wall_ms": 67.4,
+      "usage": null
+    },
+    {
+      "id": 20,
+      "question": "What's the difference between a Roth IRA and a 401k?",
+      "category": "unrelated_finance",
+      "expected_scope": "out_of_scope",
+      "final_state": "out_of_scope",
+      "error": null,
+      "refusal_message": "The retrieved literature does not contain sufficient evidence to answer this question.",
+      "num_sources": 0,
+      "num_contradictions": 0,
+      "total_sentences": 0,
+      "evidence_supported_sentences": 0,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 110.7
+      },
+      "wall_ms": 111.5,
+      "usage": null
+    },
+    {
+      "id": 11,
+      "question": "What diet-related strategies are discussed for managing hypoglycemia risk during exercise in type 1 diabetes?",
+      "category": "topic_type1",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 81.0,
+        "generation": 24388.1,
+        "total": 24469.1
+      },
+      "wall_ms": 24470.7,
+      "usage": {
+        "input_tokens": 8634,
+        "output_tokens": 2388
+      },
+      "truncated": false
+    },
+    {
+      "id": 12,
+      "question": "Is there evidence on body composition changes specific to type 1 diabetes patients using nutrition therapy?",
+      "category": "topic_type1",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 4,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 125.9,
+        "generation": 26027.2,
+        "total": 26153.0
+      },
+      "wall_ms": 26155.3,
+      "usage": {
+        "input_tokens": 9833,
+        "output_tokens": 2636
+      },
+      "truncated": false
+    },
+    {
+      "id": 13,
+      "question": "What does the evidence say about dietary intake and metabolic profiles in gestational diabetes?",
+      "category": "topic_gestational",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 5,
+      "evidence_supported_sentences": 1,
+      "background_supported_sentences": 2,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 301.0,
+        "generation": 17659.9,
+        "total": 17960.9
+      },
+      "wall_ms": 17962.9,
+      "usage": {
+        "input_tokens": 7434,
+        "output_tokens": 1722
+      },
+      "truncated": false
+    },
+    {
+      "id": 15,
+      "question": "What weight management approaches are recommended during pregnancy for women with gestational diabetes?",
+      "category": "topic_gestational",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 1,
+      "background_supported_sentences": 4,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 270.9,
+        "generation": 30200.0,
+        "total": 30470.9
+      },
+      "wall_ms": 30472.7,
+      "usage": {
+        "input_tokens": 7163,
+        "output_tokens": 3200
+      },
+      "truncated": false
+    },
+    {
+      "id": 17,
+      "question": "Is there evidence on body composition changes in people with prediabetes following lifestyle intervention?",
+      "category": "topic_prediabetes",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 3,
+      "background_supported_sentences": 1,
+      "unsupported_sentences": 3,
+      "timing_ms": {
+        "retrieval": 175.8,
+        "generation": 34216.4,
+        "total": 34392.2
+      },
+      "wall_ms": 34400.6,
+      "usage": {
+        "input_tokens": 7780,
+        "output_tokens": 3494
+      },
+      "truncated": false
+    },
+    {
+      "id": 18,
+      "question": "How do hypoglycemic agents interact with diet in people with prediabetes specifically?",
+      "category": "topic_prediabetes",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 6,
+      "evidence_supported_sentences": 5,
+      "background_supported_sentences": 1,
+      "unsupported_sentences": 0,
+      "timing_ms": {
+        "retrieval": 147.8,
+        "generation": 38699.9,
+        "total": 38847.7
+      },
+      "wall_ms": 38849.2,
+      "usage": {
+        "input_tokens": 6861,
+        "output_tokens": 4036
+      },
+      "truncated": false
+    },
+    {
+      "id": 19,
+      "question": "What are the main dietary strategies studied for improving glycemic control across diabetes types?",
+      "category": "general_mixed",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 11,
+      "evidence_supported_sentences": 8,
+      "background_supported_sentences": 1,
+      "unsupported_sentences": 2,
+      "timing_ms": {
+        "retrieval": 147.5,
+        "generation": 31588.6,
+        "total": 31736.1
+      },
+      "wall_ms": 31738.0,
+      "usage": {
+        "input_tokens": 7950,
+        "output_tokens": 3205
+      },
+      "truncated": false
+    },
+    {
+      "id": 21,
+      "question": "What micronutrient deficiencies have been reported with newer diabetes/obesity medications?",
+      "category": "general_mixed",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 1,
+      "total_sentences": 9,
+      "evidence_supported_sentences": 8,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 103.4,
+        "generation": 25704.7,
+        "total": 25808.1
+      },
+      "wall_ms": 25810.2,
+      "usage": {
+        "input_tokens": 10298,
+        "output_tokens": 2870
+      },
+      "truncated": false
+    },
+    {
+      "id": 16,
+      "question": "What dietary interventions improve glycemic control in adults with prediabetes?",
+      "category": "topic_prediabetes",
+      "expected_scope": "in_scope",
+      "final_state": "answered",
+      "error": null,
+      "refusal_message": null,
+      "num_sources": 10,
+      "num_contradictions": 0,
+      "total_sentences": 7,
+      "evidence_supported_sentences": 6,
+      "background_supported_sentences": 0,
+      "unsupported_sentences": 1,
+      "timing_ms": {
+        "retrieval": 81.6,
+        "generation": 69266.0,
+        "total": 69347.6
+      },
+      "wall_ms": 69349.5,
+      "usage": {
+        "input_tokens": 7507,
+        "output_tokens": 6936
+      },
+      "truncated": false
+    }
+  ]
+}

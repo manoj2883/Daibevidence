@@ -638,5 +638,5 @@ def test_grounded_answer_generation_live():
     event_types = [e["event"] for e in events]
 
     assert "sources" in event_types
-    assert "token" in event_types
+    assert "sentence" in event_types
     assert event_types[-1] == "done"

@@ -582,7 +582,7 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
     try:
         with client.messages.stream(
             model=get_model(),
-            max_tokens=2048,
+            max_tokens=8192,
             system=system_prompt,
             messages=[{"role": "user", "content": question}],
         ) as stream:
@@ -650,6 +650,26 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
                 synthetic = {"sentence": leftover, "chunk_ids": [], "supported": False}
                 full_sentences.append(synthetic)
                 yield {"event": "sentence", "data": _sentence_payload(synthetic, chunks)}
+
+        # Real usage from the API (not the rough char/4 estimate used for
+        # the pre-call safety check) — the actual figure for cost/latency
+        # reporting. Also check stop_reason: a response cut off by
+        # max_tokens must never be silently reported as the model having
+        # concluded "no evidence for this claim" — those are very
+        # different situations (a token budget ran out vs. a genuine
+        # absence of supporting literature) and conflating them would
+        # misreport real generation failures as an honest evidence gap.
+        usage = None
+        truncated = False
+        try:
+            final_message = stream.get_final_message()
+            usage = {
+                "input_tokens": final_message.usage.input_tokens,
+                "output_tokens": final_message.usage.output_tokens,
+            }
+            truncated = final_message.stop_reason == "max_tokens"
+        except Exception:
+            pass  # usage is a nice-to-have; never fail the response over it
     except anthropic.APIError as e:
         # A partial answer may already have streamed — surface the failure
         # explicitly rather than letting the connection die silently.
@@ -673,5 +693,12 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
 
     yield {
         "event": "done",
-        "data": {"state": final_state, "disclaimer": DISCLAIMER, "groundedness": groundedness, "timing_ms": timing_ms},
+        "data": {
+            "state": final_state,
+            "disclaimer": DISCLAIMER,
+            "groundedness": groundedness,
+            "timing_ms": timing_ms,
+            "usage": usage,
+            "truncated": truncated,
+        },
     }

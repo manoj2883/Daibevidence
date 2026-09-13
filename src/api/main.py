@@ -103,7 +103,10 @@ async def query_rag(request: QueryRequest):
       structural, not inline text markup)
     - "done"    — generation finished, carries the authoritative state, the
       disclaimer, the groundedness summary (share of sentences with a
-      supporting chunk), and timing_ms (retrieval / generation / total)
+      supporting chunk), timing_ms (retrieval / generation / total), real
+      token usage, and "truncated" (true if the response was cut off by
+      the model's output token limit rather than reaching a natural end —
+      a generation failure, never to be read as "no evidence exists")
     - "refusal" — out_of_scope: nothing cleared the floor in either tier.
       Closest scores found, what the system covers, and the score
       distribution. No Claude call made.

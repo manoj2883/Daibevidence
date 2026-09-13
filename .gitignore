@@ -31,3 +31,4 @@ data/*
 !data/corpus_manifest.json
 !data/threshold_sweep.csv
 !data/eval_results.csv
+!data/eval_summary_*.json

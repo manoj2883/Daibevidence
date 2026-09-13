@@ -90,14 +90,20 @@ def decide_retrieval_state(
 
     Candidates are assumed sorted descending by score (as Pinecone returns
     them). A chunk survives if its score >= floor. If nothing survives,
-    "refused". If the best surviving score is within low_confidence_margin
-    of the floor, "answered_low_confidence". Otherwise "answered".
+    "out_of_scope" — nothing in either tier is relevant enough to answer
+    from, so no Claude call is made at all. If the best surviving score is
+    within low_confidence_margin of the floor, "answered_low_confidence".
+    Otherwise "answered". Note: "answered"/"answered_low_confidence" here
+    are a provisional, pre-generation signal across both tiers combined —
+    src.rag.chain determines the authoritative final state (which can
+    become "no_evidence_for_claim") after seeing which chunks the model
+    actually cites.
     """
     candidate_scores = [c.score for c in candidates]
     surviving = [c for c in candidates if c.score >= floor]
 
     if not surviving:
-        state = "refused"
+        state = "out_of_scope"
     elif surviving[0].score < floor + low_confidence_margin:
         state = "answered_low_confidence"
     else:

@@ -87,20 +87,26 @@ async def query_rag(request: QueryRequest):
     """
     Submit a query to the RAG pipeline. Streams a server-sent-events response:
 
-    - "sources" — retrieved chunks + population info + retrieval state
-      ("answered" or "answered_low_confidence") + score distribution +
-      timing_ms.retrieval (sent once, before generation)
+    State enum: answered / answered_low_confidence / no_evidence_for_claim /
+    out_of_scope. Only out_of_scope is known before generation (nothing
+    cleared the floor in either the evidence or background tier); the
+    others depend on which chunks the model actually cites, so "sources"
+    carries a provisional guess and "done" carries the authoritative state.
+
+    - "sources" — retrieved chunks + population info + provisional state +
+      score distribution + timing_ms.retrieval (sent once, before generation)
     - "contradictions" — conflicting findings detected across excerpts (an
       empty list if none) + timing_ms.contradiction_check, sent once,
       before any "sentence" events
     - "sentence" — one {sentence, chunk_ids, pmids, supported} object, sent
       as soon as it completes in the stream (citation attribution is
       structural, not inline text markup)
-    - "done"    — generation finished, carries the disclaimer, the
-      groundedness summary (share of sentences with a supporting chunk),
-      and timing_ms (retrieval / generation / total)
-    - "refusal" — nothing cleared the similarity floor: closest scores found,
-      what the system covers, and the score distribution. No Claude call made.
+    - "done"    — generation finished, carries the authoritative state, the
+      disclaimer, the groundedness summary (share of sentences with a
+      supporting chunk), and timing_ms (retrieval / generation / total)
+    - "refusal" — out_of_scope: nothing cleared the floor in either tier.
+      Closest scores found, what the system covers, and the score
+      distribution. No Claude call made.
     - "error"   — misconfiguration or generation failure
     """
     return StreamingResponse(_sse_stream(request.question), media_type="text/event-stream")

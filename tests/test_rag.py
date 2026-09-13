@@ -55,7 +55,7 @@ def test_refuses_when_nothing_clears_the_floor():
     from src.rag.types import RetrievalDecision
 
     decision = RetrievalDecision(
-        state="refused",
+        state="out_of_scope",
         surviving_chunks=[],
         candidate_scores=[0.31, 0.28, 0.20],
         floor=0.5,
@@ -65,14 +65,15 @@ def test_refuses_when_nothing_clears_the_floor():
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
         with patch("src.rag.chain.retrieve_with_floor", return_value=decision):
             with patch("src.rag.chain.get_client") as mock_get_client:
-                from src.rag.chain import REFUSAL_TEXT, stream_answer
+                from src.rag.chain import OUT_OF_SCOPE_TEXT, stream_answer
 
                 events = list(stream_answer("What is the airspeed velocity of an unladen swallow?"))
 
                 assert len(events) == 1
                 assert events[0]["event"] == "refusal"
                 data = events[0]["data"]
-                assert data["message"] == REFUSAL_TEXT
+                assert data["state"] == "out_of_scope"
+                assert data["message"] == OUT_OF_SCOPE_TEXT
                 assert data["closest_scores"] == [0.31, 0.28, 0.20]
                 assert "diet and nutrition" in data["scope_description"]
                 assert data["score_distribution"]["floor"] == 0.5
@@ -233,7 +234,7 @@ def test_decide_retrieval_state_refuses_when_nothing_clears_floor():
     candidates = [RetrievedChunk(text="x", score=s) for s in [0.4, 0.3, 0.2]]
     decision = decide_retrieval_state(candidates, floor=0.5, low_confidence_margin=0.05)
 
-    assert decision.state == "refused"
+    assert decision.state == "out_of_scope"
     assert decision.surviving_chunks == []
     assert decision.candidate_scores == [0.4, 0.3, 0.2]
     assert decision.top_score is None
@@ -350,6 +351,30 @@ def test_find_complete_json_objects_incremental():
     objs2, pos2 = find_complete_json_objects(buf2, 0)
     assert objs2 == [buf2]
 
+
+def test_find_complete_json_objects_skips_leading_stray_text():
+    """
+    Regression test: a long contradiction analysis that never closes before
+    MAX_PREAMBLE_BUFFER triggers dumps leftover "<<<CONTRADICTIONS>>>"
+    marker text (or any other stray prose) at the front of the sentence
+    buffer. The scanner must skip past it and still find real sentence
+    objects later in the buffer, rather than permanently giving up on the
+    first unexpected character (that was a real bug: it produced zero
+    sentences from a real generation that actually contained content).
+    """
+    from src.rag.chain import find_complete_json_objects
+
+    buffer = '<<<CONTRADICTIONS>>>\n[{"excerpt_indices": [1]}]garbage text{"sentence": "Real content.", "chunk_ids": [1], "supported": true}'
+    objs, pos = find_complete_json_objects(buffer, 0)
+
+    # Both the (wrongly-shaped) contradiction-like object and the real
+    # sentence object get returned as raw text — _validate_sentence()
+    # filters the former out downstream; the scanner's job is just to not
+    # get stuck.
+    assert len(objs) == 2
+    assert '"sentence": "Real content."' in objs[1]
+    assert pos == len(buffer)
+
     # Resuming from a prior position only finds the new object.
     buf3 = '[{"sentence": "a"},{"sentence": "b"}]'
     first_objs, mid_pos = find_complete_json_objects(buf3, 0)
@@ -389,6 +414,79 @@ def test_compute_groundedness():
     assert result["groundedness"] == round(2 / 3, 4)
 
     assert compute_groundedness([])["groundedness"] is None
+
+
+def _make_decision(chunks, floor=0.5, margin=0.05):
+    from src.rag.types import RetrievalDecision
+    return RetrievalDecision(
+        state="answered", surviving_chunks=chunks,
+        candidate_scores=[c.score for c in chunks], floor=floor, low_confidence_margin=margin,
+    )
+
+
+def test_determine_final_state_no_evidence_backed_sentence_is_no_evidence_for_claim():
+    from src.rag.chain import determine_final_state
+    from src.rag.types import RetrievedChunk
+
+    evidence_chunk = RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.9)
+    background_chunk = RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.8)
+    chunks = [evidence_chunk, background_chunk]
+    decision = _make_decision(chunks)
+
+    # Only the background chunk (index 2) actually got cited — the model
+    # correctly declined to use the evidence chunk (index 1) even though it
+    # cleared the floor.
+    sentences = [
+        {"sentence": "Definition here.", "chunk_ids": [2], "supported": True},
+        {"sentence": "No study addresses the specific claim.", "chunk_ids": [], "supported": False},
+    ]
+    assert determine_final_state(chunks, sentences, decision) == "no_evidence_for_claim"
+
+
+def test_determine_final_state_evidence_backed_is_answered():
+    from src.rag.chain import determine_final_state
+    from src.rag.types import RetrievedChunk
+
+    evidence_chunk = RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.9)
+    background_chunk = RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.8)
+    chunks = [evidence_chunk, background_chunk]
+    decision = _make_decision(chunks)
+
+    sentences = [
+        {"sentence": "Definitional framing.", "chunk_ids": [2], "supported": True},
+        {"sentence": "The trial found an effect.", "chunk_ids": [1], "supported": True},
+    ]
+    assert determine_final_state(chunks, sentences, decision) == "answered"
+
+
+def test_determine_final_state_evidence_backed_but_weak_score_is_low_confidence():
+    from src.rag.chain import determine_final_state
+    from src.rag.types import RetrievedChunk
+
+    evidence_chunk = RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.51)
+    chunks = [evidence_chunk]
+    decision = _make_decision(chunks, floor=0.5, margin=0.05)
+
+    sentences = [{"sentence": "Weak evidence claim.", "chunk_ids": [1], "supported": True}]
+    assert determine_final_state(chunks, sentences, decision) == "answered_low_confidence"
+
+
+def test_provisional_state_background_only_survivors_is_no_evidence_for_claim():
+    from src.rag.chain import _provisional_state
+    from src.rag.types import RetrievedChunk
+
+    background_chunk = RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.8)
+    decision = _make_decision([background_chunk])
+    assert _provisional_state(decision) == "no_evidence_for_claim"
+
+
+def test_provisional_state_evidence_survivor_is_answered():
+    from src.rag.chain import _provisional_state
+    from src.rag.types import RetrievedChunk
+
+    evidence_chunk = RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.9)
+    decision = _make_decision([evidence_chunk])
+    assert _provisional_state(decision) == "answered"
 
 
 def test_stream_answer_emits_contradictions_then_sentences():
@@ -475,16 +573,21 @@ def test_stream_answer_emits_contradictions_then_sentences():
     assert done_data["groundedness"]["supported_sentences"] == 2
 
 
-def test_stream_answer_bare_refusal_becomes_single_unsupported_sentence():
+def test_stream_answer_plain_text_noncompliance_still_degrades_gracefully():
     """
-    Per the prompt's rule 6 exception, a refusal skips the contradiction
-    preamble and the JSON array entirely — the stream must still degrade
-    gracefully into the documented {sentence, chunk_ids, supported} shape.
+    The model is always expected to use the JSON array format now (the old
+    "reply with exactly this sentence, no JSON at all" refusal path was
+    retired along with the two-state refusal). If it ever ignores that
+    instruction and emits plain text anyway, the stream must still degrade
+    into the documented {sentence, chunk_ids, supported} shape rather than
+    losing the response — and because no evidence chunk ends up cited, the
+    authoritative final state must come out as no_evidence_for_claim.
     """
     from unittest.mock import MagicMock
 
-    from src.rag.chain import REFUSAL_TEXT
     from src.rag.types import RetrievalDecision, RetrievedChunk
+
+    plain_text_response = "Sorry, I can't answer that from the given excerpts."
 
     chunk = RetrievedChunk(
         text="Some unrelated excerpt.",
@@ -496,7 +599,7 @@ def test_stream_answer_bare_refusal_becomes_single_unsupported_sentence():
     )
 
     mock_stream_cm = MagicMock()
-    mock_stream_cm.__enter__.return_value.text_stream = iter([REFUSAL_TEXT])
+    mock_stream_cm.__enter__.return_value.text_stream = iter([plain_text_response])
     mock_stream_cm.__exit__.return_value = False
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
@@ -512,9 +615,12 @@ def test_stream_answer_bare_refusal_becomes_single_unsupported_sentence():
     assert event_types == ["sources", "contradictions", "sentence", "done"]
 
     sentence_data = [e for e in events if e["event"] == "sentence"][0]["data"]
-    assert sentence_data["sentence"] == REFUSAL_TEXT
+    assert sentence_data["sentence"] == plain_text_response
     assert sentence_data["chunk_ids"] == []
     assert sentence_data["supported"] is False
+
+    done_data = [e for e in events if e["event"] == "done"][0]["data"]
+    assert done_data["state"] == "no_evidence_for_claim"
 
 
 @pytest.mark.skipif(

@@ -427,26 +427,61 @@ def _validate_sentence(obj: Any) -> Optional[Dict[str, Any]]:
     return {"sentence": sentence.strip(), "chunk_ids": chunk_ids, "supported": supported}
 
 
+def _source_type_for_indices(indices: List[Any], chunks: List[RetrievedChunk]) -> Optional[str]:
+    """
+    The tier backing a sentence's citations. "evidence" wins if any cited
+    chunk is evidence-tier (rule 2 forbids a sentence from mixing tiers for
+    a research claim, but this stays defensive rather than assuming
+    compliance); "background" only if every cited chunk is background;
+    None if chunk_ids is empty or resolves to nothing valid.
+    """
+    types = set()
+    for idx in indices:
+        if isinstance(idx, int) and 1 <= idx <= len(chunks):
+            types.add("evidence" if _is_evidence_chunk(chunks[idx - 1]) else "background")
+    if "evidence" in types:
+        return "evidence"
+    if "background" in types:
+        return "background"
+    return None
+
+
 def _sentence_payload(sentence: Dict[str, Any], chunks: List[RetrievedChunk]) -> Dict[str, Any]:
     return {
         "sentence": sentence["sentence"],
         "chunk_ids": sentence["chunk_ids"],
         "pmids": _pmids_for_indices(sentence["chunk_ids"], chunks),
         "supported": sentence["supported"],
+        "source_type": _source_type_for_indices(sentence["chunk_ids"], chunks),
     }
 
 
-def compute_groundedness(sentences: List[Dict[str, Any]]) -> Dict[str, Any]:
+def compute_groundedness(sentences: List[Dict[str, Any]], chunks: List[RetrievedChunk]) -> Dict[str, Any]:
     """
     The headline metric: share of sentences with at least one supporting
-    chunk. Uses chunk_ids presence (objective, checkable) rather than the
-    model's self-reported `supported` flag as the authoritative signal.
+    chunk, split by tier. A background-only answer looking "grounded"
+    overall would hide that no research literature actually backs it, so
+    groundedness_evidence is the number that matters for "is this claim
+    backed by a study" — groundedness_background is definitional coverage
+    only, per rule 2.
     """
     total = len(sentences)
-    supported = sum(1 for s in sentences if s.get("chunk_ids"))
+    evidence_supported = 0
+    background_supported = 0
+    for s in sentences:
+        source_type = _source_type_for_indices(s.get("chunk_ids") or [], chunks)
+        if source_type == "evidence":
+            evidence_supported += 1
+        elif source_type == "background":
+            background_supported += 1
+    supported = evidence_supported + background_supported
     return {
         "groundedness": round(supported / total, 4) if total else None,
+        "groundedness_evidence": round(evidence_supported / total, 4) if total else None,
+        "groundedness_background": round(background_supported / total, 4) if total else None,
         "supported_sentences": supported,
+        "evidence_supported_sentences": evidence_supported,
+        "background_supported_sentences": background_supported,
         "total_sentences": total,
     }
 
@@ -460,8 +495,11 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
       state guess + score distribution, sent once, before generation
     - "contradictions": conflicting findings detected across excerpts (an
       empty list if none), sent once, before any "sentence" events
-    - "sentence": one {sentence, chunk_ids, pmids, supported} object, sent
-      as soon as it completes in the stream
+    - "sentence": one {sentence, chunk_ids, pmids, supported, source_type}
+      object, sent as soon as it completes in the stream — source_type is
+      "evidence"/"background"/None, computed from chunk_ids so the
+      frontend and eval harness never need to re-derive it from the
+      sources list themselves
     - "done": generation finished — carries the *authoritative* state, the
       disclaimer, and the groundedness summary (share of sentences with a
       supporting chunk)
@@ -677,7 +715,7 @@ def stream_answer(question: str) -> Generator[Dict[str, Any], None, None]:
         return
 
     full_answer = " ".join(s["sentence"] for s in full_sentences)
-    groundedness = compute_groundedness(full_sentences)
+    groundedness = compute_groundedness(full_sentences, chunks)
     final_state = determine_final_state(chunks, full_sentences, decision)
     t_end = time.monotonic()
     timing_ms = {

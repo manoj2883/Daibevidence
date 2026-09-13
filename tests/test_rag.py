@@ -402,18 +402,52 @@ def test_validate_sentence_coerces_and_rejects():
 
 def test_compute_groundedness():
     from src.rag.chain import compute_groundedness
+    from src.rag.types import RetrievedChunk
 
+    chunks = [
+        RetrievedChunk(text="e1", metadata={"source_type": "evidence"}, score=0.9),
+        RetrievedChunk(text="e2", metadata={"source_type": "evidence"}, score=0.8),
+        RetrievedChunk(text="e3", metadata={"source_type": "evidence"}, score=0.7),
+    ]
     sentences = [
         {"sentence": "a", "chunk_ids": [1], "supported": True},
         {"sentence": "b", "chunk_ids": [], "supported": False},
         {"sentence": "c", "chunk_ids": [2, 3], "supported": True},
     ]
-    result = compute_groundedness(sentences)
+    result = compute_groundedness(sentences, chunks)
     assert result["supported_sentences"] == 2
     assert result["total_sentences"] == 3
     assert result["groundedness"] == round(2 / 3, 4)
 
-    assert compute_groundedness([])["groundedness"] is None
+    assert compute_groundedness([], chunks)["groundedness"] is None
+
+
+def test_compute_groundedness_splits_evidence_and_background():
+    """
+    Overall groundedness alone would let a purely definitional,
+    background-only answer look just as "grounded" as one backed by real
+    studies — the split is what actually answers "is there a study behind
+    this," per rule 2.
+    """
+    from src.rag.chain import compute_groundedness
+    from src.rag.types import RetrievedChunk
+
+    chunks = [
+        RetrievedChunk(text="e1", metadata={"source_type": "evidence"}, score=0.9),
+        RetrievedChunk(text="b1", metadata={"source_type": "background"}, score=0.6),
+    ]
+    sentences = [
+        {"sentence": "Definition.", "chunk_ids": [2], "supported": True},
+        {"sentence": "Research finding.", "chunk_ids": [1], "supported": True},
+        {"sentence": "Unsupported transition.", "chunk_ids": [], "supported": False},
+    ]
+    result = compute_groundedness(sentences, chunks)
+    assert result["evidence_supported_sentences"] == 1
+    assert result["background_supported_sentences"] == 1
+    assert result["supported_sentences"] == 2
+    assert result["groundedness_evidence"] == round(1 / 3, 4)
+    assert result["groundedness_background"] == round(1 / 3, 4)
+    assert result["groundedness"] == round(2 / 3, 4)
 
 
 def _make_decision(chunks, floor=0.5, margin=0.05):
@@ -487,6 +521,24 @@ def test_provisional_state_evidence_survivor_is_answered():
     evidence_chunk = RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.9)
     decision = _make_decision([evidence_chunk])
     assert _provisional_state(decision) == "answered"
+
+
+def test_source_type_for_indices():
+    from src.rag.chain import _source_type_for_indices, _sentence_payload
+    from src.rag.types import RetrievedChunk
+
+    chunks = [
+        RetrievedChunk(text="e", metadata={"source_type": "evidence"}, score=0.9),
+        RetrievedChunk(text="b", metadata={"source_type": "background"}, score=0.6),
+    ]
+    assert _source_type_for_indices([1], chunks) == "evidence"
+    assert _source_type_for_indices([2], chunks) == "background"
+    assert _source_type_for_indices([1, 2], chunks) == "evidence"  # evidence wins if mixed
+    assert _source_type_for_indices([], chunks) is None
+    assert _source_type_for_indices([99], chunks) is None  # out-of-range index
+
+    payload = _sentence_payload({"sentence": "x", "chunk_ids": [2], "supported": True}, chunks)
+    assert payload["source_type"] == "background"
 
 
 def test_stream_answer_emits_contradictions_then_sentences():

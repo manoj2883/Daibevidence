@@ -98,15 +98,18 @@ async def query_rag(request: QueryRequest):
     - "contradictions" — conflicting findings detected across excerpts (an
       empty list if none) + timing_ms.contradiction_check, sent once,
       before any "sentence" events
-    - "sentence" — one {sentence, chunk_ids, pmids, supported} object, sent
-      as soon as it completes in the stream (citation attribution is
-      structural, not inline text markup)
+    - "sentence" — one {sentence, chunk_ids, pmids, supported, source_type}
+      object, sent as soon as it completes in the stream (citation
+      attribution is structural, not inline text markup); source_type is
+      "evidence"/"background"/None
     - "done"    — generation finished, carries the authoritative state, the
-      disclaimer, the groundedness summary (share of sentences with a
-      supporting chunk), timing_ms (retrieval / generation / total), real
-      token usage, and "truncated" (true if the response was cut off by
-      the model's output token limit rather than reaching a natural end —
-      a generation failure, never to be read as "no evidence exists")
+      disclaimer, the groundedness summary (overall + evidence-only +
+      background-only, since a background-only answer looking "grounded"
+      would hide that no study actually backs it), timing_ms (retrieval /
+      generation / total), real token usage, and "truncated" (true if the
+      response was cut off by the model's output token limit rather than
+      reaching a natural end — a generation failure, never to be read as
+      "no evidence exists")
     - "refusal" — out_of_scope: nothing cleared the floor in either tier.
       Closest scores found, what the system covers, and the score
       distribution. No Claude call made.

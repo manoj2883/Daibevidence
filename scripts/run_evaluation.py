@@ -76,10 +76,6 @@ def estimate_batch_cost(questions):
     return total_tokens, would_call
 
 
-def _source_types_by_index(sources):
-    return {i + 1: s.get("source_type", "evidence") for i, s in enumerate(sources)}
-
-
 def run_one_question(q):
     """
     Consume stream_answer() fully for one question and reduce it to a flat
@@ -119,20 +115,13 @@ def run_one_question(q):
 
     wall_ms = round((time.monotonic() - t0) * 1000, 1)
 
-    type_by_idx = _source_types_by_index(sources)
-    evidence_supported = 0
-    background_supported = 0
-    unsupported = 0
-    for s in sentence_records:
-        chunk_ids = s.get("chunk_ids") or []
-        if not chunk_ids:
-            unsupported += 1
-            continue
-        types = {type_by_idx.get(i, "evidence") for i in chunk_ids}
-        if "evidence" in types:
-            evidence_supported += 1
-        else:
-            background_supported += 1
+    # source_type is now computed server-side per sentence (Phase 2) —
+    # use it directly instead of re-deriving it from the sources list, so
+    # the eval harness's numbers can never drift from the product's own
+    # authoritative definition of "what tier backs this sentence."
+    evidence_supported = sum(1 for s in sentence_records if s.get("source_type") == "evidence")
+    background_supported = sum(1 for s in sentence_records if s.get("source_type") == "background")
+    unsupported = sum(1 for s in sentence_records if not s.get("chunk_ids"))
 
     total_sentences = len(sentence_records)
 

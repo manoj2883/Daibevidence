@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -10,9 +11,12 @@ from dotenv import load_dotenv
 
 from src.ingest.local_embeddings import LocalSentenceTransformerEmbeddings
 from src.rag.chain import stream_answer
+from src.rag.retriever import get_namespace, validate_namespace
 
 # Load environment variables
 load_dotenv()
+
+logger = logging.getLogger("diabevidence")
 
 
 @asynccontextmanager
@@ -20,6 +24,22 @@ async def lifespan(app: FastAPI):
     # Load the local embedding model once at boot instead of lazily on the
     # first query, so cold starts are predictable and config issues fail fast.
     LocalSentenceTransformerEmbeddings()
+
+    # Fail fast if the configured Pinecone namespace doesn't exist or is
+    # empty, rather than starting up and silently answering from the wrong
+    # (or no) data — a query against an empty/nonexistent namespace doesn't
+    # error, it just returns zero matches, indistinguishable at query time
+    # from "no evidence for this question". Never falls back to another
+    # namespace: validate_namespace() raises instead.
+    namespace = get_namespace()
+    index_name = os.environ.get("PINECONE_INDEX_NAME", "").strip()
+    vector_count = validate_namespace(namespace)
+    app.state.namespace = namespace
+    app.state.namespace_vector_count = vector_count
+    startup_msg = f"Pinecone namespace resolved: namespace={namespace!r} vector_count={vector_count} index={index_name!r}"
+    logger.info(startup_msg)
+    print(f"[startup] {startup_msg}")
+
     yield
 
 
@@ -73,12 +93,18 @@ async def serve_frontend():
 @app.get("/health", tags=["Health"])
 async def health():
     """
-    Service health check endpoint.
+    Service health check endpoint. namespace/namespace_vector_count reflect
+    what was validated at startup (see lifespan) — reading them here lets a
+    running deployment be checked without reading logs, per the "the app
+    must query v2_5k, always" fix: the app couldn't have started at all if
+    the resolved namespace were missing or empty.
     """
     return {
         "status": "healthy",
         "claude_configured": bool(os.environ.get("ANTHROPIC_API_KEY")),
-        "pinecone_configured": bool(os.environ.get("PINECONE_API_KEY") and os.environ.get("PINECONE_INDEX_NAME"))
+        "pinecone_configured": bool(os.environ.get("PINECONE_API_KEY") and os.environ.get("PINECONE_INDEX_NAME")),
+        "namespace": getattr(app.state, "namespace", None),
+        "namespace_vector_count": getattr(app.state, "namespace_vector_count", None),
     }
 
 

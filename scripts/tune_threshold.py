@@ -118,7 +118,7 @@ def main():
     parser.add_argument("--stop", type=float, default=0.70)
     parser.add_argument("--step", type=float, default=0.01)
     parser.add_argument("--margin", type=float, default=0.05, help="LOW_CONFIDENCE_MARGIN (doesn't affect refusal, only answered vs low-confidence).")
-    parser.add_argument("--namespace", default=None, help="Pinecone namespace to sweep against, e.g. v1_300 or v2_5k. Defaults to the production namespace.")
+    parser.add_argument("--namespace", default=None, help="Pinecone namespace to sweep against, e.g. v1_300 or v2_5k. Defaults to the production namespace (PINECONE_NAMESPACE env var, or \"v2_5k\" if unset).")
     parser.add_argument("--tune", choices=["evidence", "background"], default="evidence")
     parser.add_argument("--evidence-floor", type=float, default=None, help="Required with --tune background: the fixed evidence floor to hold while sweeping the background floor.")
     args = parser.parse_args()

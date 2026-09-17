@@ -18,7 +18,7 @@ from src.ingest.config import RETRIEVAL_CANDIDATE_K
 from src.ingest.population import classify_population
 from src.rag.cost import assert_chunk_cap, print_prompt_estimate
 from src.rag.query_log import log_query_event
-from src.rag.retriever import retrieve_with_floor
+from src.rag.retriever import resolve_namespace, retrieve_with_floor
 from src.rag.types import RetrievalDecision, RetrievedChunk
 
 # Load environment variables
@@ -207,8 +207,9 @@ def _source_payload(chunk: RetrievedChunk) -> Dict[str, Any]:
     }
 
 
-def _score_distribution_payload(decision: RetrievalDecision) -> Dict[str, Any]:
+def _score_distribution_payload(decision: RetrievalDecision, namespace: str) -> Dict[str, Any]:
     return {
+        "namespace": namespace,
         "floor": decision.floor,
         "background_floor": decision.background_floor if decision.background_floor is not None else decision.floor,
         "low_confidence_margin": decision.low_confidence_margin,
@@ -538,6 +539,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
         return
 
     requested_population = classify_population(question)
+    resolved_namespace = resolve_namespace(namespace)
 
     try:
         decision = retrieve_with_floor(question, namespace=namespace)
@@ -560,7 +562,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
                 "message": OUT_OF_SCOPE_TEXT,
                 "scope_description": SCOPE_DESCRIPTION,
                 "closest_scores": closest_scores,
-                "score_distribution": _score_distribution_payload(decision),
+                "score_distribution": _score_distribution_payload(decision, resolved_namespace),
                 "disclaimer": DISCLAIMER,
                 "timing_ms": {"retrieval": retrieval_ms},
             },
@@ -578,7 +580,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
             "requested_population": requested_population,
             "retrieved_populations": sorted(retrieved),
             "mismatch": mismatch,
-            "score_distribution": _score_distribution_payload(decision),
+            "score_distribution": _score_distribution_payload(decision, resolved_namespace),
             "sources": [_source_payload(c) for c in chunks],
             "timing_ms": {"retrieval": retrieval_ms},
         },

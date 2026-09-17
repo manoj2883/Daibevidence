@@ -203,7 +203,7 @@ def summarize(results):
 def main():
     parser = argparse.ArgumentParser(description="Run the domain evaluation against the live pipeline.")
     parser.add_argument("--out", default="baseline", help="Label for output files, e.g. v1_300 or v2_5k.")
-    parser.add_argument("--namespace", default=None, help="Pinecone namespace to evaluate against, e.g. v1_300 or v2_5k. Defaults to the production namespace (PINECONE_NAMESPACE env var, or \"\").")
+    parser.add_argument("--namespace", default=None, help="Pinecone namespace to evaluate against, e.g. v1_300 or v2_5k. Defaults to the production namespace (PINECONE_NAMESPACE env var, or \"v2_5k\" if unset).")
     parser.add_argument("--dry-run", action="store_true", help="Print the cost estimate only; no Claude calls.")
     parser.add_argument("--resume", action="store_true", help="Skip questions already present in the checkpoint file.")
     args = parser.parse_args()

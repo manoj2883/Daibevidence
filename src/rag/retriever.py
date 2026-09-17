@@ -6,6 +6,7 @@ from pinecone import Pinecone
 
 from src.ingest.config import (
     LOW_CONFIDENCE_MARGIN,
+    NAMESPACE_V2_5K,
     RETRIEVAL_CANDIDATE_K,
     RETRIEVAL_TOP_K,
     SIMILARITY_FLOOR_DEFAULT,
@@ -68,12 +69,66 @@ def get_similarity_floor_background() -> Optional[float]:
 
 def get_namespace() -> str:
     """
-    Which Pinecone namespace production queries hit. "" (the default
-    namespace) is the original, untouched corpus — Phase 3's v1_300/v2_5k
-    copies are opt-in via this env var, so nothing changes for the live
-    app until it's explicitly pointed at one.
+    Which Pinecone namespace production queries hit. Defaults to
+    NAMESPACE_V2_5K ("v2_5k") — the live corpus — rather than "" (the
+    index's default namespace), which used to be the silent fallback and
+    is exactly the bug this default closes: querying "" looks identical to
+    a successful query, it just silently returns nothing meaningful from
+    the wrong (empty, in this index) namespace. Eval scripts and
+    materialize_v1_300_namespace.py override this per-call via retrieve()'s
+    own `namespace` argument (e.g. --namespace v1_300), which always wins
+    over this default — see resolve_namespace().
     """
-    return os.environ.get("PINECONE_NAMESPACE", "")
+    return os.environ.get("PINECONE_NAMESPACE", NAMESPACE_V2_5K)
+
+
+def resolve_namespace(namespace: Optional[str] = None) -> str:
+    """
+    The single place that turns an optional per-call namespace override
+    into the namespace that will actually be queried: the override if one
+    was passed, otherwise get_namespace()'s default. Shared by retrieve()
+    and src.rag.chain.stream_answer so the UI's retrieval inspector always
+    reports the namespace that was actually queried, not a guess.
+    """
+    return get_namespace() if namespace is None else namespace
+
+
+def get_namespace_stats(namespace: str) -> Optional[dict]:
+    """
+    The namespace's stats sub-dict from Pinecone's describe_index_stats()
+    (currently just {"vector_count": N}), or None if the namespace doesn't
+    exist in the index at all. Querying a nonexistent or empty namespace
+    with index.query() doesn't error — it just returns zero matches, which
+    is indistinguishable from "this question has no relevant evidence".
+    describe_index_stats() is the only way to tell those apart before
+    ever sending a real query.
+    """
+    index = get_index()
+    stats = index.describe_index_stats()
+    namespaces = stats.get("namespaces") or {}
+    return namespaces.get(namespace)
+
+
+def validate_namespace(namespace: str) -> int:
+    """
+    Fail-fast startup check: refuse to start rather than silently querying
+    an empty or nonexistent namespace (see get_namespace_stats). Returns
+    the vector count on success; raises RuntimeError naming both the
+    namespace and the index on failure — never falls back to another
+    namespace, since a silent fallback is exactly the bug being fixed.
+    """
+    index_name = os.environ.get("PINECONE_INDEX_NAME", "").strip()
+    stats = get_namespace_stats(namespace)
+    vector_count = (stats or {}).get("vector_count", 0)
+    if not stats or vector_count == 0:
+        raise RuntimeError(
+            f"Pinecone namespace {namespace!r} does not exist or has zero vectors in "
+            f"index {index_name!r}. Refusing to start rather than silently falling back "
+            f"to another namespace. Set the PINECONE_NAMESPACE env var to a populated "
+            f"namespace, or ingest data into {namespace!r} first "
+            f"(e.g. scripts/fetch_corpus.py or scripts/materialize_v1_300_namespace.py)."
+        )
+    return vector_count
 
 
 def retrieve(question: str, k: Optional[int] = None, namespace: Optional[str] = None) -> List[RetrievedChunk]:
@@ -87,7 +142,7 @@ def retrieve(question: str, k: Optional[int] = None, namespace: Optional[str] = 
         _embeddings_cache = LocalSentenceTransformerEmbeddings()
 
     k = k or get_retriever_k()
-    namespace = get_namespace() if namespace is None else namespace
+    namespace = resolve_namespace(namespace)
     query_vector = _embeddings_cache.embed_query(question)
 
     index = get_index()

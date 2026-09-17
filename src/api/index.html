@@ -4,506 +4,448 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DiabEvidence — Diabetes Research Evidence Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f7f6f2;
-    --surface: #ffffff;
-    --surface-alt: #f0eee8;
-    --border: #e3e0d8;
-    --ink: #1c1b1a;
-    --ink-muted: #66605a;
-    --accent: #3d2f7a;
-    --accent-hover: #2f2460;
-    --accent-contrast: #ffffff;
-    --accent-wash: #ece9f8;
-    --user-bubble-bg: #3d2f7a;
-    --user-bubble-text: #ffffff;
-    --warn-bg: #fdf3e0;
-    --warn-border: #c98a1f;
-    --warn-text: #5c3d05;
-    --danger-wash: #fbeceb;
+    /* ---- Given tokens ---- */
+    --paper: #FBFAF8;
+    --surface: #F3F1ED;
+    --ink: #1A1D1C;
+    --muted: #5A6160;
+    --faint: #8A918F;
 
-    --pop-type1: #a83226;
-    --pop-type2: #1a4d7a;
-    --pop-gestational: #7d215f;
-    --pop-prediabetes: #8a5a00;
-    --pop-mixed: #4a4458;
+    --border: #E4E1DA;
+    --accent: #2B5C56;
+    --accent-hover: #1F4844;
+    --accent-contrast: #FBFAF8;
 
-    --radius: 6px;
-    --radius-lg: 10px;
-    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
-    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --caution: #8A5A14;
+    --caution-wash: #F2E9D8;
+    --caution-border: #C99A45;
+
+    --contradiction: #9C3B2E;
+    --contradiction-wash: #F5E4DF;
+    --contradiction-border: #C97060;
+
+    --pop-type1: #A6483A;
+    --pop-type2: #2E5C7A;
+    --pop-gestational: #7A4A78;
+    --pop-prediabetes: #6E7A3E;
+    --pop-mixed: #5A6160;
+
+    --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+    --space-5: 24px; --space-6: 32px; --space-7: 48px;
+    --radius-sm: 3px; --radius: 6px; --radius-lg: 10px;
+
+    --font-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-serif: "Source Serif 4", Georgia, "Iowan Old Style", serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+    --user-bubble-bg: var(--ink);
+    --user-bubble-text: var(--paper);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #17161b;
-      --surface: #201f26;
-      --surface-alt: #26252c;
-      --border: #37353e;
-      --ink: #ece9e3;
-      --ink-muted: #a39d93;
-      --accent: #a996ff;
-      --accent-hover: #c2b3ff;
-      --accent-contrast: #14101f;
-      --accent-wash: #2a2540;
-      --user-bubble-bg: #4c3d94;
-      --user-bubble-text: #f2efff;
-      --warn-bg: #332608;
-      --warn-border: #c98a1f;
-      --warn-text: #f0cf8e;
-      --danger-wash: #3a1f1d;
-
-      --pop-type1: #e0685a;
-      --pop-type2: #4f96d6;
-      --pop-gestational: #c463a2;
-      --pop-prediabetes: #d9a53d;
-      --pop-mixed: #9089a6;
+      --paper: #14161A; --surface: #1E2123; --ink: #ECE9E3; --muted: #9BA3A1; --faint: #6B7371;
+      --border: #2C3033;
+      --accent: #5FA89F; --accent-hover: #7BC0B6; --accent-contrast: #0F1213;
+      --caution: #D9A54A; --caution-wash: #2E2515; --caution-border: #8A6A2E;
+      --contradiction: #D98070; --contradiction-wash: #331F1B; --contradiction-border: #8A4A3A;
+      --pop-type1: #D97A6A; --pop-type2: #6FA8C9; --pop-gestational: #B87AB5;
+      --pop-prediabetes: #A3B36A; --pop-mixed: #9BA3A1;
+      --user-bubble-bg: #2C3033; --user-bubble-text: #ECE9E3;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #17161b;
-    --surface: #201f26;
-    --surface-alt: #26252c;
-    --border: #37353e;
-    --ink: #ece9e3;
-    --ink-muted: #a39d93;
-    --accent: #a996ff;
-    --accent-hover: #c2b3ff;
-    --accent-contrast: #14101f;
-    --accent-wash: #2a2540;
-    --user-bubble-bg: #4c3d94;
-    --user-bubble-text: #f2efff;
-    --warn-bg: #332608;
-    --warn-border: #c98a1f;
-    --warn-text: #f0cf8e;
-    --danger-wash: #3a1f1d;
-
-    --pop-type1: #e0685a;
-    --pop-type2: #4f96d6;
-    --pop-gestational: #c463a2;
-    --pop-prediabetes: #d9a53d;
-    --pop-mixed: #9089a6;
+    --paper: #14161A; --surface: #1E2123; --ink: #ECE9E3; --muted: #9BA3A1; --faint: #6B7371;
+    --border: #2C3033;
+    --accent: #5FA89F; --accent-hover: #7BC0B6; --accent-contrast: #0F1213;
+    --caution: #D9A54A; --caution-wash: #2E2515; --caution-border: #8A6A2E;
+    --contradiction: #D98070; --contradiction-wash: #331F1B; --contradiction-border: #8A4A3A;
+    --pop-type1: #D97A6A; --pop-type2: #6FA8C9; --pop-gestational: #B87AB5;
+    --pop-prediabetes: #A3B36A; --pop-mixed: #9BA3A1;
+    --user-bubble-bg: #2C3033; --user-bubble-text: #ECE9E3;
   }
 
   * { box-sizing: border-box; }
 
   html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
+    margin: 0; padding: 0;
+    background: var(--paper);
     color: var(--ink);
-    font-family: var(--sans);
+    font-family: var(--font-sans);
     font-size: 17px;
-    line-height: 1.6;
-  }
-  @media (min-width: 480px) {
-    html, body { font-size: 18px; }
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
   }
 
   a { color: var(--accent); }
-  button { font: inherit; color: inherit; cursor: pointer; }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; }
 
   :focus-visible {
-    outline: 3px solid var(--accent);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
 
   .app-shell {
-    max-width: 1240px;
+    max-width: 1180px;
     margin: 0 auto;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
   }
 
+  /* ---------- Masthead ---------- */
   header.app-header {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 16px 20px;
-    background: var(--bg);
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: var(--paper);
     border-bottom: 1px solid var(--border);
   }
+  .brand-block { display: flex; align-items: baseline; gap: var(--space-3); }
   .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--serif);
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
   }
-  .brand .mark {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: var(--accent);
+  .brand-tagline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  @media (max-width: 600px) { .brand-tagline { display: none; } }
+  .theme-toggle {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
     flex-shrink: 0;
   }
-  .theme-toggle {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    width: 40px; height: 40px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle:hover { border-color: var(--faint); color: var(--ink); }
 
   main#chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 20px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 36px;
+    flex: 1; overflow-y: auto;
+    padding: var(--space-6) var(--space-5) var(--space-3);
+    display: flex; flex-direction: column;
+    gap: var(--space-7);
   }
 
-  /* Empty state */
-  #empty-state {
-    margin: auto 0;
-    max-width: 640px;
-    padding: 24px 8px;
-  }
+  /* ---------- Empty state ---------- */
+  #empty-state { margin: auto 0; max-width: 660px; padding: var(--space-5) 0; }
   #empty-state h1 {
-    font-family: var(--serif);
-    font-size: 1.6rem;
-    line-height: 1.3;
-    margin: 0 0 12px;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin: 0 0 var(--space-4);
+    letter-spacing: -0.01em;
   }
   #empty-state p.scope {
-    color: var(--ink-muted);
-    margin: 0 0 28px;
+    color: var(--muted);
+    margin: 0 0 var(--space-6);
+    max-width: 54ch;
   }
-  .starters {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .starter-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 14px 16px;
+  .starter-list-label { margin-bottom: var(--space-3); }
+  .starters { display: flex; flex-direction: column; }
+  .starter-row {
+    display: flex; align-items: baseline; gap: var(--space-3);
+    width: 100%;
     text-align: left;
-    font-size: 0.95em;
-    line-height: 1.5;
+    padding: var(--space-3) var(--space-2);
+    border-top: 1px solid var(--border);
+    border-left: 2px solid transparent;
   }
-  .starter-btn:hover { background: var(--accent-wash); }
+  .starters .starter-row:last-child { border-bottom: 1px solid var(--border); }
+  .starter-row:hover, .starter-row:focus-visible { background: var(--surface); border-left-color: var(--accent); }
+  .starter-row .idx { font-family: var(--font-mono); font-size: 12px; color: var(--faint); flex-shrink: 0; width: 2ch; }
+  .starter-row .q { font-family: var(--font-serif); font-size: 1.03rem; line-height: 1.45; }
+  .starter-row .oos-tag {
+    display: inline-block;
+    margin-left: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    vertical-align: middle;
+  }
 
-  /* One exchange = user question + answer/evidence pair */
-  .exchange { display: flex; flex-direction: column; gap: 14px; }
-
+  /* ---------- Exchange ---------- */
+  .exchange { display: flex; flex-direction: column; gap: var(--space-4); }
   .user-row { display: flex; justify-content: flex-end; }
   .bubble-user {
     background: var(--user-bubble-bg);
     color: var(--user-bubble-text);
-    border-radius: var(--radius-lg);
-    border-bottom-right-radius: 3px;
-    padding: 12px 16px;
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
     max-width: 80%;
-    font-size: 0.97em;
+    font-size: 0.96em;
   }
 
-  .answer-row {
-    display: flex;
-    gap: 24px;
-    align-items: flex-start;
-  }
-  .answer-column {
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: 680px;
-  }
-  .evidence-column {
-    flex: 0 0 340px;
-    width: 340px;
-  }
+  .answer-row { display: flex; gap: var(--space-6); align-items: flex-start; }
+  .answer-column { flex: 1 1 auto; min-width: 0; max-width: 680px; }
+  .evidence-column { flex: 0 0 320px; width: 320px; }
   @media (max-width: 960px) {
     .answer-row { flex-direction: column; }
     .evidence-column { width: 100%; flex-basis: auto; }
   }
 
-  /* Status line while waiting */
+  /* ---------- Status line ---------- */
   .status-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--ink-muted);
-    font-size: 0.9em;
-    padding: 4px 0;
+    display: flex; align-items: center; gap: var(--space-2);
+    color: var(--muted); font-size: 0.88em;
+    padding: var(--space-1) 0;
   }
-  .status-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent);
-  }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
 
-  /* Confidence badge */
-  .confidence-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82em;
-    font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 999px;
-    margin-bottom: 12px;
-    width: fit-content;
-  }
-  .confidence-badge.answered { background: var(--accent-wash); color: var(--accent); }
-  .confidence-badge.low { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-border); }
-  .confidence-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-
-  /* Refusal — a designed state, not an error */
-  .refusal-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--ink-muted);
-    border-radius: var(--radius-lg);
-    padding: 20px 22px;
+  /* ---------- Caution / mismatch notices (never used for the good case) ---------- */
+  .notice {
+    display: flex; gap: var(--space-3); align-items: flex-start;
+    background: var(--caution-wash);
+    border: 1px solid var(--caution-border);
+    color: var(--caution);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-3);
+    font-size: 0.92em;
     max-width: 680px;
   }
-  .refusal-block h3 {
-    font-family: var(--serif);
-    margin: 0 0 8px;
-    font-size: 1.15rem;
-  }
-  .refusal-block p { margin: 0 0 12px; color: var(--ink-muted); }
-  .refusal-scope {
-    font-size: 0.9em;
-    background: var(--surface-alt);
+  .notice svg { flex-shrink: 0; margin-top: 2px; }
+  .notice strong { font-weight: 600; }
+  .notice .label { color: var(--caution); opacity: 0.85; display: block; margin-bottom: 2px; }
+
+  /* ---------- Refusal — a designed boundary, not an error, hence neutral ---------- */
+  .refusal-block {
+    border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 12px;
-    margin-bottom: 14px;
+    padding: var(--space-5);
+    max-width: 680px;
+  }
+  .refusal-block h3 { font-family: var(--font-serif); font-weight: 600; margin: 0 0 var(--space-2); font-size: 1.2rem; }
+  .refusal-block > p { margin: 0 0 var(--space-4); color: var(--muted); }
+  .refusal-scope {
+    font-size: 0.92em;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
   }
   .refusal-closest {
-    font-size: 0.82em;
-    color: var(--ink-muted);
-    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--faint);
+    margin-bottom: var(--space-5);
   }
-  .refusal-try { font-size: 0.85em; font-weight: 600; margin-bottom: 8px; }
+  .refusal-try .label { margin-bottom: var(--space-2); display: block; }
 
-  /* Population mismatch banner */
-  .mismatch-banner {
-    display: flex; gap: 10px; align-items: flex-start;
-    background: var(--warn-bg);
-    border: 1px solid var(--warn-border);
-    color: var(--warn-text);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    margin-bottom: 14px;
-    font-size: 0.9em;
-    max-width: 680px;
-  }
-  .mismatch-banner svg { flex-shrink: 0; margin-top: 2px; }
-
-  /* Contradiction panels */
+  /* ---------- Contradiction panels ---------- */
   .contradiction-panel {
-    border: 1px solid var(--warn-border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 16px;
+    border: 1px solid var(--contradiction-border);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-4);
     overflow: hidden;
     max-width: 680px;
   }
   .contradiction-head {
-    background: var(--warn-bg);
-    color: var(--warn-text);
-    padding: 10px 14px;
-    font-size: 0.85em;
-    font-weight: 600;
+    background: var(--contradiction-wash);
+    color: var(--contradiction);
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.9em; font-weight: 600;
   }
-  .contradiction-body {
-    display: flex;
-  }
-  .contradiction-side {
-    flex: 1;
-    padding: 14px;
-    font-size: 0.92em;
-  }
+  .contradiction-body { display: flex; }
+  .contradiction-side { flex: 1; padding: var(--space-4); font-family: var(--font-serif); font-size: 0.96em; }
   .contradiction-side + .contradiction-side { border-left: 1px solid var(--border); }
-  .contradiction-side .label { font-weight: 600; font-size: 0.82em; color: var(--ink-muted); margin-bottom: 4px; }
+  .contradiction-side .pmid-label {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+    color: var(--muted); margin-bottom: var(--space-2); display: block;
+  }
   .contradiction-differs {
-    padding: 10px 14px;
-    font-size: 0.85em;
-    color: var(--ink-muted);
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.88em; color: var(--muted);
     border-top: 1px solid var(--border);
-    background: var(--surface-alt);
+    background: var(--surface);
   }
   @media (max-width: 560px) {
     .contradiction-body { flex-direction: column; }
     .contradiction-side + .contradiction-side { border-left: none; border-top: 1px solid var(--border); }
   }
 
-  /* Sentences */
-  .answer-text { max-width: 680px; }
-  .sentence {
-    cursor: default;
-    border-radius: 3px;
-    padding: 0 1px;
-  }
-  .sentence.supported {
-    box-shadow: inset 0 -2px 0 0 var(--sentence-color, var(--accent));
-  }
-  .sentence.unsupported {
-    color: var(--ink-muted);
-    font-style: italic;
-    border-bottom: 1px dashed var(--ink-muted);
-  }
-  .sentence.highlight {
-    background: var(--accent-wash);
-  }
-  .answer-text p { margin: 0 0 0.9em; font-family: var(--serif); }
+  /* ---------- Answer text & citation markers ---------- */
+  .answer-text { max-width: 680px; font-family: var(--font-serif); font-size: 19px; line-height: 1.7; }
+  .answer-text p { margin: 0 0 1em; }
   .answer-text p:last-child { margin-bottom: 0; }
 
-  .disclaimer {
-    color: var(--ink-muted);
-    font-size: 0.78em;
-    margin-top: 12px;
-    max-width: 680px;
-  }
+  .sentence { cursor: default; }
+  .sentence.hovered { background: var(--surface); }
 
-  /* Evidence column */
-  .evidence-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 12px;
-  }
-  .evidence-section-head {
-    padding: 10px 14px;
-    font-size: 0.85em;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-  }
-  .source-list { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .source-card {
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--card-color, var(--ink-muted));
-    border-radius: 4px;
-    padding: 10px 12px;
-    font-size: 0.82em;
-    scroll-margin-top: 20px;
-  }
-  .source-card.highlight { background: var(--accent-wash); border-color: var(--accent); }
-  .source-card--background { border-left-style: dashed; }
-  .source-card .title { font-weight: 600; margin: 0 0 4px; line-height: 1.35; }
-  .source-card .meta { color: var(--ink-muted); margin: 0 0 6px; }
-  .source-card .pmid-link { font-size: 0.95em; }
-  .tier-chip {
-    display: inline-block;
-    margin-bottom: 6px;
-    padding: 1px 7px;
-    border-radius: 999px;
-    font-size: 0.72em;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .tier-chip--evidence { background: var(--accent-wash); color: var(--accent); }
-  .tier-chip--background { background: var(--border); color: var(--ink-muted); }
-  .pop-chip {
-    display: inline-block;
-    margin-top: 6px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 0.85em;
-    color: #fff;
-    background: var(--card-color, var(--ink-muted));
-  }
-  .score-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
-  .score-bar-track { flex: 1; background: var(--surface-alt); border-radius: 999px; height: 5px; overflow: hidden; }
-  .score-bar-fill { height: 100%; background: var(--card-color, var(--accent)); }
-  .score-label { font-size: 0.85em; color: var(--ink-muted); white-space: nowrap; }
-
-  /* Retrieval log */
-  details.inspector summary {
+  .cite-marker {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    padding: 0 2px;
+    margin-left: 3px;
     cursor: pointer;
-    padding: 10px 14px;
-    font-size: 0.85em;
-    font-weight: 600;
-    list-style: none;
+    white-space: nowrap;
+  }
+  .cite-marker:hover, .cite-marker:focus-visible { background: var(--surface); }
+
+  .sentence.unsupported { color: var(--muted); }
+  .cite-marker--none {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: var(--faint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0px 5px;
+    margin-left: var(--space-2);
+    cursor: default;
+  }
+
+  .disclaimer { color: var(--faint); font-size: 0.82em; margin-top: var(--space-4); max-width: 680px; }
+
+  /* ---------- Evidence rail ---------- */
+  .evidence-section { margin-bottom: var(--space-4); }
+  .evidence-section-head { margin-bottom: var(--space-2); }
+  .source-list { display: flex; flex-direction: column; }
+
+  .source-entry {
+    border-top: 1px solid var(--border);
+    padding: var(--space-3) 0;
+    scroll-margin-top: var(--space-4);
+  }
+  .source-list .source-entry:last-child { border-bottom: 1px solid var(--border); }
+  .source-entry.highlight { background: var(--surface); }
+  .source-entry--background { opacity: 0.92; }
+
+  .source-entry .row-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+  .tier-tag {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--muted);
+    border-left: 2px solid var(--muted);
+    padding-left: var(--space-2);
+  }
+  .tier-tag--background { border-left-style: dashed; }
+
+  .source-entry .title {
+    font-family: var(--font-serif); font-size: 0.98em; line-height: 1.4;
+    margin: 0 0 var(--space-1);
+  }
+  .source-entry .meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin: 0 0 var(--space-2); }
+  .source-entry .pmid-link { font-family: var(--font-mono); font-size: 12px; }
+
+  .pop-legend { display: inline-flex; align-items: center; gap: 5px; margin-top: var(--space-1); }
+  .pop-swatch { width: 8px; height: 8px; flex-shrink: 0; }
+  .pop-legend .pop-text { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+  .score-row { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
+  .score-bar-track { flex: 1; background: var(--surface); height: 3px; }
+  .score-bar-fill { height: 100%; background: var(--ink); }
+  .score-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* ---------- Retrieval log ---------- */
+  details.inspector summary {
+    cursor: pointer; list-style: none;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--muted);
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--border);
   }
   details.inspector summary::-webkit-details-marker { display: none; }
-  details.inspector summary::before { content: "▸ "; }
-  details.inspector[open] summary::before { content: "▾ "; }
-  .inspector-body { padding: 0 14px 14px; font-size: 0.82em; }
-  .inspector-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
-  .inspector-row .idx { width: 18px; color: var(--ink-muted); }
-  .inspector-row .bar-track { flex: 1; background: var(--surface-alt); border-radius: 999px; height: 5px; overflow: hidden; }
+  details.inspector summary::before { content: "› "; }
+  details.inspector[open] summary::before { content: "⌄ "; }
+  .inspector-body { padding: var(--space-2) 0 var(--space-4); }
+  .inspector-namespace-line {
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+    padding-top: var(--space-2);
+  }
+  .inspector-floor-line {
+    font-family: var(--font-mono); font-size: 11px; color: var(--caution);
+    border-top: 1px dashed var(--caution-border);
+    padding-top: var(--space-2);
+    margin: var(--space-2) 0 var(--space-3);
+  }
+  .inspector-row { display: flex; align-items: center; gap: var(--space-2); padding: 3px 0; }
+  .inspector-row .idx { width: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--faint); }
+  .inspector-row .bar-track { flex: 1; background: var(--surface); height: 3px; }
   .inspector-row .bar-fill { height: 100%; }
-  .inspector-row.cleared .bar-fill { background: var(--accent); }
-  .inspector-row.dropped .bar-fill { background: var(--border); }
-  .inspector-row.dropped { color: var(--ink-muted); }
-  .inspector-row .score-num { width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
-  .inspector-floor-line { font-size: 0.8em; color: var(--ink-muted); margin: 6px 0 10px; }
-  .timing-list { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
-  .timing-row { display: flex; justify-content: space-between; font-size: 0.85em; color: var(--ink-muted); padding: 2px 0; }
-  .timing-row span:last-child { font-variant-numeric: tabular-nums; }
+  .inspector-row.cleared .bar-fill { background: var(--ink); }
+  .inspector-row.dropped .bar-fill { background: var(--faint); }
+  .inspector-row.dropped { color: var(--faint); }
+  .inspector-row .score-num { width: 42px; text-align: right; font-family: var(--font-mono); font-size: 11px; }
+  .timing-list { margin-top: var(--space-3); border-top: 1px solid var(--border); padding-top: var(--space-2); }
+  .timing-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 2px 0; }
 
-  /* Composer */
+  /* ---------- Composer ---------- */
   .composer-wrap {
-    position: sticky;
-    bottom: 0;
-    background: var(--bg);
+    position: sticky; bottom: 0;
+    background: var(--paper);
     border-top: 1px solid var(--border);
-    padding: 14px 20px;
+    padding: var(--space-4) var(--space-5);
   }
   .composer {
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    background: var(--surface);
+    max-width: 680px; margin: 0 auto;
+    display: flex; align-items: flex-end; gap: var(--space-2);
+    background: var(--paper);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 8px;
+    border-radius: var(--radius);
+    padding: var(--space-2);
   }
   .composer:focus-within { border-color: var(--accent); }
   textarea#user-input {
-    flex: 1;
-    resize: none;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--ink);
-    font: inherit;
-    padding: 8px;
-    max-height: 140px;
+    flex: 1; resize: none; border: none; outline: none;
+    background: transparent; color: var(--ink); font: inherit;
+    padding: var(--space-2); max-height: 140px;
   }
   button#send-btn {
-    background: var(--accent);
-    color: var(--accent-contrast);
-    border: none;
-    border-radius: 999px;
-    width: 44px; height: 44px;
-    display: flex; align-items: center; justify-content: center;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: var(--radius-sm);
+    height: 38px; padding: 0 var(--space-4);
+    display: flex; align-items: center; gap: var(--space-2);
+    font-weight: 600; font-size: 0.9em;
     flex-shrink: 0;
   }
-  button#send-btn:hover { background: var(--accent-hover); }
-  button#send-btn:disabled { opacity: 0.5; cursor: default; }
+  button#send-btn:hover { background: var(--accent); }
+  button#send-btn:disabled { opacity: 0.4; cursor: default; }
 
   .info-banner {
-    background: var(--surface-alt);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-4);
     font-size: 0.9em;
     max-width: 680px;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .starter-btn, .theme-toggle, button#send-btn, .source-card, .sentence {
-      transition: background-color 0.15s ease, border-color 0.15s ease;
+    .starter-row, .theme-toggle, button#send-btn, .source-entry, .cite-marker {
+      transition: background-color 0.12s ease, border-color 0.12s ease;
     }
     .status-dot { animation: pulse 1.4s infinite ease-in-out; }
-    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-    .source-card.highlight { animation: flash 1.4s ease-out; }
-    @keyframes flash { 0% { background: var(--accent); } 100% { background: var(--accent-wash); } }
+    @keyframes pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
   }
 
   [hidden] { display: none !important; }
@@ -513,11 +455,14 @@
 
 <div class="app-shell">
   <header class="app-header">
-    <div class="brand"><span class="mark" aria-hidden="true"></span><span>DiabEvidence</span></div>
+    <div class="brand-block">
+      <span class="brand">DiabEvidence</span>
+      <span class="brand-tagline">Evidence-grounded diabetes research</span>
+    </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
-      <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
-        <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
     </button>
   </header>
@@ -528,17 +473,22 @@
       <p class="scope">
         Diet &amp; nutrition, glycemic control, body composition &amp; weight, and diet–medication
         interactions — across type 1, type 2, gestational, and prediabetes. Every answer shows exactly
-        which studies it's built from, right beside it — not hidden behind a toggle.
+        which studies it's built from, beside it, not behind a toggle. Where the evidence is thin, that
+        is shown too.
       </p>
+      <div class="label starter-list-label">Try asking</div>
       <div class="starters">
-        <button class="starter-btn" type="button" data-question="What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?">
-          What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?
+        <button class="starter-row" type="button" data-question="What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?">
+          <span class="idx">01</span>
+          <span class="q">What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?</span>
         </button>
-        <button class="starter-btn" type="button" data-question="In gestational diabetes, how effective is a ketogenic diet for glycemic control?">
-          In gestational diabetes, how effective is a ketogenic diet for glycemic control?
+        <button class="starter-row" type="button" data-question="In gestational diabetes, how effective is a ketogenic diet for glycemic control?">
+          <span class="idx">02</span>
+          <span class="q">In gestational diabetes, how effective is a ketogenic diet for glycemic control?</span>
         </button>
-        <button class="starter-btn" type="button" data-demo-refusal="true" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
-          What's the best marathon training plan for a healthy adult with no diabetes risk factors? <em>(out of scope — watch it decline)</em>
+        <button class="starter-row" type="button" data-demo-refusal="true" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
+          <span class="idx">03</span>
+          <span class="q">What's the best marathon training plan for a healthy adult with no diabetes risk factors?<span class="oos-tag">out of scope</span></span>
         </button>
       </div>
     </div>
@@ -548,8 +498,9 @@
     <form class="composer" id="composer-form">
       <textarea id="user-input" rows="1" placeholder="Ask a diabetes research question…" aria-label="Ask a diabetes research question"></textarea>
       <button id="send-btn" type="submit" aria-label="Send">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>
+        <span>Ask</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12h16M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
     </form>
@@ -598,7 +549,7 @@
 
   var msgCounter = 0;
 
-  // ---------- SSE streaming ----------
+  // ---------- SSE streaming (contract unchanged) ----------
   async function streamQuery(question, handlers) {
     var response;
     try {
@@ -668,42 +619,43 @@
     return row;
   }
 
+  // Source entries read like reference-list items: title in reading serif,
+  // journal/PMID/score as metadata in mono. The score bar is neutral ink,
+  // never population-colored — score measures retrieval strength, the
+  // population swatch is a separate categorical fact, and conflating the
+  // two would blur exactly the distinction this UI exists to keep clear.
   function buildSourceCard(source, index, msgId) {
     var colorVar = popColorVar(source.population);
     var pct = Math.max(0, Math.min(100, Math.round((source.score || 0) * 100)));
     var isBackground = source.source_type === "background";
     var el = document.createElement("div");
-    el.className = "source-card" + (isBackground ? " source-card--background" : "");
-    el.style.setProperty("--card-color", colorVar);
+    el.className = "source-entry" + (isBackground ? " source-entry--background" : "");
     el.setAttribute("data-chunk-index", String(index));
     el.id = "source-" + msgId + "-" + index;
 
-    var tierChipHtml = '<span class="tier-chip tier-chip--' + (isBackground ? "background" : "evidence") + '">' +
+    var tierHtml = '<span class="tier-tag' + (isBackground ? " tier-tag--background" : "") + '">' +
       (isBackground ? "Background" : "Evidence") + "</span>";
 
     var metaLine = escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || ""));
 
     var attributionHtml;
     if (isBackground) {
-      // Background chunks (ADA/NIDDK/CDC patient education) never have a
-      // PMID — that's expected, not missing data, so never show "PMID:
-      // unknown" for them. Link to the publisher page when we have one.
       attributionHtml = source.source_url
         ? '<a class="pmid-link" href="' + escapeHtml(source.source_url) + '" target="_blank" rel="noopener">' + escapeHtml(source.publisher || "Source") + "</a>"
         : '<span class="meta">' + escapeHtml(source.publisher || "Patient education source") + "</span>";
     } else {
       attributionHtml = source.pmid
-        ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(source.pmid) + '/" target="_blank" rel="noopener">PMID: ' + escapeHtml(source.pmid) + "</a>"
-        : '<span class="meta">PMID: unknown</span>';
+        ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(source.pmid) + '/" target="_blank" rel="noopener">PMID ' + escapeHtml(source.pmid) + "</a>"
+        : '<span class="meta">PMID unknown</span>';
     }
 
     el.innerHTML =
-      tierChipHtml +
+      '<div class="row-top">' + tierHtml + '<span class="label">' + index + "</span></div>" +
       '<p class="title">' + escapeHtml(source.title || "Untitled") + "</p>" +
       (metaLine ? '<p class="meta">' + metaLine + "</p>" : "") +
       attributionHtml +
-      '<span class="pop-chip" style="background:' + colorVar + '">' + escapeHtml(popLabel(source.population)) + "</span>" +
-      '<div class="score-row"><div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%;background:' + colorVar + '"></div></div><span class="score-label">' + pct + "%</span></div>";
+      '<div class="pop-legend"><span class="pop-swatch" style="background:' + colorVar + '"></span><span class="pop-text">' + escapeHtml(popLabel(source.population)) + "</span></div>" +
+      '<div class="score-row"><div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%"></div></div><span class="score-label">' + pct + "%</span></div>";
     return el;
   }
 
@@ -711,7 +663,11 @@
     var wrap = document.createElement("div");
     wrap.className = "inspector-body";
     var floor = scoreDist.floor;
-    var html = '<div class="inspector-floor-line">Similarity floor: ' + (floor * 100).toFixed(0) + "% — candidates below this line are dropped</div>";
+    var html = "";
+    if (scoreDist.namespace) {
+      html += '<div class="inspector-namespace-line">namespace: ' + escapeHtml(scoreDist.namespace) + "</div>";
+    }
+    html += '<div class="inspector-floor-line">floor ' + (floor * 100).toFixed(0) + "% — candidates below this line are dropped, not sent to the model</div>";
     (scoreDist.candidate_scores || []).forEach(function (score, i) {
       var cleared = score >= floor;
       var pct = Math.max(0, Math.min(100, Math.round(score * 100)));
@@ -726,10 +682,10 @@
 
   function renderTimingList(timing) {
     var rows = [
-      ["Retrieval", timing.retrieval],
-      ["Contradiction check", timing.contradiction_check],
-      ["Answer generation", timing.generation],
-      ["Total", timing.total],
+      ["retrieval", timing.retrieval],
+      ["contradiction_check", timing.contradiction_check],
+      ["generation", timing.generation],
+      ["total", timing.total],
     ];
     var html = "";
     rows.forEach(function (r) {
@@ -747,15 +703,13 @@
 
   function buildRefusalBlockHtml(message, scopeText, closestScores) {
     var starterQuestions = [];
-    // Exclude the marathon starter — it's a deliberate out-of-scope demo
-    // button, not something we'd ever want to suggest as a way to recover
-    // from a refusal.
-    document.querySelectorAll("#empty-state .starter-btn:not([data-demo-refusal])").forEach(function (btn) {
+    document.querySelectorAll("#empty-state .starter-row:not([data-demo-refusal])").forEach(function (btn) {
       starterQuestions.push(btn.getAttribute("data-question"));
     });
     var suggestionsHtml = "";
-    starterQuestions.forEach(function (q) {
-      suggestionsHtml += '<button type="button" class="starter-btn refusal-starter" data-question="' + escapeHtml(q) + '" style="margin-bottom:6px;">' + escapeHtml(q) + "</button>";
+    starterQuestions.forEach(function (q, i) {
+      suggestionsHtml += '<button type="button" class="starter-row refusal-starter" data-question="' + escapeHtml(q) + '">' +
+        '<span class="idx">' + String(i + 1).padStart(2, "0") + '</span><span class="q">' + escapeHtml(q) + "</span></button>";
     });
     return (
       '<div class="refusal-block">' +
@@ -763,10 +717,9 @@
       "<p>" + escapeHtml(message) + "</p>" +
       '<div class="refusal-scope">' + escapeHtml(scopeText || GENERIC_REFUSAL_SCOPE) + "</div>" +
       (closestScores && closestScores.length
-        ? '<div class="refusal-closest">Closest matches found were only ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + ' similar — below the threshold this system requires to answer.</div>'
+        ? '<div class="refusal-closest">closest matches found: ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>"
         : "") +
-      '<div class="refusal-try">Try asking about:</div>' +
-      suggestionsHtml +
+      '<div class="refusal-try"><span class="label">Try asking</span>' + suggestionsHtml + "</div>" +
       "</div>"
     );
   }
@@ -783,8 +736,8 @@
     el.innerHTML =
       '<div class="contradiction-head">These sources disagree: ' + escapeHtml(c.claim || "") + "</div>" +
       '<div class="contradiction-body">' +
-        '<div class="contradiction-side"><div class="label">PMID ' + escapeHtml((c.pmids && c.pmids[0]) || "?") + '</div>' + escapeHtml(c.position_a || "") + "</div>" +
-        '<div class="contradiction-side"><div class="label">PMID ' + escapeHtml((c.pmids && c.pmids[1]) || "?") + '</div>' + escapeHtml(c.position_b || "") + "</div>" +
+        '<div class="contradiction-side"><span class="pmid-label">PMID ' + escapeHtml((c.pmids && c.pmids[0]) || "?") + '</span>' + escapeHtml(c.position_a || "") + "</div>" +
+        '<div class="contradiction-side"><span class="pmid-label">PMID ' + escapeHtml((c.pmids && c.pmids[1]) || "?") + '</span>' + escapeHtml(c.position_b || "") + "</div>" +
       "</div>" +
       (c.differs_by ? '<div class="contradiction-differs">Likely explanation: ' + escapeHtml(c.differs_by) + "</div>" : "");
     return el;
@@ -796,12 +749,12 @@
         var card = document.getElementById("source-" + msgId + "-" + idx);
         if (card) card.classList.toggle("highlight", on);
       });
-      sentenceEl.classList.toggle("highlight", on && chunkIds.length > 0);
+      sentenceEl.classList.toggle("hovered", on && chunkIds.length > 0);
     }
     sentenceEl.addEventListener("mouseenter", function () { setHighlight(true); });
     sentenceEl.addEventListener("mouseleave", function () { setHighlight(false); });
-    sentenceEl.addEventListener("focus", function () { setHighlight(true); });
-    sentenceEl.addEventListener("blur", function () { setHighlight(false); });
+    sentenceEl.addEventListener("focus", function () { setHighlight(true); }, true);
+    sentenceEl.addEventListener("blur", function () { setHighlight(false); }, true);
     sentenceEl.addEventListener("click", function () {
       if (chunkIds.length) {
         var card = document.getElementById("source-" + msgId + "-" + chunkIds[0]);
@@ -820,7 +773,7 @@
       '<div class="answer-row">' +
         '<div class="answer-column">' +
           '<div class="status-line"><span class="status-dot"></span><span class="status-text">Searching evidence…</span></div>' +
-          '<div class="confidence-slot"></div>' +
+          '<div class="notice-slot"></div>' +
           '<div class="mismatch-slot"></div>' +
           '<div class="contradictions-slot"></div>' +
           '<div class="answer-text" aria-live="polite"></div>' +
@@ -835,7 +788,7 @@
       msgId: msgId,
       status: row.querySelector(".status-text"),
       statusLine: row.querySelector(".status-line"),
-      confidence: row.querySelector(".confidence-slot"),
+      notice: row.querySelector(".notice-slot"),
       mismatch: row.querySelector(".mismatch-slot"),
       contradictions: row.querySelector(".contradictions-slot"),
       answerText: row.querySelector(".answer-text"),
@@ -855,18 +808,25 @@
         timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
         els.status.textContent = "Checking for contradictions…";
 
+        // Deliberately no positive "grounded" badge here — a fully
+        // confident answer gets no color treatment at all. Only degraded
+        // states (low confidence, population mismatch, contradiction,
+        // refusal) get a visible flag. Coloring the good case would make
+        // the system look more confident than the evidence supports.
         if (data.state === "answered_low_confidence") {
-          els.confidence.innerHTML = '<span class="confidence-badge low"><span class="confidence-dot"></span>Limited evidence — this answer may be less reliable</span>';
-        } else {
-          els.confidence.innerHTML = '<span class="confidence-badge answered"><span class="confidence-dot"></span>Grounded in ' + sourcesData.length + " source" + (sourcesData.length === 1 ? "" : "s") + "</span>";
+          els.notice.innerHTML =
+            '<div class="notice">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+            '<span><span class="label">Low confidence</span>The closest evidence found only weakly clears this system’s similarity floor — treat this answer with extra caution.</span>' +
+            "</div>";
         }
 
         if (data.mismatch) {
           var retrievedStr = (data.retrieved_populations || []).join(", ") || "a different population";
           els.mismatch.innerHTML =
-            '<div class="mismatch-banner">' +
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-            "<span>The evidence found covers <strong>" + escapeHtml(retrievedStr) + "</strong>, which differs from the <strong>" + escapeHtml(data.requested_population || "") + "</strong> population asked about — it may not generalize.</span>" +
+            '<div class="notice">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+            '<span><span class="label">Population mismatch</span>The evidence found covers <strong>' + escapeHtml(retrievedStr) + '</strong>, which differs from the <strong>' + escapeHtml(data.requested_population || "") + "</strong> population asked about — it may not generalize.</span>" +
             "</div>";
         }
 
@@ -874,15 +834,13 @@
 
         var sourcesSection = document.createElement("div");
         sourcesSection.className = "evidence-section";
-        sourcesSection.innerHTML = '<div class="evidence-section-head">Sources (' + sourcesData.length + ")</div>";
+        sourcesSection.innerHTML = '<div class="evidence-section-head label">Sources · ' + sourcesData.length + "</div>";
         var list = document.createElement("div");
         list.className = "source-list";
         sourcesData.forEach(function (s, i) { list.appendChild(buildSourceCard(s, i + 1, els.msgId)); });
         sourcesSection.appendChild(list);
         els.evidenceColumn.appendChild(sourcesSection);
 
-        var inspectorSection = document.createElement("div");
-        inspectorSection.className = "evidence-section";
         var details = document.createElement("details");
         details.className = "inspector";
         var summary = document.createElement("summary");
@@ -890,8 +848,7 @@
         details.appendChild(summary);
         var body = buildInspectorBody(data.score_distribution, timing);
         details.appendChild(body);
-        inspectorSection.appendChild(details);
-        els.evidenceColumn.appendChild(inspectorSection);
+        els.evidenceColumn.appendChild(details);
         els.inspectorBody = body;
 
         scrollToBottom();
@@ -910,15 +867,24 @@
       onSentence: function (data) {
         els.statusLine.hidden = true;
         sentenceRecords.push(data);
-        var span = document.createElement("span");
         var supported = !!(data.chunk_ids && data.chunk_ids.length);
+        var span = document.createElement("span");
         span.className = "sentence " + (supported ? "supported" : "unsupported");
         span.tabIndex = 0;
         span.textContent = data.sentence + " ";
+
         if (supported) {
-          var firstPop = (sourcesData[data.chunk_ids[0] - 1] || {}).population;
-          span.style.setProperty("--sentence-color", popColorVar(firstPop));
+          var marker = document.createElement("sup");
+          marker.className = "cite-marker";
+          marker.textContent = "[" + data.chunk_ids.join(",") + "]";
+          span.appendChild(marker);
+        } else {
+          var noneTag = document.createElement("span");
+          noneTag.className = "cite-marker--none";
+          noneTag.textContent = "uncited";
+          span.appendChild(noneTag);
         }
+
         if (!para) {
           para = document.createElement("p");
           els.answerText.appendChild(para);
@@ -941,16 +907,15 @@
             if (timingList) els.inspectorBody.appendChild(timingList);
           }
         }
-        // The model can itself decline (its own grounding check) even when
-        // the similarity floor let some weak candidates through — that
-        // shows up as a single unsupported sentence rather than the
-        // dedicated "refusal" event. Give it the same designed treatment
-        // instead of leaving a lone italic line: still patient-facing,
-        // still explains what the system covers. The evidence column stays
-        // visible here (unlike a real floor-based refusal) since something
-        // genuinely was retrieved — that's worth being transparent about.
+        // The model can decline on its own (its grounding check) even when
+        // the similarity floor let weak candidates through — a single
+        // unsupported sentence rather than the dedicated "refusal" event.
+        // Give it the same neutral, designed treatment. The evidence
+        // column stays visible here (unlike a floor-based refusal) since
+        // something genuinely was retrieved — worth being transparent
+        // about, per the same "make the gap visible" principle.
         if (sentenceRecords.length === 1 && !sentenceRecords[0].supported) {
-          els.confidence.innerHTML = "";
+          els.notice.innerHTML = "";
           els.answerText.innerHTML = buildRefusalBlockHtml(sentenceRecords[0].sentence, null, null);
           wireRefusalStarters(els.answerText);
         }
@@ -1012,7 +977,7 @@
     sendQuestion(question);
   });
 
-  document.querySelectorAll(".starter-btn").forEach(function (btn) {
+  document.querySelectorAll(".starter-row").forEach(function (btn) {
     btn.addEventListener("click", function () { sendQuestion(btn.getAttribute("data-question")); });
   });
 

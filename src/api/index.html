@@ -2,504 +2,411 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DiabEvidence — Diabetes Research Evidence Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ============ Design tokens, extracted from the reference site ============ */
   :root {
-    /* ---- Given tokens ---- */
-    --paper: #FBFAF8;
-    --surface: #F3F1ED;
-    --ink: #1A1D1C;
-    --muted: #5A6160;
-    --faint: #8A918F;
+    --bg: #FFFFFF;   --bg2: #F5F5F7;  --bg3: #E8E8ED;
+    --ink: #1D1D1F;  --muted: #6E6E73; --line: #D2D2D7;
+    --blue: #0071E3; --blue-hover: #0077ED; --link: #0066CC; --card: #FFFFFF;
+    --nav: rgba(255,255,255,.72);
+    --grad: linear-gradient(90deg,#0071E3,#7B4AE2 38%,#E0457B 68%,#F59A3A);
+    --amber: #B64400;   --amber-wash: #FDF1E7; --amber-line: #E8B98A;
+    --green: #1E8E3E;
+    --rose:  #B0244A;   --rose-wash: #FBEBEF;  --rose-line: #E5A6B8;
 
-    --border: #E4E1DA;
-    --accent: #2B5C56;
-    --accent-hover: #1F4844;
-    --accent-contrast: #FBFAF8;
+    /* population accents, drawn from the site's own gradient stops */
+    --pop-type1: #7B4AE2; --pop-type2: #0071E3; --pop-gestational: #E0457B;
+    --pop-prediabetes: #C97A1E; --pop-mixed: #6E6E73;
 
-    --caution: #8A5A14;
-    --caution-wash: #F2E9D8;
-    --caution-border: #C99A45;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 22px; --space-6: 30px; --space-7: 44px; --space-8: 64px;
+    --r-sm: 12px; --r: 18px; --r-lg: 30px; --r-pill: 980px;
 
-    --contradiction: #9C3B2E;
-    --contradiction-wash: #F5E4DF;
-    --contradiction-border: #C97060;
-
-    --pop-type1: #A6483A;
-    --pop-type2: #2E5C7A;
-    --pop-gestational: #7A4A78;
-    --pop-prediabetes: #6E7A3E;
-    --pop-mixed: #5A6160;
-
-    --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
-    --space-5: 24px; --space-6: 32px; --space-7: 48px;
-    --radius-sm: 3px; --radius: 6px; --radius-lg: 10px;
-
-    --font-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-serif: "Source Serif 4", Georgia, "Iowan Old Style", serif;
-    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-
-    --user-bubble-bg: var(--ink);
-    --user-bubble-text: var(--paper);
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
-
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --paper: #14161A; --surface: #1E2123; --ink: #ECE9E3; --muted: #9BA3A1; --faint: #6B7371;
-      --border: #2C3033;
-      --accent: #5FA89F; --accent-hover: #7BC0B6; --accent-contrast: #0F1213;
-      --caution: #D9A54A; --caution-wash: #2E2515; --caution-border: #8A6A2E;
-      --contradiction: #D98070; --contradiction-wash: #331F1B; --contradiction-border: #8A4A3A;
-      --pop-type1: #D97A6A; --pop-type2: #6FA8C9; --pop-gestational: #B87AB5;
-      --pop-prediabetes: #A3B36A; --pop-mixed: #9BA3A1;
-      --user-bubble-bg: #2C3033; --user-bubble-text: #ECE9E3;
+      --bg:#000000; --bg2:#161617; --bg3:#2C2C2E; --ink:#F5F5F7; --muted:#A1A1A6; --line:#3A3A3C;
+      --blue:#0A84FF; --blue-hover:#3B9DFF; --link:#2997FF; --card:#1C1C1E; --nav: rgba(22,22,23,.72);
+      --amber:#E8A855; --amber-wash:#2E2213; --amber-line:#6B4A1E;
+      --green:#3DDC6C;
+      --rose:#E87DA0;  --rose-wash:#2E1620; --rose-line:#6B2E42;
+      --pop-type1:#A78BFA; --pop-type2:#5EB0FF; --pop-gestational:#F08FB0;
+      --pop-prediabetes:#E0A24E; --pop-mixed:#A1A1A6;
     }
   }
   :root[data-theme="dark"] {
-    --paper: #14161A; --surface: #1E2123; --ink: #ECE9E3; --muted: #9BA3A1; --faint: #6B7371;
-    --border: #2C3033;
-    --accent: #5FA89F; --accent-hover: #7BC0B6; --accent-contrast: #0F1213;
-    --caution: #D9A54A; --caution-wash: #2E2515; --caution-border: #8A6A2E;
-    --contradiction: #D98070; --contradiction-wash: #331F1B; --contradiction-border: #8A4A3A;
-    --pop-type1: #D97A6A; --pop-type2: #6FA8C9; --pop-gestational: #B87AB5;
-    --pop-prediabetes: #A3B36A; --pop-mixed: #9BA3A1;
-    --user-bubble-bg: #2C3033; --user-bubble-text: #ECE9E3;
+    --bg:#000000; --bg2:#161617; --bg3:#2C2C2E; --ink:#F5F5F7; --muted:#A1A1A6; --line:#3A3A3C;
+    --blue:#0A84FF; --blue-hover:#3B9DFF; --link:#2997FF; --card:#1C1C1E; --nav: rgba(22,22,23,.72);
+    --amber:#E8A855; --amber-wash:#2E2213; --amber-line:#6B4A1E;
+    --green:#3DDC6C;
+    --rose:#E87DA0;  --rose-wash:#2E1620; --rose-line:#6B2E42;
+    --pop-type1:#A78BFA; --pop-type2:#5EB0FF; --pop-gestational:#F08FB0;
+    --pop-prediabetes:#E0A24E; --pop-mixed:#A1A1A6;
   }
 
   * { box-sizing: border-box; }
-
   html, body {
-    margin: 0; padding: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    font-size: 17px;
-    line-height: 1.65;
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--font); font-size: 17px; line-height: 1.47; letter-spacing: -.022em;
     -webkit-font-smoothing: antialiased;
   }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+  [hidden] { display: none !important; }
 
-  a { color: var(--accent); }
-  button { font: inherit; color: inherit; cursor: pointer; background: none; }
+  .skip-link {
+    position: absolute; left: -9999px; top: 0; z-index: 100;
+    background: var(--blue); color: #fff; padding: var(--space-3) var(--space-4); border-radius: var(--r-sm);
+  }
+  .skip-link:focus { left: var(--space-4); top: var(--space-4); }
 
-  :focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: var(--radius-sm);
-  }
+  .app-shell { max-width: 1024px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
 
-  .label {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
+  /* ---------- Nav ---------- */
+  header.nav {
+    position: sticky; top: 0; z-index: 50;
+    padding-top: env(safe-area-inset-top, 0px);
+    background: var(--nav);
+    backdrop-filter: saturate(1.8) blur(20px); -webkit-backdrop-filter: saturate(1.8) blur(20px);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   }
-
-  .app-shell {
-    max-width: 1180px;
-    margin: 0 auto;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
+  .nav .in {
+    max-width: 1024px; margin: 0 auto; height: 52px; padding: 0 var(--space-5);
+    display: flex; align-items: center; gap: var(--space-4);
   }
-
-  /* ---------- Masthead ---------- */
-  header.app-header {
-    position: sticky; top: 0; z-index: 5;
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: var(--space-3);
-    padding: var(--space-4) var(--space-5);
-    background: var(--paper);
-    border-bottom: 1px solid var(--border);
-  }
-  .brand-block { display: flex; align-items: baseline; gap: var(--space-3); }
-  .brand {
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: 1.3rem;
-    letter-spacing: -0.01em;
-  }
-  .brand-tagline {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--faint);
-  }
-  @media (max-width: 600px) { .brand-tagline { display: none; } }
-  .theme-toggle {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    width: 34px; height: 34px;
+  .nav .brand { font-weight: 600; font-size: 15px; color: var(--ink); margin-right: auto; white-space: nowrap; }
+  .nav .desc { font-size: 12px; color: var(--muted); display: none; }
+  @media (min-width: 640px) { .nav .desc { display: inline; margin-left: var(--space-2); } }
+  .nav .btn-icon {
     display: flex; align-items: center; justify-content: center;
-    color: var(--muted);
-    flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 50%; color: var(--ink); opacity: .72;
+    transition: opacity .2s, background .2s;
   }
-  .theme-toggle:hover { border-color: var(--faint); color: var(--ink); }
+  .nav .btn-icon:hover, .nav .btn-icon.on { opacity: 1; background: var(--bg2); }
+  .nav .btn-icon.on { color: var(--blue); }
+  .nav .repo-link { font-size: 13px; color: var(--ink); opacity: .72; transition: opacity .2s; }
+  .nav .repo-link:hover { opacity: 1; text-decoration: none; }
+  .nav .group { display: flex; align-items: center; gap: var(--space-2); }
 
-  main#chat {
-    flex: 1; overflow-y: auto;
-    padding: var(--space-6) var(--space-5) var(--space-3);
-    display: flex; flex-direction: column;
-    gap: var(--space-7);
-  }
+  main#chat { flex: 1; overflow-y: auto; padding: var(--space-7) var(--space-5) var(--space-3); display: flex; flex-direction: column; gap: var(--space-8); }
+  .col { max-width: 680px; margin: 0 auto; width: 100%; }
 
   /* ---------- Empty state ---------- */
-  #empty-state { margin: auto 0; max-width: 660px; padding: var(--space-5) 0; }
+  #empty-state { margin: auto 0; padding: var(--space-6) 0; }
+  .eyebrow { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: -.01em; margin-bottom: var(--space-3); }
   #empty-state h1 {
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: 2rem;
-    line-height: 1.25;
-    margin: 0 0 var(--space-4);
-    letter-spacing: -0.01em;
+    font-size: clamp(30px, 4.4vw, 42px); font-weight: 600; letter-spacing: -.03em; line-height: 1.1;
+    margin: 0 0 var(--space-4); text-wrap: balance;
   }
-  #empty-state p.scope {
-    color: var(--muted);
-    margin: 0 0 var(--space-6);
-    max-width: 54ch;
+  #empty-state p.scope { font-size: 17px; color: var(--muted); line-height: 1.5; max-width: 60ch; margin: 0 0 var(--space-6); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4) var(--space-3); margin-bottom: var(--space-7); }
+  .stat b {
+    display: block; font-size: clamp(24px, 3.4vw, 34px); font-weight: 600; letter-spacing: -.03em; line-height: 1;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .starter-list-label { margin-bottom: var(--space-3); }
-  .starters { display: flex; flex-direction: column; }
-  .starter-row {
-    display: flex; align-items: baseline; gap: var(--space-3);
-    width: 100%;
-    text-align: left;
-    padding: var(--space-3) var(--space-2);
-    border-top: 1px solid var(--border);
-    border-left: 2px solid transparent;
+  .stat span { display: block; margin-top: var(--space-2); color: var(--muted); font-size: 12.5px; line-height: 1.3; }
+  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+  .starters-label { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: var(--space-3); }
+  .starters { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  @media (max-width: 640px) { .starters { grid-template-columns: 1fr; } }
+  .starter-card {
+    text-align: left; background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--r); padding: var(--space-4); transition: transform .3s var(--ease), border-color .2s;
   }
-  .starters .starter-row:last-child { border-bottom: 1px solid var(--border); }
-  .starter-row:hover, .starter-row:focus-visible { background: var(--surface); border-left-color: var(--accent); }
-  .starter-row .idx { font-family: var(--font-mono); font-size: 12px; color: var(--faint); flex-shrink: 0; width: 2ch; }
-  .starter-row .q { font-family: var(--font-serif); font-size: 1.03rem; line-height: 1.45; }
-  .starter-row .oos-tag {
-    display: inline-block;
-    margin-left: var(--space-2);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 1px 5px;
-    vertical-align: middle;
+  .starter-card:hover { transform: translateY(-2px); border-color: var(--blue); }
+  .starter-card .tag {
+    display: inline-block; font-size: 11.5px; font-weight: 600; color: var(--muted);
+    background: var(--bg2); border-radius: var(--r-pill); padding: 3px 10px; margin-bottom: var(--space-2);
   }
+  .starter-card .q { font-size: 15px; line-height: 1.4; color: var(--ink); }
 
   /* ---------- Exchange ---------- */
   .exchange { display: flex; flex-direction: column; gap: var(--space-4); }
+  .exchange.collapsed .answer-row, .exchange.collapsed .status-line { display: none; }
+  .exchange-summary {
+    display: none; width: 100%; text-align: left; align-items: baseline; gap: var(--space-3);
+    padding: var(--space-2) 0; color: var(--muted); font-size: 14px;
+  }
+  .exchange.collapsed .exchange-summary { display: flex; }
+  .exchange-summary:hover { color: var(--ink); }
+  .exchange-summary .q { color: var(--ink); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .exchange-summary .chev { flex-shrink: 0; transition: transform .2s; }
+
   .user-row { display: flex; justify-content: flex-end; }
   .bubble-user {
-    background: var(--user-bubble-bg);
-    color: var(--user-bubble-text);
-    border-radius: var(--radius);
-    padding: var(--space-3) var(--space-4);
-    max-width: 80%;
-    font-size: 0.96em;
+    background: var(--ink); color: var(--bg); border-radius: var(--r);
+    padding: var(--space-3) var(--space-4); max-width: 82%; font-size: 15px; line-height: 1.4;
   }
 
   .answer-row { display: flex; gap: var(--space-6); align-items: flex-start; }
-  .answer-column { flex: 1 1 auto; min-width: 0; max-width: 680px; }
+  .answer-column { flex: 1 1 auto; min-width: 0; }
   .evidence-column { flex: 0 0 320px; width: 320px; }
-  @media (max-width: 960px) {
+  @media (max-width: 900px) {
+    .app-shell { max-width: 100%; }
     .answer-row { flex-direction: column; }
     .evidence-column { width: 100%; flex-basis: auto; }
   }
 
-  /* ---------- Status line ---------- */
-  .status-line {
-    display: flex; align-items: center; gap: var(--space-2);
-    color: var(--muted); font-size: 0.88em;
-    padding: var(--space-1) 0;
-  }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+  /* ---------- Status / skeleton ---------- */
+  .status-line { display: flex; align-items: center; gap: var(--space-2); color: var(--muted); font-size: 14px; padding: var(--space-1) 0; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+  .skeleton { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-3); }
+  .skeleton .bar { height: 14px; border-radius: 7px; background: linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 37%, var(--bg2) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+  .skeleton .bar.w1 { width: 92%; } .skeleton .bar.w2 { width: 78%; } .skeleton .bar.w3 { width: 85%; }
+  @keyframes shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
 
-  /* ---------- Caution / mismatch notices (never used for the good case) ---------- */
+  /* ---------- Notices (caution / population mismatch) ---------- */
   .notice {
     display: flex; gap: var(--space-3); align-items: flex-start;
-    background: var(--caution-wash);
-    border: 1px solid var(--caution-border);
-    color: var(--caution);
-    border-radius: var(--radius-sm);
-    padding: var(--space-3) var(--space-4);
-    margin-bottom: var(--space-3);
-    font-size: 0.92em;
-    max-width: 680px;
+    background: var(--amber-wash); border: 1px solid var(--amber-line); color: var(--amber);
+    border-radius: var(--r-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3); font-size: 14px;
   }
   .notice svg { flex-shrink: 0; margin-top: 2px; }
-  .notice strong { font-weight: 600; }
-  .notice .label { color: var(--caution); opacity: 0.85; display: block; margin-bottom: 2px; }
+  .notice strong { color: var(--ink); font-weight: 600; }
+  .notice .label { display: block; font-weight: 600; margin-bottom: 2px; opacity: .9; }
 
-  /* ---------- Refusal — a designed boundary, not an error, hence neutral ---------- */
-  .refusal-block {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--space-5);
-    max-width: 680px;
-  }
-  .refusal-block h3 { font-family: var(--font-serif); font-weight: 600; margin: 0 0 var(--space-2); font-size: 1.2rem; }
-  .refusal-block > p { margin: 0 0 var(--space-4); color: var(--muted); }
-  .refusal-scope {
-    font-size: 0.92em;
-    background: var(--surface);
-    border-radius: var(--radius-sm);
-    padding: var(--space-3) var(--space-4);
-    margin-bottom: var(--space-4);
-  }
-  .refusal-closest {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--faint);
-    margin-bottom: var(--space-5);
-  }
-  .refusal-try .label { margin-bottom: var(--space-2); display: block; }
+  /* ---------- Refusal / abstention ---------- */
+  .refusal-block { border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--space-6); background: var(--card); }
+  .refusal-block h3 { font-size: clamp(20px, 2.6vw, 26px); font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--space-2); }
+  .refusal-block > p { margin: 0 0 var(--space-4); color: var(--muted); font-size: 16px; line-height: 1.5; }
+  .refusal-scope { font-size: 14.5px; background: var(--bg2); border-radius: var(--r-sm); padding: var(--space-4); margin-bottom: var(--space-4); line-height: 1.5; }
+  .refusal-closest { font-size: 12.5px; color: var(--muted); margin-bottom: var(--space-5); font-variant-numeric: tabular-nums; }
+  .refusal-try .starters-label { margin-top: 0; }
 
-  /* ---------- Contradiction panels ---------- */
-  .contradiction-panel {
-    border: 1px solid var(--contradiction-border);
-    border-radius: var(--radius);
-    margin-bottom: var(--space-4);
-    overflow: hidden;
-    max-width: 680px;
-  }
-  .contradiction-head {
-    background: var(--contradiction-wash);
-    color: var(--contradiction);
-    padding: var(--space-3) var(--space-4);
-    font-size: 0.9em; font-weight: 600;
-  }
+  /* ---------- Contradiction panel ---------- */
+  .contradiction-panel { border: 1px solid var(--rose-line); border-radius: var(--r); margin-bottom: var(--space-4); overflow: hidden; background: var(--card); }
+  .contradiction-head { background: var(--rose-wash); color: var(--rose); padding: var(--space-3) var(--space-4); font-size: 14px; font-weight: 600; }
   .contradiction-body { display: flex; }
-  .contradiction-side { flex: 1; padding: var(--space-4); font-family: var(--font-serif); font-size: 0.96em; }
-  .contradiction-side + .contradiction-side { border-left: 1px solid var(--border); }
-  .contradiction-side .pmid-label {
-    font-family: var(--font-mono); font-size: 12px; font-weight: 500;
-    color: var(--muted); margin-bottom: var(--space-2); display: block;
-  }
-  .contradiction-differs {
-    padding: var(--space-3) var(--space-4);
-    font-size: 0.88em; color: var(--muted);
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-  }
+  .contradiction-side { flex: 1; padding: var(--space-4); font-size: 15px; line-height: 1.5; }
+  .contradiction-side + .contradiction-side { border-left: 1px solid var(--line); }
+  .contradiction-side .pmid-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: var(--space-2); display: block; }
+  .contradiction-differs { padding: var(--space-3) var(--space-4); font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); background: var(--bg2); }
   @media (max-width: 560px) {
     .contradiction-body { flex-direction: column; }
-    .contradiction-side + .contradiction-side { border-left: none; border-top: 1px solid var(--border); }
+    .contradiction-side + .contradiction-side { border-left: none; border-top: 1px solid var(--line); }
   }
 
-  /* ---------- Answer text & citation markers ---------- */
-  .answer-text { max-width: 680px; font-family: var(--font-serif); font-size: 19px; line-height: 1.7; }
+  /* ---------- Answer text & citations ---------- */
+  .answer-text { font-size: 17px; line-height: 1.55; }
   .answer-text p { margin: 0 0 1em; }
   .answer-text p:last-child { margin-bottom: 0; }
-
   .sentence { cursor: default; }
-  .sentence.hovered { background: var(--surface); }
+  .sentence.hovered { background: var(--bg2); border-radius: 4px; }
+  .caret { display: inline-block; width: 2px; height: 1em; background: var(--blue); vertical-align: -2px; animation: blink 1s step-end infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
 
   .cite-marker {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent);
-    padding: 0 2px;
-    margin-left: 3px;
-    cursor: pointer;
-    white-space: nowrap;
+    display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; font-size: .62em; font-weight: 600;
+    vertical-align: super; position: relative; top: -.3em; margin-left: .15em;
+    border-radius: 50%; background: var(--bg3); color: var(--muted); cursor: pointer;
+    transition: background .25s, color .25s; letter-spacing: 0;
   }
-  .cite-marker:hover, .cite-marker:focus-visible { background: var(--surface); }
+  .cite-marker:hover, .cite-marker:focus-visible, .cite-marker.hovered { background: var(--blue); color: #fff; }
 
   .sentence.unsupported { color: var(--muted); }
   .cite-marker--none {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.02em;
-    color: var(--faint);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 0px 5px;
-    margin-left: var(--space-2);
-    cursor: default;
+    display: inline-block; font-size: 11px; letter-spacing: -.01em; color: var(--muted);
+    background: var(--bg2); border-radius: var(--r-pill); padding: 1px 8px; margin-left: var(--space-2); cursor: default;
   }
 
-  /* Persistent footer, not per-message — the disclaimer applies to every
-     answer this system gives, so it lives once in the composer area
-     instead of repeating inside every exchange's answer body. */
-  .disclaimer-footer {
-    color: var(--faint);
-    font-size: 0.78em;
-    line-height: 1.5;
-    max-width: 680px;
-    margin: var(--space-2) auto 0;
-    text-align: center;
+  .action-row { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-4); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted);
+    border: 1px solid var(--line); border-radius: var(--r-pill); padding: 6px 13px; transition: color .2s, border-color .2s;
   }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+  .btn-ghost.copied { color: var(--green); border-color: var(--green); }
 
   /* ---------- Evidence rail ---------- */
-  .evidence-section { margin-bottom: var(--space-4); }
-  .evidence-section-head { margin-bottom: var(--space-2); }
-  .source-list { display: flex; flex-direction: column; }
-
-  .source-entry {
-    border-top: 1px solid var(--border);
-    padding: var(--space-3) 0;
-    scroll-margin-top: var(--space-4);
+  .evidence-section-head { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: var(--space-3); }
+  .source-list { display: flex; flex-direction: column; gap: var(--space-3); }
+  .source-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: var(--space-4); scroll-margin-top: var(--space-4); transition: border-color .2s, background .2s; }
+  .source-card.highlight { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 6%, var(--card)); }
+  .source-card .row-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+  .tier-tag { font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); }
+  .tier-tag--background::before { content: "◇ "; }
+  .tier-tag--evidence::before { content: "● "; color: var(--blue); }
+  .source-card .idx { font-size: 11px; color: var(--muted); }
+  .source-card .title { font-size: 15px; font-weight: 600; line-height: 1.35; margin: 0 0 4px; letter-spacing: -.01em; }
+  .source-card .meta { font-size: 12.5px; color: var(--muted); margin: 0 0 6px; }
+  .source-card .pmid-link { font-size: 12.5px; }
+  .source-card .excerpt {
+    font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-top: var(--space-2);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .source-list .source-entry:last-child { border-bottom: 1px solid var(--border); }
-  .source-entry.highlight { background: var(--surface); }
-  .source-entry--background { opacity: 0.92; }
-
-  .source-entry .row-top {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: var(--space-2);
-  }
-  .tier-tag {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
-    color: var(--muted);
-    border-left: 2px solid var(--muted);
-    padding-left: var(--space-2);
-  }
-  .tier-tag--background { border-left-style: dashed; }
-
-  .source-entry .title {
-    font-family: var(--font-serif); font-size: 0.98em; line-height: 1.4;
-    margin: 0 0 var(--space-1);
-  }
-  .source-entry .meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin: 0 0 var(--space-2); }
-  .source-entry .pmid-link { font-family: var(--font-mono); font-size: 12px; }
-
-  .pop-legend { display: inline-flex; align-items: center; gap: 5px; margin-top: var(--space-1); }
-  .pop-swatch { width: 8px; height: 8px; flex-shrink: 0; }
-  .pop-legend .pop-text { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-
+  .source-card .excerpt.expanded { -webkit-line-clamp: unset; }
+  .source-card .more { font-size: 12.5px; margin-top: 4px; display: inline-block; }
+  .pop-legend { display: inline-flex; align-items: center; gap: 6px; margin-top: var(--space-2); }
+  .pop-swatch { width: 8px; height: 8px; border-radius: 3px; flex-shrink: 0; }
+  .pop-legend .pop-text { font-size: 11.5px; color: var(--muted); font-weight: 500; }
   .score-row { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
-  .score-bar-track { flex: 1; background: var(--surface); height: 3px; }
-  .score-bar-fill { height: 100%; background: var(--ink); }
-  .score-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .score-track { flex: 1; background: var(--bg2); height: 6px; border-radius: 3px; overflow: hidden; }
+  .score-fill { height: 100%; background: var(--blue); border-radius: 3px; }
+  .score-label { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-  /* ---------- Retrieval log ---------- */
+  /* ---------- Composer ---------- */
+  .composer-wrap {
+    position: sticky; bottom: 0; padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--nav); backdrop-filter: saturate(1.8) blur(20px); -webkit-backdrop-filter: saturate(1.8) blur(20px);
+    border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+    padding: var(--space-4) var(--space-5);
+  }
+  .composer {
+    max-width: 680px; margin: 0 auto; display: flex; align-items: flex-end; gap: var(--space-2);
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    padding: var(--space-2); transition: border-color .2s;
+  }
+  .composer:focus-within { border-color: var(--blue); }
+  textarea#user-input { flex: 1; resize: none; border: none; outline: none; background: transparent; color: var(--ink); font: inherit; font-size: 15px; padding: var(--space-2) var(--space-3); max-height: 160px; }
+  textarea#user-input::placeholder { color: var(--muted); }
+  button#send-btn {
+    background: var(--blue); color: #fff; border-radius: var(--r-pill); height: 38px; padding: 0 var(--space-4);
+    display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; flex-shrink: 0; transition: filter .2s, transform .2s;
+  }
+  button#send-btn:hover { filter: brightness(1.08); }
+  button#send-btn:active { transform: scale(.97); }
+  button#send-btn:disabled { opacity: .4; cursor: default; }
+  .hint-row { max-width: 680px; margin: var(--space-2) auto 0; display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+  .disclaimer-footer { color: var(--muted); font-size: 11.5px; line-height: 1.5; max-width: 100%; }
+  .kbd-hint { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .kbd-hint kbd { font-family: inherit; background: var(--bg2); border-radius: 4px; padding: 1px 5px; }
+
+  .info-banner { border: 1px solid var(--line); border-radius: var(--r-sm); padding: var(--space-4); font-size: 14px; background: var(--card); }
+
+  /* ---------- Retrieval inspector ---------- */
+  details.inspector { margin-top: var(--space-3); }
   details.inspector summary {
-    cursor: pointer; list-style: none;
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
-    color: var(--muted);
-    padding: var(--space-2) 0;
-    border-top: 1px solid var(--border);
+    cursor: pointer; list-style: none; font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
+    text-transform: uppercase; color: var(--muted); padding: var(--space-2) 0; border-top: 1px solid var(--line);
   }
   details.inspector summary::-webkit-details-marker { display: none; }
   details.inspector summary::before { content: "› "; }
   details.inspector[open] summary::before { content: "⌄ "; }
   .inspector-body { padding: var(--space-2) 0 var(--space-4); }
-  .inspector-namespace-line {
-    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
-    padding-top: var(--space-2);
-  }
+  .inspector-row-meta { font-size: 12px; color: var(--muted); margin-bottom: var(--space-2); }
+  .inspector-row-meta b { color: var(--ink); font-weight: 600; }
   .inspector-floor-line {
-    font-family: var(--font-mono); font-size: 11px; color: var(--caution);
-    border-top: 1px dashed var(--caution-border);
-    padding-top: var(--space-2);
-    margin: var(--space-2) 0 var(--space-3);
+    font-size: 11.5px; color: var(--amber); border-top: 1px dashed var(--amber-line);
+    padding-top: var(--space-2); margin: var(--space-2) 0 var(--space-3);
   }
-  .inspector-row { display: flex; align-items: center; gap: var(--space-2); padding: 3px 0; }
-  .inspector-row .idx { width: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--faint); }
-  .inspector-row .bar-track { flex: 1; background: var(--surface); height: 3px; }
-  .inspector-row .bar-fill { height: 100%; }
-  .inspector-row.cleared .bar-fill { background: var(--ink); }
-  .inspector-row.dropped .bar-fill { background: var(--faint); }
-  .inspector-row.dropped { color: var(--faint); }
-  .inspector-row .score-num { width: 42px; text-align: right; font-family: var(--font-mono); font-size: 11px; }
-  .timing-list { margin-top: var(--space-3); border-top: 1px solid var(--border); padding-top: var(--space-2); }
-  .timing-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 2px 0; }
+  .inspector-bars { display: flex; flex-direction: column; gap: 3px; }
+  .inspector-row { display: flex; align-items: center; gap: var(--space-2); padding: 2px 0; }
+  .inspector-row .idx { width: 16px; font-size: 11px; color: var(--muted); text-align: right; flex-shrink: 0; }
+  .inspector-row .bar-track { flex: 1; background: var(--bg2); height: 8px; border-radius: 4px; position: relative; overflow: visible; }
+  .inspector-row .bar-fill { height: 100%; border-radius: 4px; }
+  .inspector-row.cleared .bar-fill { background: var(--blue); }
+  .inspector-row.dropped .bar-fill { background: var(--line); }
+  .inspector-row.dropped { color: var(--muted); }
+  .inspector-row .floor-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--amber); }
+  .inspector-row .score-num { width: 40px; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; }
+  .timing-list { margin-top: var(--space-3); border-top: 1px solid var(--line); padding-top: var(--space-2); }
+  .timing-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 2px 0; font-variant-numeric: tabular-nums; }
+  details.raw-json { margin-top: var(--space-3); position: relative; }
+  details.raw-json summary { font-size: 11.5px; font-weight: 600; color: var(--muted); cursor: pointer; padding: var(--space-2) 0; }
+  details.raw-json pre {
+    font-size: 11px; line-height: 1.5; background: var(--bg2); border-radius: var(--r-sm);
+    padding: var(--space-3); overflow-x: auto; max-height: 320px; overflow-y: auto; margin: 0;
+  }
+  .raw-copy { margin-bottom: var(--space-2); }
 
-  /* ---------- Composer ---------- */
-  .composer-wrap {
-    position: sticky; bottom: 0;
-    background: var(--paper);
-    border-top: 1px solid var(--border);
-    padding: var(--space-4) var(--space-5);
-  }
-  .composer {
-    max-width: 680px; margin: 0 auto;
-    display: flex; align-items: flex-end; gap: var(--space-2);
-    background: var(--paper);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--space-2);
-  }
-  .composer:focus-within { border-color: var(--accent); }
-  textarea#user-input {
-    flex: 1; resize: none; border: none; outline: none;
-    background: transparent; color: var(--ink); font: inherit;
-    padding: var(--space-2); max-height: 140px;
-  }
-  button#send-btn {
-    background: var(--ink); color: var(--paper);
-    border: none; border-radius: var(--radius-sm);
-    height: 38px; padding: 0 var(--space-4);
-    display: flex; align-items: center; gap: var(--space-2);
-    font-weight: 600; font-size: 0.9em;
-    flex-shrink: 0;
-  }
-  button#send-btn:hover { background: var(--accent); }
-  button#send-btn:disabled { opacity: 0.4; cursor: default; }
-
-  .info-banner {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: var(--space-3) var(--space-4);
-    font-size: 0.9em;
-    max-width: 680px;
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .starter-row, .theme-toggle, button#send-btn, .source-entry, .cite-marker {
-      transition: background-color 0.12s ease, border-color 0.12s ease;
-    }
-    .status-dot { animation: pulse 1.4s infinite ease-in-out; }
-    @keyframes pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
+  @media print {
+    header.nav, .composer-wrap, .status-line, .action-row, details.inspector { display: none !important; }
+    body { background: #fff; color: #000; }
+    .evidence-column { width: 280px !important; }
   }
-
-  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#chat">Skip to conversation</a>
 
 <div class="app-shell">
-  <header class="app-header">
-    <div class="brand-block">
+  <header class="nav" role="banner">
+    <div class="in">
       <span class="brand">DiabEvidence</span>
-      <span class="brand-tagline">Evidence-grounded diabetes research</span>
+      <span class="desc">Diabetes research evidence assistant</span>
+      <div class="group" role="toolbar" aria-label="View options">
+        <button id="inspector-toggle" class="btn-icon" type="button" aria-pressed="false" aria-label="Toggle retrieval inspector (Cmd/Ctrl+K)" title="Retrieval inspector (⌘K)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V13M4 10V5M12 19V11M12 8V5M20 19V15M20 12V5M1 13H7M9 8H15M17 15H23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <a class="repo-link" href="https://github.com" target="_blank" rel="noopener" aria-label="View source on GitHub">GitHub</a>
+        <button id="theme-toggle" class="btn-icon" type="button" aria-label="Toggle dark mode">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
-    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
-      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.6"/>
-        <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-    </button>
   </header>
 
-  <main id="chat">
-    <div id="empty-state">
-      <h1>Diabetes research, only from the evidence.</h1>
-      <p class="scope">
-        Diet &amp; nutrition, glycemic control, body composition &amp; weight, and diet–medication
-        interactions — across type 1, type 2, gestational, and prediabetes. Every answer shows exactly
-        which studies it's built from, beside it, not behind a toggle. Where the evidence is thin, that
-        is shown too.
-      </p>
-      <div class="label starter-list-label">Try asking</div>
-      <div class="starters">
-        <button class="starter-row" type="button" data-question="What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?">
-          <span class="idx">01</span>
-          <span class="q">What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?</span>
-        </button>
-        <button class="starter-row" type="button" data-question="In gestational diabetes, how effective is a ketogenic diet for glycemic control?">
-          <span class="idx">02</span>
-          <span class="q">In gestational diabetes, how effective is a ketogenic diet for glycemic control?</span>
-        </button>
-        <button class="starter-row" type="button" data-demo-refusal="true" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
-          <span class="idx">03</span>
-          <span class="q">What's the best marathon training plan for a healthy adult with no diabetes risk factors?<span class="oos-tag">out of scope</span></span>
-        </button>
+  <main id="chat" role="main">
+    <div class="col">
+      <div id="empty-state">
+        <div class="eyebrow">Retrieval-augmented · grounded in PubMed</div>
+        <h1>Diabetes research, only from the evidence.</h1>
+        <p class="scope">
+          Diet &amp; nutrition, glycemic control, body composition &amp; weight, and diet–medication
+          interactions — across type 1, type 2, gestational, and prediabetes. Every answer shows exactly
+          which studies it's built from, beside it, not behind a toggle.
+        </p>
+
+        <div class="stats" aria-label="Corpus statistics">
+          <div class="stat"><b>5,000</b><span>abstracts indexed</span></div>
+          <div class="stat"><b>13,733</b><span>study-tier chunks</span></div>
+          <div class="stat"><b>35</b><span>background-tier chunks</span></div>
+          <div class="stat"><b>10 yrs</b><span>literature window</span></div>
+        </div>
+
+        <div class="starters-label">Try asking</div>
+        <div class="starters">
+          <button class="starter-card" type="button" data-question="What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?">
+            <span class="tag">Diet &amp; nutrition</span>
+            <span class="q">What does the evidence say about low-carbohydrate diets and glycemic control in type 2 diabetes?</span>
+          </button>
+          <button class="starter-card" type="button" data-question="Does a Mediterranean-style diet reduce the risk of developing type 2 diabetes?">
+            <span class="tag">Diet &amp; nutrition</span>
+            <span class="q">Does a Mediterranean-style diet reduce the risk of developing type 2 diabetes?</span>
+          </button>
+          <button class="starter-card" type="button" data-question="What HbA1c target is generally recommended for most nonpregnant adults with type 2 diabetes?">
+            <span class="tag">Glycemic control</span>
+            <span class="q">What HbA1c target is generally recommended for most nonpregnant adults with type 2 diabetes?</span>
+          </button>
+          <button class="starter-card" type="button" data-question="Does continuous glucose monitoring improve glycemic control compared with self-monitoring?">
+            <span class="tag">Glycemic control</span>
+            <span class="q">Does continuous glucose monitoring improve glycemic control compared with self-monitoring?</span>
+          </button>
+          <button class="starter-card" type="button" data-question="Does bariatric surgery lead to remission of type 2 diabetes?">
+            <span class="tag">Body composition &amp; weight</span>
+            <span class="q">Does bariatric surgery lead to remission of type 2 diabetes?</span>
+          </button>
+          <button class="starter-card" type="button" data-question="How does visceral adiposity relate to insulin resistance compared with subcutaneous fat?">
+            <span class="tag">Body composition &amp; weight</span>
+            <span class="q">How does visceral adiposity relate to insulin resistance compared with subcutaneous fat?</span>
+          </button>
+          <button class="starter-card" type="button" data-question="Does long-term metformin use affect vitamin B12 status?">
+            <span class="tag">Diet–medication interaction</span>
+            <span class="q">Does long-term metformin use affect vitamin B12 status?</span>
+          </button>
+          <button class="starter-card" type="button" data-demo-refusal="true" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
+            <span class="tag">Out of scope — watch it decline</span>
+            <span class="q">What's the best marathon training plan for a healthy adult with no diabetes risk factors?</span>
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -509,16 +416,16 @@
       <textarea id="user-input" rows="1" placeholder="Ask a diabetes research question…" aria-label="Ask a diabetes research question"></textarea>
       <button id="send-btn" type="submit" aria-label="Send">
         <span>Ask</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 12h16M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </form>
-    <p class="disclaimer-footer">
-      This is a summary of published research literature, not medical advice. It is not a substitute
-      for professional diagnosis, treatment, or medication guidance — consult a qualified healthcare
-      provider before making any health decisions.
-    </p>
+    <div class="hint-row">
+      <p class="disclaimer-footer">
+        Educational tool built on published research literature. Not medical advice — consult a qualified
+        healthcare provider before making any health decisions.
+      </p>
+      <span class="kbd-hint"><kbd>/</kbd> focus · <kbd>Esc</kbd> clear · <kbd>⌘K</kbd> inspector</span>
+    </div>
   </div>
 </div>
 
@@ -532,6 +439,11 @@
     return "var(--pop-" + (known.indexOf(pop) !== -1 ? pop : "mixed") + ")";
   }
   function popLabel(pop) { return POP_LABELS[pop] || (pop || "Unknown"); }
+  function escapeHtml(text) {
+    var div = document.createElement("div");
+    div.textContent = text == null ? "" : String(text);
+    return div.innerHTML;
+  }
 
   // ---------- Theme ----------
   var THEME_KEY = "diabevidence-theme";
@@ -555,23 +467,30 @@
     try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
   });
 
-  // ---------- Helpers ----------
-  function escapeHtml(text) {
-    var div = document.createElement("div");
-    div.textContent = text == null ? "" : String(text);
-    return div.innerHTML;
+  // ---------- Global retrieval-inspector toggle (off by default) ----------
+  var INSPECTOR_KEY = "diabevidence-inspector-on";
+  var inspectorOn = false;
+  try { inspectorOn = localStorage.getItem(INSPECTOR_KEY) === "1"; } catch (e) {}
+  var inspectorToggleBtn = document.getElementById("inspector-toggle");
+  function setInspectorOn(on) {
+    inspectorOn = on;
+    inspectorToggleBtn.classList.toggle("on", on);
+    inspectorToggleBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    document.querySelectorAll("details.inspector").forEach(function (d) { d.hidden = !on; });
+    try { localStorage.setItem(INSPECTOR_KEY, on ? "1" : "0"); } catch (e) {}
   }
+  inspectorToggleBtn.addEventListener("click", function () { setInspectorOn(!inspectorOn); });
 
   var msgCounter = 0;
 
-  // ---------- SSE streaming (contract unchanged) ----------
-  async function streamQuery(question, handlers) {
+  // ---------- SSE streaming ----------
+  async function streamQuery(question, namespace, handlers) {
     var response;
+    var body = { question: question };
+    if (namespace) body.namespace = namespace;
     try {
       response = await fetch("/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: question }),
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
       });
     } catch (err) {
       handlers.onError({ message: "Could not reach the server. Check your connection and try again." });
@@ -620,35 +539,47 @@
 
   // ---------- Rendering ----------
   var chatEl = document.getElementById("chat");
+  var colEl = chatEl.querySelector(".col");
   var emptyStateEl = document.getElementById("empty-state");
 
   function scrollToBottom() { chatEl.scrollTop = chatEl.scrollHeight; }
 
+  function collapseAllButLast() {
+    var exchanges = colEl.querySelectorAll(".exchange");
+    exchanges.forEach(function (ex, i) {
+      if (i < exchanges.length - 1) ex.classList.add("collapsed");
+    });
+  }
+
   function addUserRow(text) {
+    collapseAllButLast();
     var row = document.createElement("div");
     row.className = "exchange";
-    row.innerHTML = '<div class="user-row"><div class="bubble-user"></div></div>';
+    row.innerHTML =
+      '<button type="button" class="exchange-summary">' +
+        '<svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '<span class="q"></span>' +
+      '</button>' +
+      '<div class="user-row"><div class="bubble-user"></div></div>';
     row.querySelector(".bubble-user").textContent = text;
-    chatEl.appendChild(row);
+    row.querySelector(".exchange-summary .q").textContent = text;
+    row.querySelector(".exchange-summary").addEventListener("click", function () {
+      row.classList.toggle("collapsed");
+    });
+    colEl.appendChild(row);
     scrollToBottom();
     return row;
   }
 
-  // Source entries read like reference-list items: title in reading serif,
-  // journal/PMID/score as metadata in mono. The score bar is neutral ink,
-  // never population-colored — score measures retrieval strength, the
-  // population swatch is a separate categorical fact, and conflating the
-  // two would blur exactly the distinction this UI exists to keep clear.
   function buildSourceCard(source, index, msgId) {
     var colorVar = popColorVar(source.population);
     var pct = Math.max(0, Math.min(100, Math.round((source.score || 0) * 100)));
     var isBackground = source.source_type === "background";
     var el = document.createElement("div");
-    el.className = "source-entry" + (isBackground ? " source-entry--background" : "");
-    el.setAttribute("data-chunk-index", String(index));
+    el.className = "source-card";
     el.id = "source-" + msgId + "-" + index;
 
-    var tierHtml = '<span class="tier-tag' + (isBackground ? " tier-tag--background" : "") + '">' +
+    var tierHtml = '<span class="tier-tag' + (isBackground ? " tier-tag--background" : " tier-tag--evidence") + '">' +
       (isBackground ? "Background" : "Study") + "</span>";
 
     var metaLine = escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || ""));
@@ -664,67 +595,35 @@
         : '<span class="meta">PMID unknown</span>';
     }
 
+    var excerptId = "excerpt-" + msgId + "-" + index;
     el.innerHTML =
-      '<div class="row-top">' + tierHtml + '<span class="label">' + index + "</span></div>" +
+      '<div class="row-top">' + tierHtml + '<span class="idx">' + index + "</span></div>" +
       '<p class="title">' + escapeHtml(source.title || "Untitled") + "</p>" +
       (metaLine ? '<p class="meta">' + metaLine + "</p>" : "") +
       attributionHtml +
       '<div class="pop-legend"><span class="pop-swatch" style="background:' + colorVar + '"></span><span class="pop-text">' + escapeHtml(popLabel(source.population)) + "</span></div>" +
-      '<div class="score-row"><div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%"></div></div><span class="score-label">' + pct + "%</span></div>";
+      '<div class="score-row"><div class="score-track"><div class="score-fill" style="width:' + pct + '%"></div></div><span class="score-label">' + pct + "%</span></div>" +
+      '<p class="excerpt" id="' + excerptId + '">' + escapeHtml(source.excerpt || "") + "</p>" +
+      '<button type="button" class="more" data-target="' + excerptId + '">more</button>';
+
+    el.querySelector(".more").addEventListener("click", function (e) {
+      var target = document.getElementById(excerptId);
+      var expanded = target.classList.toggle("expanded");
+      e.target.textContent = expanded ? "less" : "more";
+    });
     return el;
-  }
-
-  function buildInspectorBody(scoreDist, timing) {
-    var wrap = document.createElement("div");
-    wrap.className = "inspector-body";
-    var floor = scoreDist.floor;
-    var html = "";
-    if (scoreDist.namespace) {
-      html += '<div class="inspector-namespace-line">namespace: ' + escapeHtml(scoreDist.namespace) + "</div>";
-    }
-    html += '<div class="inspector-floor-line">floor ' + (floor * 100).toFixed(0) + "% — candidates below this line are dropped, not sent to the model</div>";
-    (scoreDist.candidate_scores || []).forEach(function (score, i) {
-      var cleared = score >= floor;
-      var pct = Math.max(0, Math.min(100, Math.round(score * 100)));
-      html += '<div class="inspector-row ' + (cleared ? "cleared" : "dropped") + '">' +
-        '<span class="idx">' + (i + 1) + "</span>" +
-        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
-        '<span class="score-num">' + pct + "%</span></div>";
-    });
-    wrap.innerHTML = html;
-    return wrap;
-  }
-
-  function renderTimingList(timing) {
-    var rows = [
-      ["retrieval", timing.retrieval],
-      ["contradiction_check", timing.contradiction_check],
-      ["generation", timing.generation],
-      ["total", timing.total],
-    ];
-    var html = "";
-    rows.forEach(function (r) {
-      if (r[1] == null) return;
-      html += '<div class="timing-row"><span>' + r[0] + "</span><span>" + r[1] + " ms</span></div>";
-    });
-    if (!html) return null;
-    var div = document.createElement("div");
-    div.className = "timing-list";
-    div.innerHTML = html;
-    return div;
   }
 
   var GENERIC_REFUSAL_SCOPE = "This system answers questions on four topics, across all diabetes types: diet and nutrition, glycemic control, body composition and weight, and how diet interacts with diabetes medication.";
 
   function buildRefusalBlockHtml(message, scopeText, closestScores) {
     var starterQuestions = [];
-    document.querySelectorAll("#empty-state .starter-row:not([data-demo-refusal])").forEach(function (btn) {
+    document.querySelectorAll("#empty-state .starter-card:not([data-demo-refusal])").forEach(function (btn) {
       starterQuestions.push(btn.getAttribute("data-question"));
     });
     var suggestionsHtml = "";
-    starterQuestions.forEach(function (q, i) {
-      suggestionsHtml += '<button type="button" class="starter-row refusal-starter" data-question="' + escapeHtml(q) + '">' +
-        '<span class="idx">' + String(i + 1).padStart(2, "0") + '</span><span class="q">' + escapeHtml(q) + "</span></button>";
+    starterQuestions.slice(0, 4).forEach(function (q) {
+      suggestionsHtml += '<button type="button" class="starter-card refusal-starter" data-question="' + escapeHtml(q) + '"><span class="q">' + escapeHtml(q) + "</span></button>";
     });
     return (
       '<div class="refusal-block">' +
@@ -734,7 +633,7 @@
       (closestScores && closestScores.length
         ? '<div class="refusal-closest">closest matches found: ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>"
         : "") +
-      '<div class="refusal-try"><span class="label">Try asking</span>' + suggestionsHtml + "</div>" +
+      '<div class="refusal-try"><div class="starters-label">Try asking</div><div class="starters">' + suggestionsHtml + "</div></div>" +
       "</div>"
     );
   }
@@ -778,7 +677,9 @@
     });
   }
 
-  function addAssistantExchange() {
+  var STATUS_STAGES = ["Embedding query…", "Searching 13,733 chunks…", "Checking for contradictions…", "Generating…"];
+
+  function addAssistantExchange(namespaceLabel) {
     msgCounter += 1;
     var msgId = "m" + msgCounter;
 
@@ -787,25 +688,35 @@
     row.innerHTML =
       '<div class="answer-row">' +
         '<div class="answer-column">' +
-          '<div class="status-line"><span class="status-dot"></span><span class="status-text">Searching evidence…</span></div>' +
+          '<div class="status-line"><span class="status-dot"></span><span class="status-text">' + STATUS_STAGES[0] + '</span></div>' +
+          '<div class="skeleton"><div class="bar w1"></div><div class="bar w2"></div><div class="bar w3"></div></div>' +
           '<div class="notice-slot"></div>' +
           '<div class="mismatch-slot"></div>' +
           '<div class="contradictions-slot"></div>' +
-          '<div class="answer-text" aria-live="polite"></div>' +
+          '<div class="answer-text" role="log" aria-live="polite" aria-relevant="additions"></div>' +
+          '<div class="action-slot"></div>' +
         "</div>" +
         '<div class="evidence-column" hidden></div>' +
       "</div>";
-    chatEl.appendChild(row);
+    if (namespaceLabel) {
+      var label = document.createElement("div");
+      label.className = "eyebrow";
+      label.textContent = namespaceLabel;
+      row.querySelector(".answer-row").insertAdjacentElement("afterbegin", label);
+    }
+    colEl.appendChild(row);
     scrollToBottom();
 
     var els = {
       msgId: msgId,
       status: row.querySelector(".status-text"),
       statusLine: row.querySelector(".status-line"),
+      skeleton: row.querySelector(".skeleton"),
       notice: row.querySelector(".notice-slot"),
       mismatch: row.querySelector(".mismatch-slot"),
       contradictions: row.querySelector(".contradictions-slot"),
       answerText: row.querySelector(".answer-text"),
+      actionSlot: row.querySelector(".action-slot"),
       evidenceColumn: row.querySelector(".evidence-column"),
       inspectorBody: null,
     };
@@ -814,18 +725,23 @@
     var timing = {};
     var para = null;
     var sentenceRecords = [];
+    var caretEl = null;
+
+    function removeCaret() { if (caretEl) { caretEl.remove(); caretEl = null; } }
+    function addCaret() {
+      removeCaret();
+      caretEl = document.createElement("span");
+      caretEl.className = "caret";
+      if (!para) { para = document.createElement("p"); els.answerText.appendChild(para); }
+      para.appendChild(caretEl);
+    }
 
     return {
       onSources: function (data) {
         sourcesData = data.sources || [];
         timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
-        els.status.textContent = "Checking for contradictions…";
+        els.status.textContent = STATUS_STAGES[2];
 
-        // Deliberately no positive "grounded" badge here — a fully
-        // confident answer gets no color treatment at all. Only degraded
-        // states (low confidence, population mismatch, contradiction,
-        // refusal) get a visible flag. Coloring the good case would make
-        // the system look more confident than the evidence supports.
         if (data.state === "answered_low_confidence") {
           els.notice.innerHTML =
             '<div class="notice">' +
@@ -836,18 +752,18 @@
 
         if (data.mismatch) {
           var retrievedStr = (data.retrieved_populations || []).join(", ") || "a different population";
+          var requestedStr = (data.requested_population || []).join(", ");
           els.mismatch.innerHTML =
             '<div class="notice">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-            '<span><span class="label">Population mismatch</span>The evidence found covers <strong>' + escapeHtml(retrievedStr) + '</strong>, which differs from the <strong>' + escapeHtml((data.requested_population || []).join(", ")) + "</strong> population asked about — it may not generalize.</span>" +
+            '<span><span class="label">Population mismatch</span>The evidence found covers <strong>' + escapeHtml(retrievedStr) + '</strong>, which differs from the <strong>' + escapeHtml(requestedStr) + "</strong> population asked about — it may not generalize.</span>" +
             "</div>";
         }
 
         els.evidenceColumn.hidden = false;
 
         var sourcesSection = document.createElement("div");
-        sourcesSection.className = "evidence-section";
-        sourcesSection.innerHTML = '<div class="evidence-section-head label">Sources · ' + sourcesData.length + "</div>";
+        sourcesSection.innerHTML = '<div class="evidence-section-head">Sources · ' + sourcesData.length + "</div>";
         var list = document.createElement("div");
         list.className = "source-list";
         sourcesData.forEach(function (s, i) { list.appendChild(buildSourceCard(s, i + 1, els.msgId)); });
@@ -856,10 +772,11 @@
 
         var details = document.createElement("details");
         details.className = "inspector";
+        details.hidden = !inspectorOn;
         var summary = document.createElement("summary");
         summary.textContent = "Retrieval log";
         details.appendChild(summary);
-        var body = buildInspectorBody(data.score_distribution, timing);
+        var body = buildInspectorBody(data, timing);
         details.appendChild(body);
         els.evidenceColumn.appendChild(details);
         els.inspectorBody = body;
@@ -874,11 +791,14 @@
           list.forEach(function (c) { frag.appendChild(buildContradictionPanel(c)); });
           els.contradictions.appendChild(frag);
         }
-        els.status.textContent = "Writing answer…";
+        els.status.textContent = STATUS_STAGES[3];
+        addCaret();
         scrollToBottom();
       },
       onSentence: function (data) {
         els.statusLine.hidden = true;
+        els.skeleton.hidden = true;
+        removeCaret();
         var isFirstSentence = sentenceRecords.length === 0;
         sentenceRecords.push(data);
         var supported = !!(data.chunk_ids && data.chunk_ids.length);
@@ -888,18 +808,17 @@
         span.textContent = data.sentence;
 
         if (supported) {
-          // One marker per cited excerpt, each with its own leading space —
-          // " [1] [2]", never a single "[1,2]" jammed against the sentence.
           data.chunk_ids.forEach(function (id) {
             var marker = document.createElement("sup");
             marker.className = "cite-marker";
-            marker.textContent = "[" + id + "]";
+            marker.textContent = id;
+            marker.setAttribute("role", "button");
+            marker.setAttribute("tabindex", "0");
+            marker.setAttribute("aria-label", "Jump to source " + id);
             span.appendChild(document.createTextNode(" "));
             span.appendChild(marker);
           });
         } else {
-          // "uncited" only ever appears as this separate UI-level tag, never
-          // as literal text inside the sentence itself.
           var noneTag = document.createElement("span");
           noneTag.className = "cite-marker--none";
           noneTag.textContent = "uncited";
@@ -908,22 +827,17 @@
         }
         span.appendChild(document.createTextNode(" "));
 
-        // Short paragraphs, one idea each: a new <p> starts whenever the
-        // model flags new_paragraph (rule 3 in SYSTEM_PROMPT — e.g. the
-        // shift from the background/definitional part of the answer to the
-        // study/evidence part). The first sentence always starts its own
-        // paragraph regardless of the flag. A model that never sets the
-        // flag degrades gracefully to one paragraph, same as before this
-        // existed.
         if (!para || (data.new_paragraph && !isFirstSentence)) {
           para = document.createElement("p");
           els.answerText.appendChild(para);
         }
         para.appendChild(span);
         wireSentenceHover(span, data.chunk_ids || [], els.msgId);
+        addCaret();
         scrollToBottom();
       },
       onDone: function (data) {
+        removeCaret();
         if (data.timing_ms) {
           timing.generation = data.timing_ms.generation;
           timing.total = data.timing_ms.total;
@@ -934,22 +848,18 @@
             if (timingList) els.inspectorBody.appendChild(timingList);
           }
         }
-        // The model can decline on its own (its grounding check) even when
-        // the similarity floor let weak candidates through — a single
-        // unsupported sentence rather than the dedicated "refusal" event.
-        // Give it the same neutral, designed treatment. The evidence
-        // column stays visible here (unlike a floor-based refusal) since
-        // something genuinely was retrieved — worth being transparent
-        // about, per the same "make the gap visible" principle.
         if (sentenceRecords.length === 1 && !sentenceRecords[0].supported) {
           els.notice.innerHTML = "";
           els.answerText.innerHTML = buildRefusalBlockHtml(sentenceRecords[0].sentence, null, null);
           wireRefusalStarters(els.answerText);
+        } else if (sentenceRecords.length) {
+          els.actionSlot.appendChild(buildActionRow(sentenceRecords, sourcesData));
         }
         scrollToBottom();
       },
       onRefusal: function (data) {
         els.statusLine.hidden = true;
+        els.skeleton.hidden = true;
         els.evidenceColumn.hidden = true;
         els.answerText.innerHTML = buildRefusalBlockHtml(data.message, data.scope_description, data.closest_scores);
         wireRefusalStarters(els.answerText);
@@ -957,10 +867,92 @@
       },
       onError: function (data) {
         els.statusLine.hidden = true;
+        els.skeleton.hidden = true;
+        removeCaret();
         els.answerText.innerHTML = '<div class="info-banner">' + escapeHtml(data.message || "Something went wrong.") + "</div>";
         scrollToBottom();
       },
     };
+  }
+
+  function buildActionRow(sentenceRecords, sourcesData) {
+    var row = document.createElement("div");
+    row.className = "action-row";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn-ghost";
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.6"/></svg><span>Copy as Markdown</span>';
+    btn.addEventListener("click", function () {
+      var md = sentenceRecords.map(function (s) {
+        var suffix = s.chunk_ids && s.chunk_ids.length ? " " + s.chunk_ids.map(function (id) { return "[" + id + "]"; }).join(" ") : "";
+        return s.sentence + suffix;
+      }).join(" ");
+      var refs = sourcesData.filter(function (s) { return s.pmid; }).map(function (s, i) {
+        return "[" + (i + 1) + "] " + s.title + (s.pmid ? " — PMID " + s.pmid : "");
+      }).join("\n");
+      var full = md + (refs ? "\n\n---\n" + refs : "");
+      navigator.clipboard.writeText(full).then(function () {
+        btn.classList.add("copied");
+        btn.querySelector("span").textContent = "Copied";
+        setTimeout(function () { btn.classList.remove("copied"); btn.querySelector("span").textContent = "Copy as Markdown"; }, 1800);
+      }).catch(function () {});
+    });
+    row.appendChild(btn);
+    return row;
+  }
+
+  function buildInspectorBody(sourcesEventData, timing) {
+    var scoreDist = sourcesEventData.score_distribution;
+    var wrap = document.createElement("div");
+    wrap.className = "inspector-body";
+    var floor = scoreDist.floor;
+    var html = '<div class="inspector-row-meta">namespace: <b>' + escapeHtml(scoreDist.namespace) + "</b> · top-k retrieved: <b>" + (scoreDist.candidate_scores || []).length + "</b></div>";
+    html += '<div class="inspector-floor-line">floor ' + (floor * 100).toFixed(0) + "% — candidates below this line are dropped, not sent to the model</div>";
+    html += '<div class="inspector-bars">';
+    (scoreDist.candidate_scores || []).forEach(function (score, i) {
+      var cleared = score >= floor;
+      var pct = Math.max(0, Math.min(100, Math.round(score * 100)));
+      html += '<div class="inspector-row ' + (cleared ? "cleared" : "dropped") + '">' +
+        '<span class="idx">' + (i + 1) + "</span>" +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div><div class="floor-marker" style="left:' + (floor * 100) + '%"></div></div>' +
+        '<span class="score-num">' + pct + "%</span></div>";
+    });
+    html += "</div>";
+    wrap.innerHTML = html;
+
+    var rawDetails = document.createElement("details");
+    rawDetails.className = "raw-json";
+    var rawSummary = document.createElement("summary");
+    rawSummary.textContent = "Raw JSON";
+    rawDetails.appendChild(rawSummary);
+    var pre = document.createElement("pre");
+    pre.textContent = JSON.stringify(sourcesEventData, null, 2);
+    var copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "btn-ghost raw-copy";
+    copyBtn.textContent = "Copy JSON";
+    copyBtn.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        copyBtn.textContent = "Copied";
+        setTimeout(function () { copyBtn.textContent = "Copy JSON"; }, 1500);
+      }).catch(function () {});
+    });
+    rawDetails.appendChild(copyBtn);
+    rawDetails.appendChild(pre);
+    wrap.appendChild(rawDetails);
+
+    return wrap;
+  }
+
+  function renderTimingList(timing) {
+    var rows = [["Embedding + retrieval", timing.retrieval], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
+    var html = "";
+    rows.forEach(function (r) { if (r[1] != null) html += '<div class="timing-row"><span>' + r[0] + "</span><span>" + r[1] + " ms</span></div>"; });
+    if (!html) return null;
+    var div = document.createElement("div");
+    div.className = "timing-list";
+    div.innerHTML = html;
+    return div;
   }
 
   // ---------- Composer ----------
@@ -971,7 +963,7 @@
 
   input.addEventListener("input", function () {
     input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 140) + "px";
+    input.style.height = Math.min(input.scrollHeight, 160) + "px";
   });
   input.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
@@ -985,7 +977,7 @@
 
     addUserRow(question);
     var handlers = addAssistantExchange();
-    await streamQuery(question, handlers);
+    await streamQuery(question, null, handlers);
 
     isSending = false;
     sendBtn.disabled = false;
@@ -1001,13 +993,33 @@
     sendQuestion(question);
   });
 
-  document.querySelectorAll(".starter-row").forEach(function (btn) {
+  document.querySelectorAll(".starter-card").forEach(function (btn) {
     btn.addEventListener("click", function () { sendQuestion(btn.getAttribute("data-question")); });
+  });
+
+  // ---------- Global keyboard shortcuts ----------
+  document.addEventListener("keydown", function (e) {
+    var target = e.target;
+    var typing = target && (target.tagName === "TEXTAREA" || target.tagName === "INPUT");
+
+    if (e.key === "/" && !typing) {
+      e.preventDefault();
+      input.focus();
+      return;
+    }
+    if (e.key === "Escape" && document.activeElement === input) {
+      input.value = "";
+      input.style.height = "auto";
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      setInspectorOn(!inspectorOn);
+    }
   });
 
   input.focus();
 })();
 </script>
-
 </body>
 </html>

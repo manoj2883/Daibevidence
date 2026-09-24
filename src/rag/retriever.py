@@ -131,11 +131,23 @@ def validate_namespace(namespace: str) -> int:
     return vector_count
 
 
-def retrieve(question: str, k: Optional[int] = None, namespace: Optional[str] = None) -> List[RetrievedChunk]:
+def retrieve(
+    question: str,
+    k: Optional[int] = None,
+    namespace: Optional[str] = None,
+    tier: Optional[str] = None,
+) -> List[RetrievedChunk]:
     """
     Embed the question locally and query Pinecone for the top-k most similar
     chunks. Returns them ordered by descending similarity score, exactly as
     Pinecone returns them — never more than k.
+
+    `tier`, when given ("background" or "evidence"/"study"), restricts the
+    query to that tier only via a Pinecone metadata filter on source_type —
+    used to route a definitional sub-question to the background tier only
+    and an evidence-seeking sub-question to the study tier only (see
+    src.rag.query_classifier), rather than letting the two tiers compete on
+    score within one blended top-k.
     """
     global _embeddings_cache
     if _embeddings_cache is None:
@@ -146,7 +158,15 @@ def retrieve(question: str, k: Optional[int] = None, namespace: Optional[str] = 
     query_vector = _embeddings_cache.embed_query(question)
 
     index = get_index()
-    response = index.query(vector=query_vector, top_k=k, include_metadata=True, namespace=namespace)
+    query_kwargs = dict(vector=query_vector, top_k=k, include_metadata=True, namespace=namespace)
+    if tier is not None:
+        # The corpus's own metadata value for the study tier is "evidence"
+        # (see src/rag/chain.py's SOURCE TYPE header) — "study" is accepted
+        # here too so callers can use either the internal or the
+        # user-facing tier name without needing to know which is which.
+        source_type_value = "evidence" if tier in ("study", "evidence") else tier
+        query_kwargs["filter"] = {"source_type": {"$eq": source_type_value}}
+    response = index.query(**query_kwargs)
 
     chunks = []
     for match in response.get("matches", []):
@@ -208,16 +228,19 @@ def decide_retrieval_state(
     )
 
 
-def retrieve_with_floor(question: str, namespace: Optional[str] = None) -> RetrievalDecision:
+def retrieve_with_floor(
+    question: str, namespace: Optional[str] = None, tier: Optional[str] = None
+) -> RetrievalDecision:
     """
     The Task 1 retrieval path: pull a wide candidate pool and let the
     similarity floor decide how many (if any) are relevant enough to use,
     instead of always forcing a fixed top-k. `namespace` lets Phase 4's
     evaluation run the same question set against v1_300 and v2_5k
     separately for a side-by-side comparison, without touching production
-    (which stays on get_namespace()'s default unless overridden).
+    (which stays on get_namespace()'s default unless overridden). `tier`
+    restricts retrieval to one tier only — see retrieve().
     """
-    candidates = retrieve(question, k=get_candidate_k(), namespace=namespace)
+    candidates = retrieve(question, k=get_candidate_k(), namespace=namespace, tier=tier)
     return decide_retrieval_state(
         candidates, get_similarity_floor(), background_floor=get_similarity_floor_background()
     )

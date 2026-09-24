@@ -45,7 +45,15 @@ def split_pubmed_documents(
     """
     Chunk PubMed abstract dicts (as produced by src.ingest.pubmed) into
     word-based chunks, attaching pmid/title/journal/year/publication_type/
-    population/chunk_index as metadata on every chunk.
+    population/chunk_index/source_type as metadata on every chunk.
+
+    source_type is set explicitly to "evidence" here (rather than relying on
+    query-time code defaulting a missing field) so a Pinecone metadata
+    filter on source_type can actually select the study/evidence tier —
+    a missing field doesn't satisfy a Pinecone filter even via $ne, so the
+    default-in-code approach silently made every study-tier chunk
+    unfindable by tier filter until this was added (see
+    scripts/backfill_source_type.py for the existing corpus).
     """
     chunked_docs = []
     for doc in documents:
@@ -54,6 +62,7 @@ def split_pubmed_documents(
 
         for i, chunk in enumerate(chunks):
             metadata = {field: doc.get(field, "") for field in CHUNK_METADATA_FIELDS}
+            metadata["source_type"] = "evidence"
             metadata["chunk_index"] = i
             chunked_docs.append({
                 "text": chunk,
@@ -97,6 +106,7 @@ def split_pubmed_documents_sectioned(
             pieces = split_text_by_words(section_text, chunk_size_words=chunk_size_words, overlap_words=overlap_words)
             for piece in pieces:
                 metadata = {field: doc.get(field, "") for field in SECTIONED_CHUNK_METADATA_FIELDS}
+                metadata["source_type"] = "evidence"  # see split_pubmed_documents for why this must be explicit
                 metadata["chunk_index"] = chunk_index
                 metadata["section"] = section.get("label", "")
                 chunked_docs.append({"text": piece, "metadata": metadata})

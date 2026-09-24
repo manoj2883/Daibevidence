@@ -303,4 +303,88 @@ BACKGROUND_DOCUMENTS: List[Dict[str, Any]] = [
             "overall and 71% for those over 60."
         ),
     },
+    {
+        "publisher": "ADA",
+        "title": "Nutrition Therapy Recommendations (Standards of Care)",
+        "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1",
+        "population": "mixed",
+        "text": (
+            "The ADA's Standards of Care describes nutrition therapy as a foundation of managing all forms of "
+            "diabetes, delivered ideally through individualized medical nutrition therapy with a registered "
+            "dietitian. There is no single 'diabetes diet' — eating patterns as different as Mediterranean, "
+            "DASH, low-carbohydrate, plant-based, and low-fat approaches can all support glycemic goals when "
+            "tailored to the person's preferences, culture, and health status, rather than one pattern being "
+            "prescribed universally.\n\n"
+            "Core Principles: Recommended general emphases include vegetables, fruits, legumes, whole grains, "
+            "lean protein sources, and minimizing added sugars and refined carbohydrates. Portion awareness — "
+            "for example, the Diabetes Plate method (filling half the plate with non-starchy vegetables, one "
+            "quarter with lean protein, one quarter with carbohydrate-containing foods) — is presented as an "
+            "accessible starting point rather than strict carbohydrate counting for everyone.\n\n"
+            "Carbohydrate Awareness: For people using mealtime insulin, carbohydrate counting or consistent "
+            "carbohydrate intake at meals is emphasized as a way to match insulin dosing to food intake. For "
+            "people not on mealtime insulin, general carbohydrate quality and portion size are emphasized over "
+            "precise counting.\n\n"
+            "Weight Management: For adults with type 2 diabetes or prediabetes who have overweight or obesity, "
+            "nutrition therapy that supports even modest weight loss (around 5% of body weight) is associated "
+            "with improved glycemic control and cardiovascular risk factors; sustained approaches are preferred "
+            "over any single restrictive diet.\n\n"
+            "Special Populations: Nutrition guidance is adapted by population — during pregnancy (including "
+            "gestational diabetes), nutrition therapy focuses on adequate nutrition for fetal growth alongside "
+            "glycemic goals; for older adults, guidance considers appetite, dentition, and the risk of "
+            "under-nutrition alongside glycemic goals, rather than defaulting to the same restrictions used for "
+            "younger adults."
+        ),
+    },
+    {
+        "publisher": "ADA",
+        "title": "Glycemic Targets (Standards of Care)",
+        "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1",
+        "population": "mixed",
+        "text": (
+            "The ADA's Standards of Care sets general glycemic targets as a starting point for most "
+            "nonpregnant adults with diabetes, to be individualized based on age, other health conditions, "
+            "hypoglycemia risk, and how long someone has had diabetes, rather than applied uniformly.\n\n"
+            "A1C Target: For many nonpregnant adults, a reasonable general A1C goal is below 7%. A less "
+            "stringent goal such as below 8% may be appropriate for people with limited life expectancy, "
+            "extensive comorbid illness, or a history of severe hypoglycemia, where the harms of very tight "
+            "control may outweigh the benefits. A more stringent goal (for example, below 6.5%) may be "
+            "considered for some people early in the disease course, if achievable without significant "
+            "hypoglycemia.\n\n"
+            "Time in Range: For people using continuous glucose monitoring, time-in-range (the percentage of "
+            "readings within a target glucose band, typically 70-180 mg/dL) and time-below-range are used "
+            "alongside A1C as complementary measures of glycemic control, since A1C alone does not capture "
+            "how much glucose fluctuates day to day.\n\n"
+            "Pregnancy: Glycemic targets during pregnancy, including in gestational diabetes, are generally "
+            "tighter than the standard nonpregnant targets, reflecting the goal of minimizing risk to both "
+            "parent and baby; specific numeric targets are set by the treating clinician based on individual "
+            "circumstances."
+        ),
+    },
+    {
+        "publisher": "NIDDK",
+        "title": "Managing Diabetes",
+        "source_url": "https://www.niddk.nih.gov/health-information/diabetes/overview/managing-diabetes",
+        "population": "mixed",
+        "text": (
+            "Managing diabetes generally involves several coordinated pieces: monitoring blood glucose, "
+            "following an eating plan, staying physically active, taking medications as prescribed, and "
+            "attending regular checkups — the specific mix depends on which type of diabetes a person has and "
+            "their individual health needs.\n\n"
+            "Blood Glucose Monitoring: Checking blood glucose — either with fingerstick testing or a continuous "
+            "glucose monitor — helps a person and their care team see how food, activity, medication, illness, "
+            "and stress affect blood glucose levels, and adjust the overall management plan accordingly.\n\n"
+            "Physical Activity: Regular physical activity is described as generally helping the body use "
+            "insulin more effectively and helping manage blood glucose, blood pressure, and weight; the type "
+            "and amount of safe activity should be discussed with a healthcare provider, particularly for "
+            "people with diabetes-related complications.\n\n"
+            "Working With a Care Team: Diabetes management typically involves a care team that may include a "
+            "primary care provider, endocrinologist, dietitian, and diabetes educator, with regular checkups "
+            "used to review blood glucose patterns, screen for complications (eye, kidney, foot, and "
+            "cardiovascular checks), and adjust the treatment plan over time.\n\n"
+            "Emotional Health: Managing a chronic condition day to day can be stressful, and NIDDK material "
+            "notes that diabetes distress and burnout are common; discussing emotional wellbeing with a "
+            "healthcare provider is presented as a legitimate part of overall diabetes management, not a "
+            "separate concern."
+        ),
+    },
 ]

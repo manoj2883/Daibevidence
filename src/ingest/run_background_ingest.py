@@ -59,6 +59,7 @@ def main() -> None:
     parser.add_argument("--chunk-size-words", type=int, default=BACKGROUND_CHUNK_SIZE_WORDS)
     parser.add_argument("--overlap-words", type=int, default=BACKGROUND_CHUNK_OVERLAP_WORDS)
     parser.add_argument("--dry-run", action="store_true", help="Chunk/export but skip the Pinecone upload.")
+    parser.add_argument("--namespace", default="", help="Pinecone namespace to upload into, e.g. v2_5k. Defaults to the index's default namespace.")
     args = parser.parse_args()
 
     documents = BACKGROUND_DOCUMENTS
@@ -84,8 +85,8 @@ def main() -> None:
         return
 
     ids = [_stable_id(c["metadata"]["publisher"], c["metadata"]["title"], c["metadata"]["chunk_index"]) for c in chunks]
-    print("Embedding and upserting background chunks into Pinecone (stable IDs — safe to re-run)...")
-    upload_chunks(chunks, ids=ids)
+    print(f"Embedding and upserting background chunks into Pinecone namespace {args.namespace!r} (stable IDs — safe to re-run)...")
+    upload_chunks(chunks, ids=ids, namespace=args.namespace)
     print("Background ingestion complete.")
 
 

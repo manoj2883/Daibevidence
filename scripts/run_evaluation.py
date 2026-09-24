@@ -62,11 +62,12 @@ def estimate_batch_cost(questions, namespace=None):
         if decision.state == "out_of_scope":
             continue
         chunks = decision.surviving_chunks
-        requested_population = classify_population(q["question"])
+        requested_population = ", ".join(sorted(classify_population(q["question"])))
         context_str = format_context(chunks)
         system_prompt = SYSTEM_PROMPT.format(
             requested_population=requested_population,
             retrieved_populations="",
+            sub_question_note="",
             contra_start=CONTRA_START,
             contra_end=CONTRA_END,
             context=context_str,

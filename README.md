@@ -32,6 +32,8 @@ data/                      # gitignored local cache — except corpus_manifest.j
 
 ## Architecture
 
+> **This section predates the corpus expansion to `v2_5k` (5,000 abstracts), the namespace fail-fast fix, the two-tier (background/study) query routing, and the population-classifier fix.** See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the current-state reference, including diagrams. The description below is kept for the original single-namespace pipeline's mechanics (chunking, embedding, the similarity floor) which are still accurate in spirit — only the numbers (corpus size, chunk counts) and the tier-routing/population-classification behavior have changed.
+
 Two pipelines, both built on [Pinecone](https://www.pinecone.io/) as the vector store. Scope, filters, and limits are named constants at the top of `src/ingest/config.py` — that's the file to edit to change the corpus.
 
 **Ingestion** (`python -m src.ingest.run_ingest`)

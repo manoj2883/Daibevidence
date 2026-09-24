@@ -94,7 +94,7 @@ def run_one_question_retrieval_only(q, namespace=None, rerank=False):
         "reference_answer": q.get("reference_answer"),
         "generated_answer": None,
         "provisional_state": decision.state,
-        "requested_population": requested_population,
+        "requested_population": sorted(requested_population),
         "retrieved_populations": sorted(retrieved),
         "population_mismatch": mismatch,
         "num_surviving_chunks": len(decision.surviving_chunks),

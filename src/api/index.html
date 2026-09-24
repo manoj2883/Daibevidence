@@ -323,7 +323,17 @@
     cursor: default;
   }
 
-  .disclaimer { color: var(--faint); font-size: 0.82em; margin-top: var(--space-4); max-width: 680px; }
+  /* Persistent footer, not per-message — the disclaimer applies to every
+     answer this system gives, so it lives once in the composer area
+     instead of repeating inside every exchange's answer body. */
+  .disclaimer-footer {
+    color: var(--faint);
+    font-size: 0.78em;
+    line-height: 1.5;
+    max-width: 680px;
+    margin: var(--space-2) auto 0;
+    text-align: center;
+  }
 
   /* ---------- Evidence rail ---------- */
   .evidence-section { margin-bottom: var(--space-4); }
@@ -504,6 +514,11 @@
         </svg>
       </button>
     </form>
+    <p class="disclaimer-footer">
+      This is a summary of published research literature, not medical advice. It is not a substitute
+      for professional diagnosis, treatment, or medication guidance — consult a qualified healthcare
+      provider before making any health decisions.
+    </p>
   </div>
 </div>
 
@@ -634,7 +649,7 @@
     el.id = "source-" + msgId + "-" + index;
 
     var tierHtml = '<span class="tier-tag' + (isBackground ? " tier-tag--background" : "") + '">' +
-      (isBackground ? "Background" : "Evidence") + "</span>";
+      (isBackground ? "Background" : "Study") + "</span>";
 
     var metaLine = escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || ""));
 
@@ -777,7 +792,6 @@
           '<div class="mismatch-slot"></div>' +
           '<div class="contradictions-slot"></div>' +
           '<div class="answer-text" aria-live="polite"></div>' +
-          '<div class="disclaimer-slot"></div>' +
         "</div>" +
         '<div class="evidence-column" hidden></div>' +
       "</div>";
@@ -792,7 +806,6 @@
       mismatch: row.querySelector(".mismatch-slot"),
       contradictions: row.querySelector(".contradictions-slot"),
       answerText: row.querySelector(".answer-text"),
-      disclaimer: row.querySelector(".disclaimer-slot"),
       evidenceColumn: row.querySelector(".evidence-column"),
       inspectorBody: null,
     };
@@ -826,7 +839,7 @@
           els.mismatch.innerHTML =
             '<div class="notice">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-            '<span><span class="label">Population mismatch</span>The evidence found covers <strong>' + escapeHtml(retrievedStr) + '</strong>, which differs from the <strong>' + escapeHtml(data.requested_population || "") + "</strong> population asked about — it may not generalize.</span>" +
+            '<span><span class="label">Population mismatch</span>The evidence found covers <strong>' + escapeHtml(retrievedStr) + '</strong>, which differs from the <strong>' + escapeHtml((data.requested_population || []).join(", ")) + "</strong> population asked about — it may not generalize.</span>" +
             "</div>";
         }
 
@@ -866,26 +879,43 @@
       },
       onSentence: function (data) {
         els.statusLine.hidden = true;
+        var isFirstSentence = sentenceRecords.length === 0;
         sentenceRecords.push(data);
         var supported = !!(data.chunk_ids && data.chunk_ids.length);
         var span = document.createElement("span");
         span.className = "sentence " + (supported ? "supported" : "unsupported");
         span.tabIndex = 0;
-        span.textContent = data.sentence + " ";
+        span.textContent = data.sentence;
 
         if (supported) {
-          var marker = document.createElement("sup");
-          marker.className = "cite-marker";
-          marker.textContent = "[" + data.chunk_ids.join(",") + "]";
-          span.appendChild(marker);
+          // One marker per cited excerpt, each with its own leading space —
+          // " [1] [2]", never a single "[1,2]" jammed against the sentence.
+          data.chunk_ids.forEach(function (id) {
+            var marker = document.createElement("sup");
+            marker.className = "cite-marker";
+            marker.textContent = "[" + id + "]";
+            span.appendChild(document.createTextNode(" "));
+            span.appendChild(marker);
+          });
         } else {
+          // "uncited" only ever appears as this separate UI-level tag, never
+          // as literal text inside the sentence itself.
           var noneTag = document.createElement("span");
           noneTag.className = "cite-marker--none";
           noneTag.textContent = "uncited";
+          span.appendChild(document.createTextNode(" "));
           span.appendChild(noneTag);
         }
+        span.appendChild(document.createTextNode(" "));
 
-        if (!para) {
+        // Short paragraphs, one idea each: a new <p> starts whenever the
+        // model flags new_paragraph (rule 3 in SYSTEM_PROMPT — e.g. the
+        // shift from the background/definitional part of the answer to the
+        // study/evidence part). The first sentence always starts its own
+        // paragraph regardless of the flag. A model that never sets the
+        // flag degrades gracefully to one paragraph, same as before this
+        // existed.
+        if (!para || (data.new_paragraph && !isFirstSentence)) {
           para = document.createElement("p");
           els.answerText.appendChild(para);
         }
@@ -894,9 +924,6 @@
         scrollToBottom();
       },
       onDone: function (data) {
-        if (data.disclaimer) {
-          els.disclaimer.innerHTML = '<p class="disclaimer">' + escapeHtml(data.disclaimer) + "</p>";
-        }
         if (data.timing_ms) {
           timing.generation = data.timing_ms.generation;
           timing.total = data.timing_ms.total;
@@ -925,9 +952,6 @@
         els.statusLine.hidden = true;
         els.evidenceColumn.hidden = true;
         els.answerText.innerHTML = buildRefusalBlockHtml(data.message, data.scope_description, data.closest_scores);
-        if (data.disclaimer) {
-          els.disclaimer.innerHTML = '<p class="disclaimer">' + escapeHtml(data.disclaimer) + "</p>";
-        }
         wireRefusalStarters(els.answerText);
         scrollToBottom();
       },

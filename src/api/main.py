@@ -2,16 +2,25 @@ import json
 import logging
 import os
 from contextlib import asynccontextmanager
+from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
+from src.ingest.config import NAMESPACE_V1_300, NAMESPACE_V2_5K
 from src.ingest.local_embeddings import LocalSentenceTransformerEmbeddings
 from src.rag.chain import stream_answer
 from src.rag.retriever import get_namespace, validate_namespace
+
+# Namespaces a client is allowed to request via /query's optional
+# `namespace` field (comparison mode) — never pass an arbitrary
+# client-supplied string straight to Pinecone. get_namespace()'s resolved
+# production namespace is always allowed too, even if it's neither of
+# these (e.g. a future namespace set only via PINECONE_NAMESPACE).
+ALLOWED_QUERY_NAMESPACES = {NAMESPACE_V1_300, NAMESPACE_V2_5K}
 
 # Load environment variables
 load_dotenv()
@@ -66,14 +75,25 @@ app.add_middleware(
 
 class QueryRequest(BaseModel):
     question: str = Field(..., description="The query/question to answer.")
+    namespace: Optional[str] = Field(
+        None,
+        description=(
+            "Optional Pinecone namespace override for side-by-side comparison "
+            f"(e.g. running the same question against both {NAMESPACE_V1_300!r} "
+            f"and {NAMESPACE_V2_5K!r}). Must be one of {sorted(ALLOWED_QUERY_NAMESPACES)!r} "
+            "— any other value is rejected (400), never silently substituted or "
+            "passed through to Pinecone as-is. Omit to use the server's configured "
+            "production namespace."
+        ),
+    )
 
 
 def _sse_event(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
-def _sse_stream(question: str):
-    for item in stream_answer(question):
+def _sse_stream(question: str, namespace: Optional[str] = None):
+    for item in stream_answer(question, namespace=namespace):
         yield _sse_event(item["event"], item["data"])
 
 
@@ -105,6 +125,10 @@ async def health():
         "pinecone_configured": bool(os.environ.get("PINECONE_API_KEY") and os.environ.get("PINECONE_INDEX_NAME")),
         "namespace": getattr(app.state, "namespace", None),
         "namespace_vector_count": getattr(app.state, "namespace_vector_count", None),
+        # What /query's optional `namespace` field (comparison mode) will
+        # accept — single source of truth, so the frontend never hardcodes
+        # a duplicate of ALLOWED_QUERY_NAMESPACES that could drift from it.
+        "available_namespaces": sorted(ALLOWED_QUERY_NAMESPACES),
     }
 
 
@@ -119,15 +143,22 @@ async def query_rag(request: QueryRequest):
     others depend on which chunks the model actually cites, so "sources"
     carries a provisional guess and "done" carries the authoritative state.
 
-    - "sources" — retrieved chunks + population info + provisional state +
-      score distribution + timing_ms.retrieval (sent once, before generation)
+    - "sources" — retrieved chunks + population info (requested_population
+      is a list — a question can name more than one population) +
+      question_type ("definitional"/"evidence_seeking"/"compound") +
+      sub_questions (how a compound question was decomposed; a
+      definitional sub-question retrieves from the background tier only,
+      an evidence-seeking one from the study tier only) + provisional
+      state + score distribution + timing_ms.retrieval (sent once, before
+      generation)
     - "contradictions" — conflicting findings detected across excerpts (an
       empty list if none) + timing_ms.contradiction_check, sent once,
       before any "sentence" events
-    - "sentence" — one {sentence, chunk_ids, pmids, supported, source_type}
-      object, sent as soon as it completes in the stream (citation
-      attribution is structural, not inline text markup); source_type is
-      "evidence"/"background"/None
+    - "sentence" — one {sentence, chunk_ids, pmids, supported, source_type,
+      new_paragraph} object, sent as soon as it completes in the stream
+      (citation attribution is structural, not inline text markup);
+      source_type is "evidence"/"background"/None; new_paragraph signals a
+      paragraph break
     - "done"    — generation finished, carries the authoritative state, the
       disclaimer, the groundedness summary (overall + evidence-only +
       background-only, since a background-only answer looking "grounded"
@@ -140,5 +171,17 @@ async def query_rag(request: QueryRequest):
       Closest scores found, what the system covers, and the score
       distribution. No Claude call made.
     - "error"   — misconfiguration or generation failure
+
+    `request.namespace` is optional and, if given, must be one of
+    ALLOWED_QUERY_NAMESPACES (400 otherwise) — lets a client run the same
+    question against v1_300 and v2_5k for a side-by-side comparison,
+    without accepting an arbitrary namespace string from the client.
+    Omitted, it falls through to the server's configured production
+    namespace (unchanged behavior).
     """
-    return StreamingResponse(_sse_stream(request.question), media_type="text/event-stream")
+    if request.namespace is not None and request.namespace not in ALLOWED_QUERY_NAMESPACES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid namespace {request.namespace!r}. Must be one of {sorted(ALLOWED_QUERY_NAMESPACES)}.",
+        )
+    return StreamingResponse(_sse_stream(request.question, namespace=request.namespace), media_type="text/event-stream")

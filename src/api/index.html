@@ -152,7 +152,7 @@
   .answer-row { display: flex; gap: var(--space-6); align-items: flex-start; }
   .answer-column { flex: 1 1 auto; min-width: 0; }
   .evidence-column { flex: 0 0 320px; width: 320px; }
-  .sources-toggle-mobile { display: none; }
+  .sources-toggle-mobile, .sheet-close, .sheet-handle { display: none; }
 
   @media (max-width: 900px) {
     .app-shell { max-width: 100%; }
@@ -178,8 +178,12 @@
       padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
     }
     .evidence-column.open { transform: translateY(0); }
-    .evidence-column .sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto var(--space-4); }
-    .evidence-column .sheet-close { position: absolute; top: var(--space-4); right: var(--space-4); }
+    .evidence-column .sheet-handle { display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto var(--space-4); }
+    .evidence-column .sheet-close {
+      display: flex; align-items: center; justify-content: center; position: absolute;
+      top: var(--space-4); right: var(--space-4); width: 32px; height: 32px; border-radius: 50%;
+      color: var(--ink); background: var(--bg2);
+    }
   }
   @media (min-width: 901px) { .sheet-backdrop { display: none; } }
 

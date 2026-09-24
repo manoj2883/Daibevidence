@@ -717,6 +717,20 @@
     return el;
   }
 
+  function jumpToSource(chunkIndex, msgId) {
+    var card = document.getElementById("source-" + msgId + "-" + chunkIndex);
+    if (!card) return;
+    var evidenceCol = card.closest(".evidence-column");
+    if (evidenceCol && evidenceCol.__openSheet) evidenceCol.__openSheet();
+    var excerpt = card.querySelector(".excerpt");
+    var moreBtn = card.querySelector(".more");
+    if (excerpt && moreBtn && !excerpt.classList.contains("expanded")) {
+      excerpt.classList.add("expanded");
+      moreBtn.textContent = "less";
+    }
+    card.scrollIntoView({ block: "nearest" });
+  }
+
   function wireSentenceHover(sentenceEl, chunkIds, msgId) {
     function setHighlight(on) {
       chunkIds.forEach(function (idx) {
@@ -729,11 +743,12 @@
     sentenceEl.addEventListener("mouseleave", function () { setHighlight(false); });
     sentenceEl.addEventListener("focus", function () { setHighlight(true); }, true);
     sentenceEl.addEventListener("blur", function () { setHighlight(false); }, true);
+    // Falls back to the first citation when the click lands on the
+    // sentence body itself, not a specific marker (each marker has its
+    // own click handler — see onSentence — that takes precedence via
+    // stopPropagation).
     sentenceEl.addEventListener("click", function () {
-      if (chunkIds.length) {
-        var card = document.getElementById("source-" + msgId + "-" + chunkIds[0]);
-        if (card) card.scrollIntoView({ block: "nearest" });
-      }
+      if (chunkIds.length) jumpToSource(chunkIds[0], msgId);
     });
   }
 
@@ -767,6 +782,7 @@
     closeBtn.addEventListener("click", close);
     backdrop.addEventListener("click", close);
     evidenceColumnEl.__closeSheet = close;
+    evidenceColumnEl.__openSheet = open;
   }
 
   function addAssistantExchange(namespaceLabel, parentEl) {
@@ -914,6 +930,13 @@
             marker.setAttribute("role", "button");
             marker.setAttribute("tabindex", "0");
             marker.setAttribute("aria-label", "Jump to source " + id);
+            // Each marker jumps to *its own* source, even on a sentence with
+            // several citations — click here shouldn't always land on the
+            // sentence's first chunk_id regardless of which marker was hit.
+            marker.addEventListener("click", function (e) {
+              e.stopPropagation();
+              jumpToSource(id, els.msgId);
+            });
             span.appendChild(document.createTextNode(" "));
             span.appendChild(marker);
           });

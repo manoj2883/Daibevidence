@@ -152,11 +152,48 @@
   .answer-row { display: flex; gap: var(--space-6); align-items: flex-start; }
   .answer-column { flex: 1 1 auto; min-width: 0; }
   .evidence-column { flex: 0 0 320px; width: 320px; }
+  .sources-toggle-mobile { display: none; }
+
   @media (max-width: 900px) {
     .app-shell { max-width: 100%; }
     .answer-row { flex-direction: column; }
-    .evidence-column { width: 100%; flex-basis: auto; }
+
+    /* Citation panel becomes a bottom sheet instead of an inline column. */
+    .sources-toggle-mobile {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: var(--space-3);
+      font-size: 13px; font-weight: 600; color: var(--blue); border: 1px solid var(--line);
+      border-radius: var(--r-pill); padding: 7px 14px;
+    }
+    .sheet-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 60;
+      opacity: 0; pointer-events: none; transition: opacity .25s var(--ease);
+    }
+    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    .evidence-column {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; width: 100%; flex-basis: auto;
+      background: var(--bg); border-radius: var(--r-lg) var(--r-lg) 0 0;
+      padding: var(--space-5); max-height: 82vh; overflow-y: auto;
+      box-shadow: 0 -8px 40px rgba(0,0,0,.2);
+      transform: translateY(100%); transition: transform .3s var(--ease);
+      padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+    }
+    .evidence-column.open { transform: translateY(0); }
+    .evidence-column .sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto var(--space-4); }
+    .evidence-column .sheet-close { position: absolute; top: var(--space-4); right: var(--space-4); }
   }
+  @media (min-width: 901px) { .sheet-backdrop { display: none; } }
+
+  /* ---------- Namespace comparison ---------- */
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); align-items: start; }
+  @media (max-width: 900px) { .compare-row { grid-template-columns: 1fr; } }
+  .compare-col { min-width: 0; border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--space-5); background: var(--card); }
+  .compare-col .compare-label {
+    display: inline-block; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
+    color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, var(--card)); border-radius: var(--r-pill);
+    padding: 3px 10px; margin-bottom: var(--space-4);
+  }
+  .compare-col .evidence-column { position: static; transform: none; box-shadow: none; padding: 0; border-radius: 0; background: none; max-height: none; overflow: visible; margin-top: var(--space-5); border-top: 1px solid var(--line); padding-top: var(--space-4); }
+  .compare-col .sources-toggle-mobile, .compare-col .sheet-close, .compare-col .sheet-handle { display: none; }
 
   /* ---------- Status / skeleton ---------- */
   .status-line { display: flex; align-items: center; gap: var(--space-2); color: var(--muted); font-size: 14px; padding: var(--space-1) 0; }
@@ -325,9 +362,17 @@
   }
 
   @media print {
-    header.nav, .composer-wrap, .status-line, .action-row, details.inspector { display: none !important; }
-    body { background: #fff; color: #000; }
-    .evidence-column { width: 280px !important; }
+    header.nav, .composer-wrap, .status-line, .skeleton, .action-row, details.inspector,
+    .sources-toggle-mobile, .sheet-backdrop, .starters-label, .starters, #empty-state,
+    .exchange-summary, .sheet-close, .sheet-handle { display: none !important; }
+    body { background: #fff; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .app-shell, main#chat, .col { max-width: 100%; overflow: visible; }
+    .exchange.collapsed .answer-row { display: flex !important; }
+    .compare-row { grid-template-columns: 1fr 1fr !important; gap: 24px; page-break-inside: avoid; }
+    .compare-col { border-color: #ccc; break-inside: avoid; }
+    .evidence-column { position: static !important; transform: none !important; box-shadow: none !important; max-height: none !important; overflow: visible !important; width: 280px !important; }
+    .cite-marker { background: #eee !important; color: #333 !important; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 10px; color: #666; }
   }
 </style>
 </head>
@@ -340,6 +385,9 @@
       <span class="brand">DiabEvidence</span>
       <span class="desc">Diabetes research evidence assistant</span>
       <div class="group" role="toolbar" aria-label="View options">
+        <button id="compare-toggle" class="btn-icon" type="button" aria-pressed="false" aria-label="Toggle v1_300 vs v2_5k comparison mode" title="Compare v1_300 vs v2_5k">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="4" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>
+        </button>
         <button id="inspector-toggle" class="btn-icon" type="button" aria-pressed="false" aria-label="Toggle retrieval inspector (Cmd/Ctrl+K)" title="Retrieval inspector (⌘K)">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V13M4 10V5M12 19V11M12 8V5M20 19V15M20 12V5M1 13H7M9 8H15M17 15H23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
@@ -480,6 +528,18 @@
     try { localStorage.setItem(INSPECTOR_KEY, on ? "1" : "0"); } catch (e) {}
   }
   inspectorToggleBtn.addEventListener("click", function () { setInspectorOn(!inspectorOn); });
+
+  // ---------- Namespace comparison mode ----------
+  var compareMode = false;
+  var compareToggleBtn = document.getElementById("compare-toggle");
+  compareToggleBtn.addEventListener("click", function () {
+    compareMode = !compareMode;
+    compareToggleBtn.classList.toggle("on", compareMode);
+    compareToggleBtn.setAttribute("aria-pressed", compareMode ? "true" : "false");
+    input.placeholder = compareMode
+      ? "Ask a question — runs against v1_300 and v2_5k side by side…"
+      : "Ask a diabetes research question…";
+  });
 
   var msgCounter = 0;
 
@@ -679,12 +739,41 @@
 
   var STATUS_STAGES = ["Embedding query…", "Searching 13,733 chunks…", "Checking for contradictions…", "Generating…"];
 
-  function addAssistantExchange(namespaceLabel) {
+  function wireMobileSheet(evidenceColumnEl, answerColumnEl, count) {
+    if (!count) return;
+    var backdrop = document.createElement("div");
+    backdrop.className = "sheet-backdrop";
+    document.body.appendChild(backdrop);
+
+    var handle = document.createElement("div");
+    handle.className = "sheet-handle";
+    evidenceColumnEl.insertAdjacentElement("afterbegin", handle);
+    var closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "btn-icon sheet-close";
+    closeBtn.setAttribute("aria-label", "Close sources");
+    closeBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    evidenceColumnEl.insertAdjacentElement("afterbegin", closeBtn);
+
+    var toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "sources-toggle-mobile";
+    toggleBtn.textContent = "View " + count + " source" + (count === 1 ? "" : "s");
+    answerColumnEl.appendChild(toggleBtn);
+
+    function open() { evidenceColumnEl.classList.add("open"); backdrop.classList.add("open"); }
+    function close() { evidenceColumnEl.classList.remove("open"); backdrop.classList.remove("open"); }
+    toggleBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+    backdrop.addEventListener("click", close);
+    evidenceColumnEl.__closeSheet = close;
+  }
+
+  function addAssistantExchange(namespaceLabel, parentEl) {
     msgCounter += 1;
     var msgId = "m" + msgCounter;
 
     var row = document.createElement("div");
-    row.className = "exchange";
     row.innerHTML =
       '<div class="answer-row">' +
         '<div class="answer-column">' +
@@ -698,26 +787,34 @@
         "</div>" +
         '<div class="evidence-column" hidden></div>' +
       "</div>";
+    var rowContent = row.firstElementChild;
     if (namespaceLabel) {
       var label = document.createElement("div");
       label.className = "eyebrow";
       label.textContent = namespaceLabel;
-      row.querySelector(".answer-row").insertAdjacentElement("afterbegin", label);
+      rowContent.insertAdjacentElement("afterbegin", label);
     }
-    colEl.appendChild(row);
+    if (parentEl) {
+      parentEl.appendChild(rowContent);
+    } else {
+      var exchange = document.createElement("div");
+      exchange.className = "exchange";
+      exchange.appendChild(rowContent);
+      colEl.appendChild(exchange);
+    }
     scrollToBottom();
 
     var els = {
       msgId: msgId,
-      status: row.querySelector(".status-text"),
-      statusLine: row.querySelector(".status-line"),
-      skeleton: row.querySelector(".skeleton"),
-      notice: row.querySelector(".notice-slot"),
-      mismatch: row.querySelector(".mismatch-slot"),
-      contradictions: row.querySelector(".contradictions-slot"),
-      answerText: row.querySelector(".answer-text"),
-      actionSlot: row.querySelector(".action-slot"),
-      evidenceColumn: row.querySelector(".evidence-column"),
+      status: rowContent.querySelector(".status-text"),
+      statusLine: rowContent.querySelector(".status-line"),
+      skeleton: rowContent.querySelector(".skeleton"),
+      notice: rowContent.querySelector(".notice-slot"),
+      mismatch: rowContent.querySelector(".mismatch-slot"),
+      contradictions: rowContent.querySelector(".contradictions-slot"),
+      answerText: rowContent.querySelector(".answer-text"),
+      actionSlot: rowContent.querySelector(".action-slot"),
+      evidenceColumn: rowContent.querySelector(".evidence-column"),
       inspectorBody: null,
     };
 
@@ -780,6 +877,8 @@
         details.appendChild(body);
         els.evidenceColumn.appendChild(details);
         els.inspectorBody = body;
+
+        wireMobileSheet(els.evidenceColumn, rowContent.querySelector(".answer-column"), sourcesData.length);
 
         scrollToBottom();
       },
@@ -976,12 +1075,48 @@
     emptyStateEl.setAttribute("hidden", "");
 
     addUserRow(question);
-    var handlers = addAssistantExchange();
-    await streamQuery(question, null, handlers);
+
+    if (compareMode) {
+      await sendComparisonQuestion(question);
+    } else {
+      var handlers = addAssistantExchange();
+      await streamQuery(question, null, handlers);
+    }
 
     isSending = false;
     sendBtn.disabled = false;
     input.focus();
+  }
+
+  // Runs the same question against v1_300 and v2_5k concurrently and
+  // renders both in a two-column comparison row (screenshot/print-friendly
+  // — see the print stylesheet). Each column is a full mini answer+sources
+  // stack (addAssistantExchange's normal .evidence-column, just reparented
+  // into a static, non-sheet layout via the .compare-col CSS override).
+  async function sendComparisonQuestion(question) {
+    var exchange = document.createElement("div");
+    exchange.className = "exchange";
+    var compareRow = document.createElement("div");
+    compareRow.className = "compare-row";
+    exchange.appendChild(compareRow);
+    colEl.appendChild(exchange);
+
+    var colA = document.createElement("div");
+    colA.className = "compare-col";
+    colA.innerHTML = '<span class="compare-label">v1_300 · baseline</span>';
+    var colB = document.createElement("div");
+    colB.className = "compare-col";
+    colB.innerHTML = '<span class="compare-label">v2_5k · current</span>';
+    compareRow.appendChild(colA);
+    compareRow.appendChild(colB);
+    scrollToBottom();
+
+    var handlersA = addAssistantExchange(null, colA);
+    var handlersB = addAssistantExchange(null, colB);
+    await Promise.all([
+      streamQuery(question, "v1_300", handlersA),
+      streamQuery(question, "v2_5k", handlersB),
+    ]);
   }
 
   form.addEventListener("submit", function (e) {
@@ -1006,6 +1141,10 @@
       e.preventDefault();
       input.focus();
       return;
+    }
+    if (e.key === "Escape") {
+      var openSheet = document.querySelector(".evidence-column.open");
+      if (openSheet && openSheet.__closeSheet) { openSheet.__closeSheet(); return; }
     }
     if (e.key === "Escape" && document.activeElement === input) {
       input.value = "";

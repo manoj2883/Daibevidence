@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from src.ingest.config import RETRIEVAL_CANDIDATE_K
 from src.ingest.population import classify_population
 from src.rag.cost import assert_chunk_cap, print_prompt_estimate
+from src.rag.query_classifier import classify_and_decompose, overall_question_type
 from src.rag.query_log import log_query_event
 from src.rag.retriever import resolve_namespace, retrieve_with_floor
 from src.rag.types import RetrievalDecision, RetrievedChunk
@@ -52,11 +53,13 @@ MAX_PREAMBLE_BUFFER = 6000
 
 SYSTEM_PROMPT = """You are a clinical evidence assistant covering all forms of diabetes \
 (type 1, type 2, gestational, and prediabetes) research. You answer strictly from the source \
-excerpts below. Excerpts come from two tiers, each labeled SOURCE TYPE in its header: "evidence" \
-(PubMed reviews, systematic reviews, meta-analyses, and clinical trials) and "background" \
-(patient-education pages from ADA, NIDDK, or CDC, covering definitions, diagnostic criteria, and \
-general disease mechanism — not research findings). You are not a doctor and nothing you say is \
-medical advice.
+excerpts below. Excerpts come from two tiers, each labeled SOURCE TYPE in its header: "background" \
+(patient-education pages from ADA or NIDDK, covering definitions, diagnostic criteria, and general \
+disease mechanism — not research findings) and "study" (PubMed reviews, systematic reviews, \
+meta-analyses, and clinical trials). You are not a doctor and nothing you say is medical advice.
+
+Write for a general reader: plain language at roughly an 8th-grade reading level. Use a technical \
+term only when a plain word would lose meaning, and keep sentences short.
 
 Rules, in order of priority:
 1. Use ONLY information stated in the source excerpts. Never use outside knowledge, training data, \
@@ -64,7 +67,7 @@ or assumptions, even if you believe you know the answer.
 2. A "background" excerpt may ONLY support a sentence that defines or explains something — what a \
 condition is, how it's diagnosed, or how it generally works. A "background" excerpt must NEVER be the \
 sole or partial support for a sentence that claims an intervention works, states or implies an effect \
-size, makes a comparison, or reports any research finding — that requires an "evidence" excerpt. If a \
+size, makes a comparison, or reports any research finding — that requires a "study" excerpt. If a \
 sentence mixes a definitional point with a research claim, split it into separate sentences so each \
 one's chunk_ids correctly reflect what actually supports it.
 3. Output your answer as a single JSON array, one object per sentence, in order. Each object has \
@@ -72,50 +75,62 @@ exactly these keys: "sentence" (one complete sentence of your answer, plain text
 bracketed PubMed citations like [PMID: 123] in this text; attribution is carried entirely by \
 chunk_ids, not by markup in the sentence), "chunk_ids" (array of the [Excerpt N] numbers from below \
 that support this specific sentence's claim, e.g. [1, 3], or [] if the sentence is pure transition or \
-framing with no factual claim), and "supported" (true only if chunk_ids is non-empty and the sentence \
-genuinely follows from those excerpts, respecting rule 2's tier restriction). If a specific clinical \
-claim cannot be attributed to any excerpt, do not include it as a sentence at all — never present an \
-unsupported clinical claim, whether marked or not.
-4. Before the JSON array, compare the "evidence"-tier excerpts for genuine contradictions — cases \
-where two excerpts report conflicting findings on the same specific claim (not just different topics, \
-and not a population difference — that is handled separately). Background excerpts don't report \
-research findings, so they cannot contradict anything under this rule. Report this as a JSON preamble, \
-exactly as follows, before the sentence array: a line containing exactly "{contra_start}", then a JSON \
-array (or "[]" if none), then a line containing exactly "{contra_end}". Each array entry must have \
-exactly these keys: "excerpt_indices" (array of the [Excerpt N] numbers involved, e.g. [1, 3]), "claim" \
-(the specific point they disagree on), "position_a" (what the first excerpt found), "position_b" (what \
-the other found), and "differs_by" (what differs between the studies that could explain the \
-disagreement — e.g. population, study design, duration, sample size). If you report a contradiction \
-here, your sentence array below MUST present both positions rather than silently picking one.
-5. State which diabetes population (type 1, type 2, gestational, prediabetes, or a mix) the evidence \
-you cite applies to, as one of the sentences in your answer — not only in a source list.
-6. The user's question was automatically classified as being about the "{requested_population}" \
-population (this may be "mixed" if the question didn't specify one, or mentioned more than one). \
-The retrieved excerpts cover population(s): {retrieved_populations}. If "{requested_population}" is \
-not "mixed" and it differs from the retrieved population(s), you MUST explicitly flag this mismatch \
-as one of your sentences before answering, and make clear the evidence may not generalize to the \
-population actually asked about. If "{requested_population}" is "mixed", just state plainly which \
-population(s) the evidence covers, with no mismatch to flag. Do not report this as a contradiction \
-under rule 4 — population mismatch is a distinct thing from two studies disagreeing.
-7. If no excerpt actually answers the specific claim in the question — even if some excerpts cleared \
+framing with no factual claim), "supported" (true only if chunk_ids is non-empty and the sentence \
+genuinely follows from those excerpts, respecting rule 2's tier restriction), and "new_paragraph" \
+(boolean — true if this sentence starts a new paragraph). Keep paragraphs short and focused on one \
+idea; start a new paragraph at each real shift in idea, and always at the shift from \
+background/definitional content to study/evidence content (or back). The very first sentence is its \
+own paragraph regardless of this flag's value. If a specific clinical claim cannot be attributed to \
+any excerpt, do not include it as a sentence at all — never present an unsupported clinical claim, \
+whether marked or not.
+4. Before the JSON array, compare the "study"-tier excerpts for genuine contradictions — cases where \
+two excerpts report conflicting findings on the same specific claim (not just different topics, and \
+not a population difference — that is handled separately). Background excerpts don't report research \
+findings, so they cannot contradict anything under this rule. Report this as a JSON preamble, exactly \
+as follows, before the sentence array: a line containing exactly "{contra_start}", then a JSON array \
+(or "[]" if none), then a line containing exactly "{contra_end}". Each array entry must have exactly \
+these keys: "excerpt_indices" (array of the [Excerpt N] numbers involved, e.g. [1, 3]), "claim" (the \
+specific point they disagree on), "position_a" (what the first excerpt found), "position_b" (what the \
+other found), and "differs_by" (what differs between the studies that could explain the disagreement \
+— e.g. population, study design, duration, sample size). If you report a contradiction here, your \
+sentence array below MUST present both positions rather than silently picking one.
+5. Lead with the direct answer — the first sentence answers the question, never a caveat. When the \
+question has both a definitional part and a research part (see "Parts to answer, in order" below if \
+the question was split), answer the definitional part first from background excerpts, then what the \
+studies show from study excerpts, in that order. State which diabetes population (type 1, type 2, \
+gestational, prediabetes, or a mix) the evidence you cite applies to, as one of your sentences — not \
+only in a source list. Every caveat — a population mismatch (rule 6), a part of the question that \
+can't be answered (rule 7), reduced confidence, anything hedging the answer — comes AFTER the direct \
+answer. Never open with a caveat.
+6. The user's question was automatically classified as being about the following population(s): \
+"{requested_population}" ("mixed" means the question didn't name a specific one). The retrieved \
+excerpts cover population(s): {retrieved_populations}. Flag a population mismatch — as a caveat \
+sentence placed AFTER your main answer, per rule 5, never as the opening sentence — only when \
+"{requested_population}" is not "mixed" AND none of the named population(s) are among the retrieved \
+population(s) AND the retrieved population(s) are not "mixed" (general/all-population content covers \
+whatever was asked, so that is not a mismatch). Otherwise, just state plainly which population(s) the \
+evidence covers, with no mismatch to flag. Do not report a population mismatch as a contradiction \
+under rule 4 — they are different things.
+7. If no excerpt actually answers a specific claim in the question — even if some excerpts cleared \
 retrieval — still output the normal contradiction preamble and JSON array. Include any genuinely \
-relevant definitional sentences from "background" excerpts if available (each correctly citing their \
-chunk_ids, per rule 2), then end with exactly one final sentence stating plainly, in these words or \
-very close to them, that no study in the retrieved literature addresses [restate the specific claim] — \
-give that sentence chunk_ids: [] and supported: false. This rule applies EVEN WHEN the question also \
-has a definitional part that IS answered from background excerpts: answering the definitional part \
-does not excuse you from this final sentence for the part that has no study behind it. A population \
-statement (rule 6) or a mismatch flag is never a substitute for this — they answer a different \
-question ("who does the evidence cover") than this one ("is there a study on this specific claim at \
-all"). Never stretch an excerpt to appear to answer something it doesn't just to avoid saying so.
+relevant definitional sentences from background excerpts if available (each correctly citing their \
+chunk_ids, per rule 2), then end with exactly one final sentence, in plain language, stating that no \
+study in the retrieved literature addresses [restate the specific claim] — give that sentence \
+chunk_ids: [] and supported: false. Per rule 5, this is a closing statement, not a preamble: it comes \
+last, after everything that IS answered. This rule applies EVEN WHEN the question also has a \
+definitional part that IS answered from background excerpts: answering the definitional part does not \
+excuse you from this final sentence for the part that has no study behind it. A population statement \
+(rule 6) is never a substitute for this — they answer a different question ("who does the evidence \
+cover") than this one ("is there a study on this specific claim at all"). Never stretch an excerpt to \
+appear to answer something it doesn't just to avoid saying so.
 8. Never fabricate a PMID, a statistic, a study finding, or a population.
 9. If the question or the evidence concerns diabetes medications, discuss them only in general, \
 informational, mechanistic terms (e.g., how a drug class interacts with diet or nutrition). NEVER give \
 dosing instructions, prescribing guidance, or advice to start, stop, or adjust a medication.
 10. Be precise: prefer specific numbers, effect sizes, and study populations stated in the excerpts \
-over vague language — from "evidence" excerpts only, per rule 2.
+over vague language — from "study" excerpts only, per rule 2.
 
-Source excerpts:
+{sub_question_note}Source excerpts:
 {context}"""
 
 
@@ -138,9 +153,13 @@ def format_context(chunks: List[RetrievedChunk]) -> str:
     """
     Render retrieved chunks as a labeled context block for the prompt. Every
     header leads with SOURCE TYPE so the model can never miss which tier an
-    excerpt comes from — evidence (PubMed) vs. background (ADA/NIDDK/CDC
+    excerpt comes from — "study" (PubMed) vs. "background" (ADA/NIDDK
     patient education), which the SYSTEM_PROMPT restricts to definitional
-    use only.
+    use only. The label shown here is "study" (matching SYSTEM_PROMPT's
+    vocabulary and the UI's citation-chip label); the underlying metadata
+    value stays "evidence" internally (see _is_evidence_chunk) — renaming
+    that would mean re-tagging every already-uploaded vector for no
+    behavioral benefit, so only the word shown to the model/user changed.
     """
     blocks = []
     for i, chunk in enumerate(chunks, start=1):
@@ -162,11 +181,101 @@ def format_context(chunks: List[RetrievedChunk]) -> str:
             year = meta.get("year", "")
             pub_type = meta.get("publication_type", "")
             header = (
-                f"[Excerpt {i}] SOURCE TYPE: evidence | PMID {pmid} — {title} ({journal}, {year}) "
+                f"[Excerpt {i}] SOURCE TYPE: study | PMID {pmid} — {title} ({journal}, {year}) "
                 f"| Publication type: {pub_type} | Population: {population}"
             )
         blocks.append(f"{header}\n{chunk.text}")
     return "\n\n".join(blocks)
+
+
+def _chunk_identity(chunk: RetrievedChunk) -> Tuple[str, Any, Any]:
+    """
+    A stable de-duplication key for merging chunks retrieved across
+    multiple sub-questions (see _retrieve_for_question) — two sub-questions
+    of the same overall type could otherwise both surface the same chunk.
+    """
+    meta = chunk.metadata or {}
+    if meta.get("source_type") == "background":
+        return ("background", meta.get("publisher"), (meta.get("title"), meta.get("chunk_index")))
+    return ("evidence", meta.get("pmid"), meta.get("chunk_index"))
+
+
+def _tier_for_question_type(question_type: str) -> str:
+    return "background" if question_type == "definitional" else "study"
+
+
+def _retrieve_for_question(
+    question: str, namespace: Optional[str]
+) -> Tuple[RetrievalDecision, List[Dict[str, Any]]]:
+    """
+    Classifies `question` — possibly decomposing it into sub-questions, see
+    src.rag.query_classifier — and retrieves each sub-question against its
+    own tier only: a definitional sub-question retrieves from the
+    background tier only, an evidence-seeking one from the study tier only
+    (rather than letting the two tiers compete on raw similarity score
+    within one blended top-k, which is how a purely definitional question
+    like "what is X" could end up citing a study excerpt that happens to
+    score higher than the actual definition).
+
+    Merges the per-sub-question results into one RetrievalDecision whose
+    surviving_chunks are ordered with every definitional sub-question's
+    chunks first, then every evidence-seeking sub-question's — since
+    classify_and_decompose already returns sub-questions in that order,
+    concatenating preserves it. format_context() renders chunks in list
+    order, so the excerpt list Claude sees — and therefore the order rule 5
+    asks it to follow — is enforced structurally, not just by instruction.
+
+    Returns (merged_decision, classified_sub_questions) — the caller needs
+    the sub-question breakdown to build the prompt's "parts to answer" note.
+    """
+    classified = classify_and_decompose(question)
+
+    seen = set()
+    merged_chunks: List[RetrievedChunk] = []
+    all_candidate_scores: List[float] = []
+    last_decision: Optional[RetrievalDecision] = None
+
+    for item in classified:
+        tier = _tier_for_question_type(item["type"])
+        decision = retrieve_with_floor(item["question"], namespace=namespace, tier=tier)
+        last_decision = decision
+        all_candidate_scores.extend(decision.candidate_scores)
+        for chunk in decision.surviving_chunks:
+            key = _chunk_identity(chunk)
+            if key in seen:
+                continue
+            seen.add(key)
+            merged_chunks.append(chunk)
+
+    merged = RetrievalDecision(
+        state="out_of_scope" if not merged_chunks else "answered",
+        surviving_chunks=merged_chunks,
+        candidate_scores=all_candidate_scores,
+        floor=last_decision.floor,
+        background_floor=last_decision.background_floor,
+        low_confidence_margin=last_decision.low_confidence_margin,
+    )
+    return merged, classified
+
+
+def _sub_question_note(classified: List[Dict[str, Any]]) -> str:
+    """
+    Empty string for a single (non-compound) question — nothing to add to
+    the prompt. For a compound question, an explicit numbered breakdown so
+    the model addresses each part, in the order rule 5 requires (already
+    the order `classified` is in — see _retrieve_for_question).
+    """
+    if len(classified) < 2:
+        return ""
+    lines = []
+    for i, item in enumerate(classified, start=1):
+        tier_label = "background/definitional" if item["type"] == "definitional" else "study/evidence"
+        lines.append(f"{i}. ({tier_label}) {item['question']}")
+    return (
+        "This question was split into the following parts — answer each, in this order:\n"
+        + "\n".join(lines)
+        + "\n\n"
+    )
 
 
 def retrieved_population_set(chunks: List[RetrievedChunk]) -> Set[str]:
@@ -180,14 +289,26 @@ def retrieved_populations_summary(chunks: List[RetrievedChunk]) -> str:
     return ", ".join(sorted(populations)) if populations else "unknown"
 
 
-def is_population_mismatch(requested_population: str, retrieved: Set[str]) -> bool:
+def is_population_mismatch(requested_population: Set[str], retrieved: Set[str]) -> bool:
     """
     Deterministic mismatch flag (independent of what the model writes in
     prose) so the frontend can render the warning banner reliably.
+
+    `requested_population` is a *set* (classify_population can now name more
+    than one population, e.g. {"type1", "type2"} for "What is type 1 and
+    type 2 diabetes" — collapsing that to "mixed" and then comparing a
+    single string was the actual bug: "type 1 and type 2 diabetes" used to
+    get silently classified as type2-only, which made a mismatch fire
+    against evidence that in fact covered it). A mismatch only fires when
+    the question names a population the evidence doesn't cover at all —
+    "mixed" retrieved content (general/all-population material) counts as
+    covering everything asked, so it never triggers a mismatch either.
     """
-    if requested_population == "mixed" or not retrieved:
+    if not requested_population or requested_population == {"mixed"} or not retrieved:
         return False
-    return requested_population not in retrieved
+    if "mixed" in retrieved:
+        return False
+    return not (requested_population & retrieved)
 
 
 def _source_payload(chunk: RetrievedChunk) -> Dict[str, Any]:
@@ -412,9 +533,13 @@ def find_complete_json_objects(buffer: str, start: int = 0) -> Tuple[List[str], 
 
 def _validate_sentence(obj: Any) -> Optional[Dict[str, Any]]:
     """
-    Coerce a parsed JSON object into the {sentence, chunk_ids, supported}
-    shape, or return None if it's missing the one thing that actually
-    matters (sentence text) — never propagate a malformed entry.
+    Coerce a parsed JSON object into the {sentence, chunk_ids, supported,
+    new_paragraph} shape, or return None if it's missing the one thing
+    that actually matters (sentence text) — never propagate a malformed
+    entry. new_paragraph defaults to False (stay in the current paragraph)
+    if the model omits it or sends something that isn't a bool — a model
+    that doesn't comply with this field just renders as one paragraph,
+    same as before this field existed, rather than breaking.
     """
     if not isinstance(obj, dict):
         return None
@@ -426,7 +551,15 @@ def _validate_sentence(obj: Any) -> Optional[Dict[str, Any]]:
     supported = obj.get("supported")
     if not isinstance(supported, bool):
         supported = bool(chunk_ids)
-    return {"sentence": sentence.strip(), "chunk_ids": chunk_ids, "supported": supported}
+    new_paragraph = obj.get("new_paragraph")
+    if not isinstance(new_paragraph, bool):
+        new_paragraph = False
+    return {
+        "sentence": sentence.strip(),
+        "chunk_ids": chunk_ids,
+        "supported": supported,
+        "new_paragraph": new_paragraph,
+    }
 
 
 def _source_type_for_indices(indices: List[Any], chunks: List[RetrievedChunk]) -> Optional[str]:
@@ -455,6 +588,7 @@ def _sentence_payload(sentence: Dict[str, Any], chunks: List[RetrievedChunk]) ->
         "pmids": _pmids_for_indices(sentence["chunk_ids"], chunks),
         "supported": sentence["supported"],
         "source_type": _source_type_for_indices(sentence["chunk_ids"], chunks),
+        "new_paragraph": sentence.get("new_paragraph", False),
     }
 
 
@@ -494,14 +628,22 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     event dicts: {"event": ..., "data": ...}. Possible events:
 
     - "sources": retrieved chunks + population info + a *provisional*
-      state guess + score distribution, sent once, before generation
+      state guess + score distribution, sent once, before generation.
+      question_type ("definitional"/"evidence_seeking"/"compound") and
+      sub_questions (the classify_and_decompose() breakdown — a list of
+      one if the question wasn't compound) show how the question was
+      routed: a definitional sub-question retrieves from the background
+      tier only, an evidence-seeking one from the study tier only (see
+      _retrieve_for_question). requested_population is now a list (can
+      name more than one population, e.g. ["type1", "type2"]).
     - "contradictions": conflicting findings detected across excerpts (an
       empty list if none), sent once, before any "sentence" events
-    - "sentence": one {sentence, chunk_ids, pmids, supported, source_type}
-      object, sent as soon as it completes in the stream — source_type is
-      "evidence"/"background"/None, computed from chunk_ids so the
-      frontend and eval harness never need to re-derive it from the
-      sources list themselves
+    - "sentence": one {sentence, chunk_ids, pmids, supported, source_type,
+      new_paragraph} object, sent as soon as it completes in the stream —
+      source_type is "evidence"/"background"/None, computed from chunk_ids
+      so the frontend and eval harness never need to re-derive it from the
+      sources list themselves; new_paragraph signals a paragraph break
+      (see SYSTEM_PROMPT rule 3)
     - "done": generation finished — carries the *authoritative* state, the
       disclaimer, and the groundedness summary (share of sentences with a
       supporting chunk)
@@ -539,13 +681,16 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
         return
 
     requested_population = classify_population(question)
+    requested_population_str = ", ".join(sorted(requested_population))
     resolved_namespace = resolve_namespace(namespace)
 
     try:
-        decision = retrieve_with_floor(question, namespace=namespace)
+        decision, classified_sub_questions = _retrieve_for_question(question, namespace)
     except ValueError as e:
         yield {"event": "error", "data": {"message": str(e)}}
         return
+
+    question_type = overall_question_type(classified_sub_questions)
 
     t_after_retrieval = time.monotonic()
     retrieval_ms = round((t_after_retrieval - t_start) * 1000, 1)
@@ -554,7 +699,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
 
     if decision.state == "out_of_scope":
         closest_scores = decision.candidate_scores[:3]
-        log_query_event(question, requested_population, [], OUT_OF_SCOPE_TEXT, state="out_of_scope")
+        log_query_event(question, sorted(requested_population), [], OUT_OF_SCOPE_TEXT, state="out_of_scope")
         yield {
             "event": "refusal",
             "data": {
@@ -577,7 +722,9 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
         "event": "sources",
         "data": {
             "state": _provisional_state(decision),
-            "requested_population": requested_population,
+            "question_type": question_type,
+            "sub_questions": classified_sub_questions,
+            "requested_population": sorted(requested_population),
             "retrieved_populations": sorted(retrieved),
             "mismatch": mismatch,
             "score_distribution": _score_distribution_payload(decision, resolved_namespace),
@@ -589,8 +736,9 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     context_str = format_context(chunks)
     retrieved_populations_str = retrieved_populations_summary(chunks)
     system_prompt = SYSTEM_PROMPT.format(
-        requested_population=requested_population,
+        requested_population=requested_population_str,
         retrieved_populations=retrieved_populations_str,
+        sub_question_note=_sub_question_note(classified_sub_questions),
         contra_start=CONTRA_START,
         contra_end=CONTRA_END,
         context=context_str,
@@ -728,7 +876,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     }
 
     log_query_event(
-        question, requested_population, chunks, full_answer,
+        question, sorted(requested_population), chunks, full_answer,
         state=final_state, sentences=full_sentences, groundedness=groundedness["groundedness"],
     )
 

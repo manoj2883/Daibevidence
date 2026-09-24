@@ -28,7 +28,7 @@ def _chunk_summary(chunk: RetrievedChunk) -> Dict[str, Any]:
 
 def log_query_event(
     question: str,
-    requested_population: str,
+    requested_population: List[str],
     chunks: List[RetrievedChunk],
     answer: str,
     path: str = QUERY_LOG_PATH,

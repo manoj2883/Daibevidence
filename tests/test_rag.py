@@ -153,7 +153,7 @@ def test_format_context_and_retrieved_populations():
     ]
 
     context = format_context(chunks)
-    assert "SOURCE TYPE: evidence" in context
+    assert "SOURCE TYPE: study" in context
     assert "PMID 11111111" in context
     assert "PMID 22222222" in context
     assert "Population: type2" in context
@@ -204,10 +204,27 @@ def test_source_payload_includes_source_type_and_publisher():
 def test_population_mismatch_flag():
     from src.rag.chain import is_population_mismatch
 
-    assert is_population_mismatch("gestational", {"type2"}) is True
-    assert is_population_mismatch("type2", {"type2", "mixed"}) is False
-    assert is_population_mismatch("mixed", {"type2"}) is False
-    assert is_population_mismatch("type2", set()) is False
+    assert is_population_mismatch({"gestational"}, {"type2"}) is True
+    assert is_population_mismatch({"type2"}, {"type2", "mixed"}) is False
+    assert is_population_mismatch({"mixed"}, {"type2"}) is False
+    assert is_population_mismatch({"type2"}, set()) is False
+
+
+def test_population_mismatch_multi_population_covered_by_one():
+    # "What is type 1 and type 2 diabetes" bug regression: requesting both
+    # type1 and type2, with evidence covering only one of them, must NOT be
+    # a mismatch as long as the evidence covers at least one named population
+    # or the retrieved content is general ("mixed").
+    from src.rag.chain import is_population_mismatch
+
+    assert is_population_mismatch({"type1", "type2"}, {"type2"}) is False
+    assert is_population_mismatch({"type1", "type2"}, {"mixed"}) is False
+
+
+def test_population_mismatch_multi_population_covered_by_neither():
+    from src.rag.chain import is_population_mismatch
+
+    assert is_population_mismatch({"type1", "type2"}, {"gestational"}) is True
 
 
 def test_assert_chunk_cap_raises_over_limit():
@@ -438,13 +455,17 @@ def test_validate_sentence_coerces_and_rejects():
     from src.rag.chain import _validate_sentence
 
     assert _validate_sentence({"sentence": "  x  ", "chunk_ids": [1, 2], "supported": True}) == {
-        "sentence": "x", "chunk_ids": [1, 2], "supported": True,
+        "sentence": "x", "chunk_ids": [1, 2], "supported": True, "new_paragraph": False,
     }
     # Missing supported -> derived from chunk_ids presence.
     assert _validate_sentence({"sentence": "x", "chunk_ids": [1]})["supported"] is True
     assert _validate_sentence({"sentence": "x", "chunk_ids": []})["supported"] is False
     # Non-list chunk_ids -> coerced to [].
     assert _validate_sentence({"sentence": "x", "chunk_ids": "bad"})["chunk_ids"] == []
+    # new_paragraph: present and true -> kept; missing/invalid -> False.
+    assert _validate_sentence({"sentence": "x", "new_paragraph": True})["new_paragraph"] is True
+    assert _validate_sentence({"sentence": "x", "new_paragraph": "yes"})["new_paragraph"] is False
+    assert _validate_sentence({"sentence": "x"})["new_paragraph"] is False
     # No sentence text at all -> rejected.
     assert _validate_sentence({"chunk_ids": [1]}) is None
     assert _validate_sentence({"sentence": "   "}) is None

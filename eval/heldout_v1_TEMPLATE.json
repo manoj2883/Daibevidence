@@ -1,0 +1,117 @@
+{
+  "_instructions": "Fill in 'question' and 'label' (in_scope | adjacent | unrelated) for each slot. Optional: 'topic' (glycemic_control | body_composition_weight | diet_nutrition | diet_medication_interaction) and 'notes'. Written by Mano; committed unmodified as eval/heldout_v1.json.",
+  "questions": [
+    {
+      "id": 101,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 102,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 103,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 104,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 105,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 106,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 107,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 108,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 109,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 110,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 111,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 112,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 113,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 114,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 115,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    },
+    {
+      "id": 116,
+      "question": "",
+      "label": "",
+      "topic": "",
+      "notes": ""
+    }
+  ]
+}

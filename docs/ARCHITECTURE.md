@@ -31,7 +31,9 @@ flowchart TB
         Route -->|definitional| Background
         Route -->|evidence_seeking| Study
         Route --> Merge["merged, ordered chunks\nbackground first, then study"]
-        Merge --> Prompt["SYSTEM_PROMPT\n(src/rag/chain.py)"]
+        Merge --> Judge["src/rag/judge.py\njudge_answerability()\n(Haiku — answerable? + reason)"]
+        Judge -->|not answerable| Refuse["refusal event\n(no main-model call)"]
+        Judge -->|answerable| Prompt["SYSTEM_PROMPT\n(src/rag/chain.py)"]
         Prompt --> Claude["Anthropic Claude\n(messages.stream)"]
         Claude --> SSE["SSE events:\nsources / contradictions /\nsentence / done / refusal / error"]
         SSE --> Frontend["src/api/index.html\nvanilla JS renderer"]
@@ -55,21 +57,27 @@ sequenceDiagram
     Chain->>QC: classify_and_decompose(question)
     QC-->>Chain: [{question, type: definitional|evidence_seeking}, ...]
     loop each sub-question, in order (definitional first)
-        Chain->>Ret: retrieve_with_floor(sub_question, tier=background|study)
-        Ret-->>Chain: RetrievalDecision (surviving_chunks, scores)
+        Chain->>Ret: retrieve(sub_question, tier=background|study, k=candidate_k)
+        Ret-->>Chain: candidates (top get_retriever_k() used for judge/generation,\nfull pool scored against the floor for logging only)
     end
     Chain->>Chain: merge chunks (background chunks first, then study)
-    alt nothing cleared the floor in either tier
-        Chain-->>API: event "refusal" (state=out_of_scope, zero Claude cost)
-    else something cleared the floor
-        Chain-->>API: event "sources" (chunks, population, mismatch flag, question_type)
-        Chain->>LLM: messages.stream(SYSTEM_PROMPT + question)
-        LLM-->>Chain: JSON preamble (contradictions) + JSON sentence array
-        Chain-->>API: event "contradictions"
-        loop each sentence object parsed off the stream
-            Chain-->>API: event "sentence" {sentence, chunk_ids, supported, source_type, new_paragraph}
+    alt nothing retrieved at all (defensive fallback)
+        Chain-->>API: event "refusal" (state=out_of_scope, judge=null, zero Claude cost)
+    else
+        Chain->>LLM: judge_answerability(question, top chunks) [Haiku]
+        LLM-->>Chain: {answerable, reason}
+        alt not answerable
+            Chain-->>API: event "refusal" (state=out_of_scope, judge verdict+reason, no main-model call)
+        else answerable
+            Chain-->>API: event "sources" (chunks, population, mismatch flag, question_type, judge verdict+reason)
+            Chain->>LLM: messages.stream(SYSTEM_PROMPT + question) [main model]
+            LLM-->>Chain: JSON preamble (contradictions) + JSON sentence array
+            Chain-->>API: event "contradictions"
+            loop each sentence object parsed off the stream
+                Chain-->>API: event "sentence" {sentence, chunk_ids, supported, source_type, new_paragraph}
+            end
+            Chain-->>API: event "done" (final_state, groundedness, usage, disclaimer)
         end
-        Chain-->>API: event "done" (final_state, groundedness, usage, disclaimer)
     end
     API-->>U: text/event-stream
 ```
@@ -91,9 +99,10 @@ sequenceDiagram
 
 | File | Responsibility |
 |---|---|
-| `src/rag/retriever.py` | `retrieve()` — embeds the question, queries Pinecone, optionally filtered to one tier (`tier="background"` or `"study"`/`"evidence"`) via a Pinecone metadata filter on `source_type`. `get_namespace()` defaults to `v2_5k`; `validate_namespace()` fails the app's startup if the resolved namespace is missing or empty — no silent fallback to another namespace |
+| `src/rag/retriever.py` | `retrieve()` — embeds the question, queries Pinecone, optionally filtered to one tier (`tier="background"` or `"study"`/`"evidence"`) via a Pinecone metadata filter on `source_type`. `decide_retrieval_state()` — pure scoring over a candidate pool against the similarity floor; kept for the retrieval inspector's score distribution, no longer the abstain gate (see Answerability judge, below). `get_namespace()` defaults to `v2_5k`; `validate_namespace()` fails the app's startup if the resolved namespace is missing or empty — no silent fallback to another namespace |
 | `src/rag/query_classifier.py` | Pure heuristic (no LLM call): `classify_question_type()` (definitional vs. evidence-seeking), `decompose_compound()` (splits a genuinely compound question into sub-questions, without splitting a compound *subject* like "type 1 and type 2 diabetes" into two questions), `classify_and_decompose()` (both, sub-questions ordered definitional-first) |
-| `src/rag/chain.py` `_retrieve_for_question()` | Runs each sub-question's retrieval against its own tier only, merges and de-duplicates the results, preserving background-first ordering so the excerpt list Claude receives is already in the order the answer must follow |
+| `src/rag/chain.py` `_retrieve_for_question()` | Runs each sub-question's retrieval against its own tier only, takes the top `get_retriever_k()` candidates by raw score (regardless of floor survival) from each, merges and de-duplicates them, preserving background-first ordering so the excerpt list Claude receives is already in the order the answer must follow. Also scores the full candidate pool against the floor purely for score-distribution logging |
+| `src/rag/judge.py` `judge_answerability()` | **Answerability judge** (replaces the floor as the abstain gate). Sends the question + top retrieved chunks to a small model (`ANTHROPIC_JUDGE_MODEL`, default `claude-haiku-4-5`) asking whether they actually answer the question, not just relate to it topically — see `docs/findings-retrieval-floor.md` for why the floor alone can't do this. Always returns `{answerable, reason}`; a malformed response or API failure defaults to `answerable: false` (logged), never falls through to generation ungoverned |
 
 ### Generation
 
@@ -119,13 +128,13 @@ sequenceDiagram
 | File | Responsibility |
 |---|---|
 | `eval/eval_set_v2.json` | Frozen 43-question set: 24 in-scope (evenly split across the 4 indexed topics) + 17 diabetes-adjacent-off-topic + 2 fully-unrelated, each with a hand-written ground-truth reference answer |
-| `scripts/run_eval_v1.py` | Runs an eval set against a namespace; `--retrieval-only` and `--rerank` modes cost nothing (Pinecone + local embeddings/cross-encoder only) |
+| `scripts/run_eval_v1.py` | Runs an eval set against a namespace; `--retrieval-only` and `--rerank` modes cost nothing (Pinecone + local embeddings/cross-encoder only). The full-pipeline mode now also records `top_score`/`judge_verdict`/`judge_reason` per question and, when a cached retrieval-only baseline file is available, a summary section comparing the old floor-only gate against the new judge gate (correct refusals / false rejects / false accepts for each) |
 | `scripts/smoke_test_v2_5k.py` | Minimal 3-query smoke test proving the generation path works, with real token/cost reporting |
-| `src/rag/reranker.py` | Local ONNX cross-encoder (no API cost) — tried as a fix for "similarity floor can't separate in-scope from diabetes-adjacent-off-topic questions"; it doesn't fix it (documented finding, not yet resolved) |
+| `src/rag/reranker.py` | Local ONNX cross-encoder (no API cost) — tried as a fix for "similarity floor can't separate in-scope from diabetes-adjacent-off-topic questions"; it doesn't fix it (documented finding, below) |
 
 ## 4. Known open items
 
-- **Similarity floor cannot gate diabetes-adjacent-but-off-topic questions** (e.g. "what treats diabetic retinopathy") — confirmed at n=17, and a cross-encoder reranker doesn't fix it either. Both are solid domain gates (diabetes vs. not) but not topic gates (the 4 indexed topics vs. diabetes-adjacent content). The likely fix is generation-stage (`no_evidence_for_claim`) or a dedicated topic classifier, not a retrieval-score threshold. Full write-up, with re-verified numbers: [`docs/findings-retrieval-floor.md`](findings-retrieval-floor.md).
+- **Similarity floor cannot gate diabetes-adjacent-but-off-topic questions** (e.g. "what treats diabetic retinopathy") — confirmed at n=17, and a cross-encoder reranker doesn't fix it either. Both are solid domain gates (diabetes vs. not) but not topic gates (the 4 indexed topics vs. diabetes-adjacent content). Full write-up, with re-verified numbers: [`docs/findings-retrieval-floor.md`](findings-retrieval-floor.md). **Fix implemented (2026-09-26): `src/rag/judge.py`** replaces the floor as the abstain gate with an LLM answerability check (see the Answerability judge component above and in `README.md`). Not yet validated end-to-end against `eval/eval_set_v2.json` with real generation — the Anthropic API key behind this project had a zero credit balance as of 2026-09-16 (any live Claude call, including the judge's, fails with a billing error until that's resolved); `scripts/run_eval_v1.py`'s new old-vs-new comparison section is ready to run once credit is confirmed available.
 - **The `new_paragraph` and tier-routing/decomposition prompt behavior have not been verified against a live Claude response** as of this writing — they were implemented and unit-tested without calling the Anthropic API (per the task that introduced them), so the *code path* is verified but the *model's actual compliance* with the new formatting/ordering rules is not yet confirmed by a real generation.
 - **`docs/ARCHITECTURE.md` (this file) vs. `README.md`**: the README's "Architecture" section predates the two-tier renaming (`evidence`→`study` display label), query classification/decomposition, and the multi-population classifier fix. Treat this file as authoritative until the README is updated to match.
 

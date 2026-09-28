@@ -351,6 +351,17 @@
   .inspector-row.dropped { color: var(--muted); }
   .inspector-row .floor-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--amber); }
   .inspector-row .score-num { width: 40px; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; }
+  .inspector-judge {
+    display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-3);
+    padding-top: var(--space-2); border-top: 1px solid var(--line); font-size: 12px;
+  }
+  .inspector-judge .idx { width: 16px; text-align: right; flex-shrink: 0; font-weight: 600; }
+  .inspector-judge.cleared .idx { color: var(--green); }
+  .inspector-judge.dropped .idx { color: var(--amber); }
+  .inspector-judge .judge-verdict { font-weight: 600; flex-shrink: 0; }
+  .inspector-judge.cleared .judge-verdict { color: var(--green); }
+  .inspector-judge.dropped .judge-verdict { color: var(--amber); }
+  .inspector-judge .judge-reason { color: var(--muted); }
   .timing-list { margin-top: var(--space-3); border-top: 1px solid var(--line); padding-top: var(--space-2); }
   .timing-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 2px 0; font-variant-numeric: tabular-nums; }
   details.raw-json { margin-top: var(--space-3); position: relative; }
@@ -680,7 +691,7 @@
 
   var GENERIC_REFUSAL_SCOPE = "This system answers questions on four topics, across all diabetes types: diet and nutrition, glycemic control, body composition and weight, and how diet interacts with diabetes medication.";
 
-  function buildRefusalBlockHtml(message, scopeText, closestScores) {
+  function buildRefusalBlockHtml(message, scopeText, closestScores, judge) {
     var starterQuestions = [];
     document.querySelectorAll("#empty-state .starter-card:not([data-demo-refusal])").forEach(function (btn) {
       starterQuestions.push(btn.getAttribute("data-question"));
@@ -689,14 +700,23 @@
     starterQuestions.slice(0, 4).forEach(function (q) {
       suggestionsHtml += '<button type="button" class="starter-card refusal-starter" data-question="' + escapeHtml(q) + '"><span class="q">' + escapeHtml(q) + "</span></button>";
     });
+    // A judge verdict means chunks *did* clear retrieval — they just don't
+    // answer this specific question — so the old "below the floor" framing
+    // would be wrong here; show the judge's own reason instead. Only the
+    // defensive nothing-retrieved-at-all case (judge is null) still uses
+    // the similarity-floor framing.
+    var evidenceLine = "";
+    if (judge && judge.reason) {
+      evidenceLine = '<div class="refusal-closest">answerability check: ' + escapeHtml(judge.reason) + "</div>";
+    } else if (closestScores && closestScores.length) {
+      evidenceLine = '<div class="refusal-closest">closest matches found: ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>";
+    }
     return (
       '<div class="refusal-block">' +
       "<h3>No evidence found for this question</h3>" +
       "<p>" + escapeHtml(message) + "</p>" +
       '<div class="refusal-scope">' + escapeHtml(scopeText || GENERIC_REFUSAL_SCOPE) + "</div>" +
-      (closestScores && closestScores.length
-        ? '<div class="refusal-closest">closest matches found: ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>"
-        : "") +
+      evidenceLine +
       '<div class="refusal-try"><div class="starters-label">Try asking</div><div class="starters">' + suggestionsHtml + "</div></div>" +
       "</div>"
     );
@@ -857,6 +877,7 @@
       onSources: function (data) {
         sourcesData = data.sources || [];
         timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
+        timing.judge = data.timing_ms && data.timing_ms.judge;
         els.status.textContent = STATUS_STAGES[2];
 
         if (data.state === "answered_low_confidence") {
@@ -987,7 +1008,7 @@
         els.statusLine.hidden = true;
         els.skeleton.hidden = true;
         els.evidenceColumn.hidden = true;
-        els.answerText.innerHTML = buildRefusalBlockHtml(data.message, data.scope_description, data.closest_scores);
+        els.answerText.innerHTML = buildRefusalBlockHtml(data.message, data.scope_description, data.closest_scores, data.judge);
         wireRefusalStarters(els.answerText);
         scrollToBottom();
       },
@@ -1044,6 +1065,14 @@
         '<span class="score-num">' + pct + "%</span></div>";
     });
     html += "</div>";
+    if (sourcesEventData.judge) {
+      var judge = sourcesEventData.judge;
+      html += '<div class="inspector-judge ' + (judge.answerable ? "cleared" : "dropped") + '">' +
+        '<span class="idx">' + (judge.answerable ? "✓" : "✗") + "</span>" +
+        '<span class="judge-verdict">' + (judge.answerable ? "answerable" : "not answerable") + "</span>" +
+        '<span class="judge-reason">' + escapeHtml(judge.reason || "") + "</span>" +
+        "</div>";
+    }
     wrap.innerHTML = html;
 
     var rawDetails = document.createElement("details");
@@ -1071,7 +1100,7 @@
   }
 
   function renderTimingList(timing) {
-    var rows = [["Embedding + retrieval", timing.retrieval], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
+    var rows = [["Embedding + retrieval", timing.retrieval], ["Answerability judge", timing.judge], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
     var html = "";
     rows.forEach(function (r) { if (r[1] != null) html += '<div class="timing-row"><span>' + r[0] + "</span><span>" + r[1] + " ms</span></div>"; });
     if (!html) return null;

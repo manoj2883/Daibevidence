@@ -103,3 +103,7 @@ The practical consequence: the similarity floor (and a cross-encoder reranker la
 
 1. Only run the generation-based evaluation, once, against the expanded (n=17) set, once Claude API access is confirmed available.
 2. If gating diabetes-adjacent-off-topic content at retrieval time is still wanted, the next thing to try is a topic classifier scoped to the 4 indexed topics specifically (not a relevance-score threshold of any kind), not another embedding/reranking model — see Interpretation above for why a score-based approach is structurally unlikely to work here.
+
+## Update (2026-09-26): answerability judge implemented
+
+Item 2 above is superseded — rather than a retrieval-time topic classifier, `src/rag/judge.py` adds a generation-adjacent answerability check: a small model (Haiku) sees the question plus the top retrieved chunks and judges directly whether they answer it, replacing the similarity floor as the abstain gate (the floor's scores are still computed and logged, just not the gate). This is the "generation-stage" direction item 1 already pointed at, made explicit rather than left to `no_evidence_for_claim` alone. Not yet validated against this document's own eval set with real generation — still blocked on the same Anthropic API credit issue noted above; `scripts/run_eval_v1.py` now records `judge_verdict`/`judge_reason` per question and, once a run completes, will report correct-refusal/false-reject/false-accept rates for the judge gate against this document's cached floor-only baseline.

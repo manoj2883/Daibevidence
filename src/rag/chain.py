@@ -17,15 +17,34 @@ from dotenv import load_dotenv
 from src.ingest.config import RETRIEVAL_CANDIDATE_K
 from src.ingest.population import classify_population
 from src.rag.cost import assert_chunk_cap, print_prompt_estimate
+from src.rag.judge import judge_answerability
 from src.rag.query_classifier import classify_and_decompose, overall_question_type
 from src.rag.query_log import log_query_event
-from src.rag.retriever import resolve_namespace, retrieve_with_floor
+from src.rag.retriever import (
+    decide_retrieval_state,
+    get_candidate_k,
+    get_retriever_k,
+    get_similarity_floor,
+    get_similarity_floor_background,
+    resolve_namespace,
+    retrieve,
+)
 from src.rag.types import RetrievalDecision, RetrievedChunk
 
 # Load environment variables
 load_dotenv()
 
 OUT_OF_SCOPE_TEXT = "The retrieved literature does not contain sufficient evidence to answer this question."
+
+# The answerability judge's refusal message — distinct from OUT_OF_SCOPE_TEXT
+# above, which now only fires in the defensive case of zero retrieved
+# candidates (see _retrieve_for_question / stream_answer).
+JUDGE_REFUSAL_TEXT = "I couldn't find evidence in the literature I have that answers this question."
+
+# How many top-scoring chunks the answerability judge sees. Deliberately
+# small: the judge's job is a quick answerability check, not a full review
+# of every candidate that cleared retrieval.
+JUDGE_CHUNK_LIMIT = 5
 
 SCOPE_DESCRIPTION = (
     "This system answers questions on four topics, across all diabetes types (type 1, "
@@ -205,7 +224,7 @@ def _tier_for_question_type(question_type: str) -> str:
 
 
 def _retrieve_for_question(
-    question: str, namespace: Optional[str]
+    question: str, namespace: Optional[str], retrieval_mode: str = "topk"
 ) -> Tuple[RetrievalDecision, List[Dict[str, Any]]]:
     """
     Classifies `question` — possibly decomposing it into sub-questions, see
@@ -225,22 +244,50 @@ def _retrieve_for_question(
     order, so the excerpt list Claude sees — and therefore the order rule 5
     asks it to follow — is enforced structurally, not just by instruction.
 
+    retrieval_mode selects which chunks become surviving_chunks:
+    - "topk" (default, production behavior): the top get_retriever_k()
+      candidates by raw score, regardless of whether they cleared the
+      similarity floor — docs/findings-retrieval-floor.md found the floor
+      can't separate topically-related-but-unanswerable questions from
+      genuinely answerable ones, so it no longer gates which chunks reach
+      the judge/generation stage (src.rag.judge does that job now).
+    - "floor": only candidates that cleared the similarity floor (the
+      pre-judge behavior) — used exclusively by diagnostic/eval scripts
+      reconstructing the old floor-gated pipeline for comparison (see
+      scripts/run_old_pipeline_full.py); never used by the live /query path.
+    Either way, candidate_scores/floor/low_confidence_margin on the merged
+    RetrievalDecision are always computed over the full candidate pool via
+    decide_retrieval_state, driving the retrieval inspector and eval
+    logging unchanged regardless of mode.
+
     Returns (merged_decision, classified_sub_questions) — the caller needs
     the sub-question breakdown to build the prompt's "parts to answer" note.
     """
+    if retrieval_mode not in ("topk", "floor"):
+        raise ValueError(f"retrieval_mode must be 'topk' or 'floor', got {retrieval_mode!r}")
+
     classified = classify_and_decompose(question)
 
     seen = set()
     merged_chunks: List[RetrievedChunk] = []
     all_candidate_scores: List[float] = []
-    last_decision: Optional[RetrievalDecision] = None
+    last_floor: Optional[float] = None
+    last_background_floor: Optional[float] = None
+    last_margin: Optional[float] = None
 
     for item in classified:
         tier = _tier_for_question_type(item["type"])
-        decision = retrieve_with_floor(item["question"], namespace=namespace, tier=tier)
-        last_decision = decision
-        all_candidate_scores.extend(decision.candidate_scores)
-        for chunk in decision.surviving_chunks:
+        candidates = retrieve(item["question"], k=get_candidate_k(), namespace=namespace, tier=tier)
+        scored = decide_retrieval_state(
+            candidates, get_similarity_floor(), background_floor=get_similarity_floor_background()
+        )
+        last_floor = scored.floor
+        last_background_floor = scored.background_floor
+        last_margin = scored.low_confidence_margin
+        all_candidate_scores.extend(scored.candidate_scores)
+
+        selected = scored.surviving_chunks if retrieval_mode == "floor" else candidates[: get_retriever_k()]
+        for chunk in selected:
             key = _chunk_identity(chunk)
             if key in seen:
                 continue
@@ -251,9 +298,9 @@ def _retrieve_for_question(
         state="out_of_scope" if not merged_chunks else "answered",
         surviving_chunks=merged_chunks,
         candidate_scores=all_candidate_scores,
-        floor=last_decision.floor,
-        background_floor=last_decision.background_floor,
-        low_confidence_margin=last_decision.low_confidence_margin,
+        floor=last_floor,
+        background_floor=last_background_floor,
+        low_confidence_margin=last_margin,
     )
     return merged, classified
 
@@ -622,20 +669,26 @@ def compute_groundedness(sentences: List[Dict[str, Any]], chunks: List[Retrieved
     }
 
 
-def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[Dict[str, Any], None, None]:
+def stream_answer(
+    question: str,
+    namespace: Optional[str] = None,
+    *,
+    retrieval_mode: str = "topk",
+    force_judge: Optional[bool] = None,
+) -> Generator[Dict[str, Any], None, None]:
     """
     Run the grounded RAG pipeline for one question, yielding a sequence of
     event dicts: {"event": ..., "data": ...}. Possible events:
 
     - "sources": retrieved chunks + population info + a *provisional*
-      state guess + score distribution, sent once, before generation.
-      question_type ("definitional"/"evidence_seeking"/"compound") and
-      sub_questions (the classify_and_decompose() breakdown — a list of
-      one if the question wasn't compound) show how the question was
-      routed: a definitional sub-question retrieves from the background
-      tier only, an evidence-seeking one from the study tier only (see
-      _retrieve_for_question). requested_population is now a list (can
-      name more than one population, e.g. ["type1", "type2"]).
+      state guess + score distribution + the judge's verdict, sent once,
+      before generation. question_type ("definitional"/"evidence_seeking"/
+      "compound") and sub_questions (the classify_and_decompose()
+      breakdown — a list of one if the question wasn't compound) show how
+      the question was routed: a definitional sub-question retrieves from
+      the background tier only, an evidence-seeking one from the study
+      tier only (see _retrieve_for_question). requested_population is now
+      a list (can name more than one population, e.g. ["type1", "type2"]).
     - "contradictions": conflicting findings detected across excerpts (an
       empty list if none), sent once, before any "sentence" events
     - "sentence": one {sentence, chunk_ids, pmids, supported, source_type,
@@ -647,30 +700,55 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     - "done": generation finished — carries the *authoritative* state, the
       disclaimer, and the groundedness summary (share of sentences with a
       supporting chunk)
-    - "refusal": nothing cleared the similarity floor in either tier
-      (state="out_of_scope") — refusal message, closest scores found, what
-      the system covers, and the score distribution. No Claude call made.
+    - "refusal": either nothing was retrieved at all (state="out_of_scope",
+      a defensive fallback — see below) or the answerability judge decided
+      the retrieved excerpts don't actually answer the question
+      (state="out_of_scope", judge.answerable=false) — refusal message,
+      closest scores found, what the system covers, the score
+      distribution, and the judge's verdict+reason. No main-model call is
+      made either way (the judge call, on a smaller model, still runs).
     - "error": something is misconfigured (e.g. missing API key) or
       generation itself failed
 
     The API's state enum is answered / answered_low_confidence /
-    no_evidence_for_claim / out_of_scope. Only "out_of_scope" is knowable
-    before generation (nothing survived the floor in either tier, so
-    there's nothing to send Claude). The other three depend on which
-    chunks the model actually cites — a chunk can clear the floor and
-    still go unused if the model correctly decides it doesn't answer the
-    question, which is exactly "no_evidence_for_claim": in scope, and
-    (when background chunks exist) the model still gives the definitional
-    context, but no study addresses the specific claim asked. That's why
-    "sources" carries a provisional guess (usually right, cheap, lets the
-    frontend show something immediately) while "done" carries the real
-    answer, computed by determine_final_state() from what was actually
-    cited.
+    no_evidence_for_claim / out_of_scope. "out_of_scope" is now decided by
+    src.rag.judge.judge_answerability, not a similarity threshold —
+    docs/findings-retrieval-floor.md found cosine similarity measures
+    topical relatedness, not answerability, so it can't separate a
+    diabetes-adjacent-but-out-of-scope question from a genuinely in-scope
+    one. The similarity floor is still computed and logged (see
+    _retrieve_for_question) and still used for score_distribution in the
+    inspector, but no longer gates generation on its own; the one place it
+    still can is the defensive "nothing retrieved at all" case handled
+    just below (e.g. an empty namespace), which the judge is never even
+    asked about. Beyond the judge's gate, the remaining three states
+    depend on which chunks the model actually cites — a chunk can pass the
+    judge and still go unused if the model correctly decides it doesn't
+    answer the question, which is exactly "no_evidence_for_claim": in
+    scope, and (when background chunks exist) the model still gives the
+    definitional context, but no study addresses the specific claim
+    asked. That's why "sources" carries a provisional guess (usually
+    right, cheap, lets the frontend show something immediately) while
+    "done" carries the real answer, computed by determine_final_state()
+    from what was actually cited.
 
-    Retrieves a wide candidate pool (RETRIEVAL_CANDIDATE_K) and lets the
-    similarity floor decide how many survive, rather than always sending a
-    fixed top-k. Never sends more than RETRIEVAL_CANDIDATE_K chunks to
-    Claude — enforced by a hard assertion, not just a printed warning.
+    Retrieves a wide candidate pool (RETRIEVAL_CANDIDATE_K) per
+    sub-question for scoring, but only the top get_retriever_k() by raw
+    score are used for the judge/generation. Never sends more than
+    RETRIEVAL_CANDIDATE_K chunks to the main model — enforced by a hard
+    assertion, not just a printed warning.
+
+    retrieval_mode and force_judge are diagnostic-only, keyword-only
+    parameters for eval scripts reconstructing the pre-judge pipeline for
+    comparison (see scripts/run_old_pipeline_full.py) — the live /query
+    path never passes them, so production behavior is unchanged by their
+    existence. retrieval_mode="floor" selects only floor-surviving chunks
+    (see _retrieve_for_question) instead of the top-k-by-raw-score default.
+    force_judge, when not None, skips the real judge call entirely and
+    uses this boolean as the verdict; the emitted judge payload still
+    carries {"answerable": force_judge, "bypassed": True, "reason": ...}
+    so any record built from these events is visibly marked as using a
+    forced verdict, never mistaken for a real judge call.
     """
     t_start = time.monotonic()
 
@@ -685,7 +763,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     resolved_namespace = resolve_namespace(namespace)
 
     try:
-        decision, classified_sub_questions = _retrieve_for_question(question, namespace)
+        decision, classified_sub_questions = _retrieve_for_question(question, namespace, retrieval_mode=retrieval_mode)
     except ValueError as e:
         yield {"event": "error", "data": {"message": str(e)}}
         return
@@ -698,6 +776,10 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     assert_chunk_cap(decision.surviving_chunks, RETRIEVAL_CANDIDATE_K)
 
     if decision.state == "out_of_scope":
+        # Defensive fallback only — fires when nothing was retrieved at all
+        # (e.g. an empty namespace), not as the answerability gate: that's
+        # the judge's job now, below. Never asks the judge about a question
+        # with literally nothing to show it.
         closest_scores = decision.candidate_scores[:3]
         log_query_event(question, sorted(requested_population), [], OUT_OF_SCOPE_TEXT, state="out_of_scope")
         yield {
@@ -708,6 +790,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
                 "scope_description": SCOPE_DESCRIPTION,
                 "closest_scores": closest_scores,
                 "score_distribution": _score_distribution_payload(decision, resolved_namespace),
+                "judge": None,
                 "disclaimer": DISCLAIMER,
                 "timing_ms": {"retrieval": retrieval_ms},
             },
@@ -715,6 +798,35 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
         return
 
     chunks = decision.surviving_chunks
+
+    t_before_judge = time.monotonic()
+    if force_judge is not None:
+        judge_result = {
+            "answerable": force_judge,
+            "reason": "judge bypassed (diagnostic run) — verdict forced by caller, not a real judge call",
+            "bypassed": True,
+        }
+    else:
+        judge_result = judge_answerability(client, question, chunks[:JUDGE_CHUNK_LIMIT])
+    judge_ms = round((time.monotonic() - t_before_judge) * 1000, 1)
+
+    if not judge_result["answerable"]:
+        log_query_event(question, sorted(requested_population), [], JUDGE_REFUSAL_TEXT, state="out_of_scope")
+        yield {
+            "event": "refusal",
+            "data": {
+                "state": "out_of_scope",
+                "message": JUDGE_REFUSAL_TEXT,
+                "scope_description": SCOPE_DESCRIPTION,
+                "closest_scores": decision.candidate_scores[:3],
+                "score_distribution": _score_distribution_payload(decision, resolved_namespace),
+                "judge": judge_result,
+                "disclaimer": DISCLAIMER,
+                "timing_ms": {"retrieval": retrieval_ms, "judge": judge_ms},
+            },
+        }
+        return
+
     retrieved = retrieved_population_set(chunks)
     mismatch = is_population_mismatch(requested_population, retrieved)
 
@@ -728,8 +840,9 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
             "retrieved_populations": sorted(retrieved),
             "mismatch": mismatch,
             "score_distribution": _score_distribution_payload(decision, resolved_namespace),
+            "judge": judge_result,
             "sources": [_source_payload(c) for c in chunks],
-            "timing_ms": {"retrieval": retrieval_ms},
+            "timing_ms": {"retrieval": retrieval_ms, "judge": judge_ms},
         },
     }
 
@@ -850,6 +963,7 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
         # misreport real generation failures as an honest evidence gap.
         usage = None
         truncated = False
+        model_used = None
         try:
             final_message = stream.get_final_message()
             usage = {
@@ -857,6 +971,12 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
                 "output_tokens": final_message.usage.output_tokens,
             }
             truncated = final_message.stop_reason == "max_tokens"
+            # The exact model string the API actually served this request
+            # with, not get_model()'s config value — a report on "which
+            # model was actually called" should read this field, not the
+            # config default, since a model alias can resolve to a
+            # different pinned snapshot than the name requested.
+            model_used = final_message.model
         except Exception:
             pass  # usage is a nice-to-have; never fail the response over it
     except anthropic.APIError as e:
@@ -871,7 +991,8 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
     t_end = time.monotonic()
     timing_ms = {
         "retrieval": retrieval_ms,
-        "generation": round((t_end - t_after_retrieval) * 1000, 1),
+        "judge": judge_ms,
+        "generation": round((t_end - t_after_retrieval) * 1000 - judge_ms, 1),
         "total": round((t_end - t_start) * 1000, 1),
     }
 
@@ -889,5 +1010,6 @@ def stream_answer(question: str, namespace: Optional[str] = None) -> Generator[D
             "timing_ms": timing_ms,
             "usage": usage,
             "truncated": truncated,
+            "model": model_used,
         },
     }

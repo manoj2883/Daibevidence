@@ -143,7 +143,27 @@ def summarize_retrieval_only(results):
     }
 
 
-def run_one_question(q, namespace=None):
+def run_one_question(q, namespace=None, **stream_kwargs):
+    """
+    Runs the live pipeline (src.rag.chain.stream_answer). By default this
+    is the production judge-gated pipeline; passing retrieval_mode="floor"
+    and/or force_judge=<bool> (both diagnostic-only kwargs on
+    stream_answer — see its docstring) reconstructs the pre-judge pipeline
+    instead, e.g. for scripts/run_old_pipeline_full.py.
+
+    Captures full detail — not just aggregate counts — because
+    scripts/grade_faithfulness.py needs the actual cited excerpt text and
+    per-sentence chunk_ids to check citations, not just "how many sentences
+    were supported": "sources" (full source payloads, excerpt text
+    included), "sentence_records" (full per-sentence {sentence, chunk_ids,
+    pmids, supported, source_type} objects), "judge" (the full verdict
+    dict, including "bypassed": True when force_judge was used — never
+    silently indistinguishable from a real verdict), and "model_generation"
+    /"model_judge" (the exact model strings the API actually served the
+    requests with, read from the response objects — see
+    src.rag.chain/src.rag.judge — not from config defaults, which a report
+    should never assume match what was actually called).
+    """
     t0 = time.monotonic()
     sources = []
     sentence_records = []
@@ -154,11 +174,18 @@ def run_one_question(q, namespace=None):
     truncated = False
     error = None
     refusal_message = None
+    top_score = None
+    judge = None
+    score_distribution = None
+    model_generation = None
 
-    for ev in stream_answer(q["question"], namespace=namespace):
+    for ev in stream_answer(q["question"], namespace=namespace, **stream_kwargs):
         event, data = ev["event"], ev["data"]
         if event == "sources":
             sources = data.get("sources", [])
+            score_distribution = data.get("score_distribution")
+            top_score = (score_distribution or {}).get("top_score")
+            judge = data.get("judge")
         elif event == "contradictions":
             contradictions = data.get("contradictions", [])
         elif event == "sentence":
@@ -168,10 +195,14 @@ def run_one_question(q, namespace=None):
             timing_ms = data.get("timing_ms", {})
             usage = data.get("usage")
             truncated = data.get("truncated", False)
+            model_generation = data.get("model")
         elif event == "refusal":
             final_state = data.get("state", "out_of_scope")
             timing_ms = data.get("timing_ms", {})
             refusal_message = data.get("message")
+            score_distribution = data.get("score_distribution")
+            top_score = (score_distribution or {}).get("top_score")
+            judge = data.get("judge")
         elif event == "error":
             error = data.get("message")
 
@@ -190,8 +221,16 @@ def run_one_question(q, namespace=None):
         "reference_answer": q.get("reference_answer"),
         "generated_answer": generated_answer,
         "final_state": final_state,
+        "top_score": top_score,
+        "judge_verdict": (judge or {}).get("answerable"),
+        "judge_reason": (judge or {}).get("reason"),
+        "judge": judge,
+        "score_distribution": score_distribution,
+        "answered": final_state is not None and final_state != "out_of_scope" and error is None,
         "error": error,
         "refusal_message": refusal_message,
+        "sources": sources,
+        "sentence_records": sentence_records,
         "num_sources": len(sources),
         "pmids_cited": sorted({p for s in sentence_records for p in s.get("pmids", []) if p}),
         "num_contradictions": len(contradictions),
@@ -203,6 +242,8 @@ def run_one_question(q, namespace=None):
         "wall_ms": wall_ms,
         "usage": usage,
         "truncated": truncated,
+        "model_generation": model_generation,
+        "model_judge": (judge or {}).get("model"),
     }
 
 
@@ -219,7 +260,46 @@ def load_checkpoint(path):
     return done
 
 
-def summarize(results):
+def load_old_baseline(path):
+    """
+    The pre-judge similarity-floor baseline: a cached retrieval-only run's
+    per-question "provisional_state" (see run_one_question_retrieval_only),
+    keyed by question id. Used by summarize() to compare the old
+    threshold-only gate against the new judge gate on the same 43
+    questions, without re-running retrieval. Returns {} (comparison
+    skipped) if the file doesn't exist rather than failing the whole eval
+    run over a missing optional baseline.
+    """
+    if not path or not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    return {r["id"]: r["provisional_state"] for r in data.get("results", [])}
+
+
+def _gate_breakdown(items, refused_pred, refused_label, answered_label):
+    """
+    Confusion-style breakdown of one gate's refuse/answer decision against
+    ground-truth in_scope, for one set of results that all share the same
+    in_scope value (see callers). refused_pred(item) -> bool decides
+    whether that gate refused this question. refused_label/answered_label
+    name what "refused"/"answered" actually means for this bucket — e.g.
+    for out-of-scope questions, "refused" is a correct refusal and
+    "answered" is a false accept; for in-scope questions it's the reverse
+    (refused = false reject, answered = correct answer) — spelling that out
+    in the field names avoids having to remember which bucket is which.
+    """
+    return {
+        "n": len(items),
+        refused_label: sum(1 for r in items if refused_pred(r)),
+        answered_label: sum(1 for r in items if not refused_pred(r)),
+        f"ids_{refused_label}": sorted(r["id"] for r in items if refused_pred(r)),
+        f"ids_{answered_label}": sorted(r["id"] for r in items if not refused_pred(r)),
+    }
+
+
+def summarize(results, old_baseline=None):
+    old_baseline = old_baseline or {}
     in_scope = [r for r in results if r["in_scope"]]
     out_scope = [r for r in results if not r["in_scope"]]
 
@@ -248,7 +328,7 @@ def summarize(results):
             "errors": sum(1 for r in items if r["error"]),
         }
 
-    return {
+    summary = {
         "n_in_scope": len(in_scope),
         "n_out_of_scope": len(out_scope),
         "per_topic": per_topic,
@@ -269,6 +349,31 @@ def summarize(results):
         "errors": sum(1 for r in results if r["error"]),
     }
 
+    if old_baseline:
+        # Old gate = pure similarity floor (cached provisional_state from a
+        # retrieval-only run, e.g. data/eval_v1_retrieval_only_rerank_v2_5k.json).
+        # New gate = this run's actual outcome (judge + generation).
+        # "Correct refusal" / "false reject" / "false accept" are always
+        # relative to the ground-truth in_scope label, never to each other.
+        old_refused = lambda r: old_baseline.get(r["id"]) == "out_of_scope"  # noqa: E731
+        new_refused = lambda r: r["final_state"] == "out_of_scope" or not r["answered"]  # noqa: E731
+
+        summary["old_vs_new_gate_comparison"] = {
+            "old_gate": "similarity floor only (cached retrieval-only provisional_state)",
+            "new_gate": "answerability judge + generation (this run)",
+            "old_out_of_scope": _gate_breakdown(out_scope, old_refused, "correct_refusals", "false_accepts"),
+            "new_out_of_scope": _gate_breakdown(out_scope, new_refused, "correct_refusals", "false_accepts"),
+            "old_in_scope": _gate_breakdown(in_scope, old_refused, "false_rejects", "correct_answers"),
+            "new_in_scope": _gate_breakdown(in_scope, new_refused, "false_rejects", "correct_answers"),
+            "old_false_accept_rate": rate(out_scope, lambda r: not old_refused(r)),
+            "new_false_accept_rate": rate(out_scope, lambda r: not new_refused(r)),
+            "old_false_reject_rate": rate(in_scope, old_refused),
+            "new_false_reject_rate": rate(in_scope, new_refused),
+            "questions_missing_from_old_baseline": sorted(r["id"] for r in results if r["id"] not in old_baseline),
+        }
+
+    return summary
+
 
 def main():
     parser = argparse.ArgumentParser(description="Run eval/eval_set_v1.json against the live pipeline.")
@@ -279,6 +384,15 @@ def main():
     parser.add_argument("--retrieval-only", action="store_true", help="Pinecone + local embeddings only, zero Claude calls. Reports provisional state, not generated answers.")
     parser.add_argument("--rerank", action="store_true", help="With --retrieval-only: also score the candidate pool with a local cross-encoder (no API cost).")
     parser.add_argument("--questions-path", default=QUESTIONS_PATH, help="Path to the question-set JSON, e.g. eval/eval_set_v2.json.")
+    parser.add_argument(
+        "--old-baseline",
+        default="data/eval_v1_retrieval_only_rerank_v2_5k.json",
+        help=(
+            "Cached retrieval-only results (provisional_state per question id) used as the "
+            "pre-judge similarity-floor baseline for summary comparison. Pass '' to skip the "
+            "comparison. Ignored in --retrieval-only/--dry-run modes."
+        ),
+    )
     args = parser.parse_args()
 
     load_dotenv()
@@ -331,7 +445,10 @@ def main():
         checkpoint_f.close()
 
     results = sorted(results_by_id.values(), key=lambda r: r["id"])
-    summary = summarize(results)
+    old_baseline = load_old_baseline(args.old_baseline)
+    if args.old_baseline and not old_baseline:
+        print(f"(No old-threshold baseline loaded from {args.old_baseline!r} — comparison section omitted.)")
+    summary = summarize(results, old_baseline=old_baseline)
 
     summary_path = f"data/eval_v1_summary_{args.out}.json"
     with open(summary_path, "w", encoding="utf-8") as f:

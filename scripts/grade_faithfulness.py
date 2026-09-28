@@ -115,7 +115,11 @@ def grade_answer(client, question, sources, sentence_records):
     try:
         response = client.messages.create(
             model=get_model(),
-            max_tokens=1500,
+            # The grading model emits a thinking block before its text, and
+            # thinking tokens count against max_tokens. At 1500, 6 of 10 grades
+            # in the first v2 grading pass were truncated or empty (found live;
+            # see eval/REPORT_twostage_judge.md). 8000 leaves ample headroom.
+            max_tokens=8000,
             system=GRADER_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_content}],
         )
@@ -124,6 +128,10 @@ def grade_answer(client, question, sources, sentence_records):
     except anthropic.APIError as e:
         logger.error("Grader API call failed: %s", e)
         return _default_verdict(f"grader call failed: {e}")
+
+    if response.stop_reason == "max_tokens":
+        logger.error("Grader hit max_tokens before finishing (%d output tokens)", response.usage.output_tokens)
+        return _default_verdict("grader hit max_tokens")
 
     cleaned = extract_json_object(raw)
     try:

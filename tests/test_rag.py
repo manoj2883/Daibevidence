@@ -1143,6 +1143,43 @@ def test_judge_strips_bare_code_fences_no_language_tag():
     assert result == {"answerable": True, "reason": "ok"}
 
 
+def test_extract_json_object_fence_with_trailing_prose_after():
+    """
+    Live-discovered failure mode: a model told to "show your work" (Stage
+    B's prompt) can emit ```json ... ``` and then keep writing prose after
+    the closing fence — _strip_code_fences only handled a fence bracketing
+    the *entire* response, so this case fell through to a JSON parse
+    error. extract_json_object must find the fenced content regardless of
+    what follows it.
+    """
+    from src.rag.judge import extract_json_object
+
+    raw = '```json\n{"verdict": "sufficient", "reason": "ok"}\n```\n\n**Detailed reasoning:** blah blah blah'
+    assert json.loads(extract_json_object(raw)) == {"verdict": "sufficient", "reason": "ok"}
+
+
+def test_extract_json_object_bare_braces_with_prose_before_and_after():
+    from src.rag.judge import extract_json_object
+
+    raw = 'Sure, here is my analysis. {"verdict": "partial", "reason": "ok"} Let me know if you need more detail.'
+    assert json.loads(extract_json_object(raw)) == {"verdict": "partial", "reason": "ok"}
+
+
+def test_extract_json_object_handles_nested_braces_and_string_escapes():
+    from src.rag.judge import extract_json_object
+
+    raw = 'prose {"a": {"nested": 1}, "note": "a brace \\"like this }\\" inside a string"} trailing text'
+    parsed = json.loads(extract_json_object(raw))
+    assert parsed["a"]["nested"] == 1
+    assert "brace" in parsed["note"]
+
+
+def test_extract_json_object_no_json_at_all_returns_input_unchanged():
+    from src.rag.judge import extract_json_object
+
+    assert extract_json_object("no json here at all") == "no json here at all"
+
+
 def test_judge_malformed_json_defaults_to_not_answerable():
     from src.rag.judge import _parse_judge_response
 

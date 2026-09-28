@@ -13,6 +13,7 @@ same excerpts the main model would see.
 import json
 import logging
 import os
+import re
 from typing import Any, Dict, List
 
 import anthropic
@@ -62,7 +63,9 @@ def _strip_code_fences(text: str) -> str:
     """
     A small model asked for "JSON only" still occasionally wraps it in a
     ```json ... ``` fence — strip that before parsing rather than failing
-    on otherwise-valid JSON.
+    on otherwise-valid JSON. Only handles the case where the fence brackets
+    the *entire* response; see extract_json_object() for the more general
+    case (a fence, or bare braces, with prose before and/or after).
     """
     text = text.strip()
     if not text.startswith("```"):
@@ -76,6 +79,70 @@ def _strip_code_fences(text: str) -> str:
     return text.strip()
 
 
+def _find_matching_brace(text: str, start: int) -> int:
+    """
+    Given text[start] == '{', returns the index of its matching '}',
+    respecting string literals and escapes (a brace inside a quoted string
+    must never affect depth) — or -1 if the object never closes. Same
+    scanning approach as src.rag.chain.find_complete_json_objects, but for
+    finding one specific object's end rather than scanning a whole stream.
+    """
+    depth, in_string, escape = 0, False, False
+    for i in range(start, len(text)):
+        c = text[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif c == "\\":
+                escape = True
+            elif c == '"':
+                in_string = False
+        else:
+            if c == '"':
+                in_string = True
+            elif c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+                if depth == 0:
+                    return i
+    return -1
+
+
+def extract_json_object(text: str) -> str:
+    """
+    Robustly extracts a single JSON object from a model response that may
+    have prose before and/or after it — a small model told to "return only
+    JSON" (and, for the evidence judge, also told to "show your work") will
+    sometimes wrap the object in a ```json fence AND continue with
+    unrequested prose afterward, which a simple "strip a fence bracketing
+    the whole string" pass (see _strip_code_fences) cannot recover — this
+    was found live, not hypothetically, when Stage B's model produced
+    exactly this shape mid-eval.
+
+    Strategy, most-specific first:
+    1. A fenced ```...``` block anywhere in the text — take the first one's
+       contents (handles fence-plus-trailing-prose).
+    2. No fence: find the first '{' and its brace-matched '}' (handles bare
+       JSON with prose before/after, no fence at all).
+    3. Neither found: return the input unchanged (stripped) so the caller's
+       own json.loads still runs and fails with a normal error to log.
+    """
+    text = text.strip()
+
+    fence_match = re.search(r"```(?:json)?\s*\n?(.*?)```", text, re.DOTALL)
+    if fence_match:
+        return fence_match.group(1).strip()
+
+    brace_start = text.find("{")
+    if brace_start != -1:
+        brace_end = _find_matching_brace(text, brace_start)
+        if brace_end != -1:
+            return text[brace_start:brace_end + 1]
+
+    return text
+
+
 def _parse_judge_response(raw: str) -> Dict[str, Any]:
     """
     Never raises. Any malformed or unexpected shape logs the raw response
@@ -83,7 +150,7 @@ def _parse_judge_response(raw: str) -> Dict[str, Any]:
     response must never silently fall through to "answerable", since that
     would defeat the entire point of adding the judge as a gate.
     """
-    cleaned = _strip_code_fences(raw)
+    cleaned = extract_json_object(raw)
     try:
         parsed = json.loads(cleaned)
     except json.JSONDecodeError:

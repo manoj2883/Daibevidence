@@ -22,7 +22,7 @@ from typing import Any, Dict, Optional
 import anthropic
 
 from src.rag.cost import print_prompt_estimate
-from src.rag.judge import _strip_code_fences, get_judge_model
+from src.rag.judge import extract_json_object, get_judge_model
 
 logger = logging.getLogger("diabevidence")
 
@@ -164,7 +164,7 @@ def judge_scope(client: anthropic.Anthropic, question: str) -> Dict[str, Any]:
             logger.error("Scope judge API call failed (attempt %d): %s", attempt + 1, e)
             break
         last_raw = raw
-        cleaned = _strip_code_fences(raw)
+        cleaned = extract_json_object(raw)
         try:
             parsed = json.loads(cleaned)
         except json.JSONDecodeError:

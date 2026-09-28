@@ -41,7 +41,7 @@ import anthropic
 from dotenv import load_dotenv
 
 from src.rag.chain import get_client, get_model
-from src.rag.judge import _strip_code_fences
+from src.rag.judge import extract_json_object
 
 load_dotenv()
 
@@ -125,7 +125,7 @@ def grade_answer(client, question, sources, sentence_records):
         logger.error("Grader API call failed: %s", e)
         return _default_verdict(f"grader call failed: {e}")
 
-    cleaned = _strip_code_fences(raw)
+    cleaned = extract_json_object(raw)
     try:
         parsed = json.loads(cleaned)
     except json.JSONDecodeError:

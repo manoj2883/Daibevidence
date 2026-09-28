@@ -36,3 +36,8 @@ data/*
 !data/eval_results.csv
 !data/eval_summary_*.json
 !data/corpus_comparison_v1_300_vs_v2_5k.csv
+
+# Claude Code local settings and session handoff
+.claude/settings.local.json
+.claude/NEXT_SESSION.md
+.claude/scheduled_tasks.lock

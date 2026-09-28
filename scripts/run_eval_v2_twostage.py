@@ -11,6 +11,11 @@ the results), never to re-run after seeing a result you don't like.
 
 Does not modify eval/eval_set_v2.json or its labels.
 
+Resumable: each completed question is appended to <out>.partial.jsonl as soon as it finishes, and
+a restarted run skips every id already there, so a crash or kill never costs a re-run of finished
+questions. Stage A results are also cached on disk (data/scope_cache.json, keyed by prompt hash +
+question) and reused across runs.
+
 Usage:
     python -m scripts.run_eval_v2_twostage --namespace v2_5k
 """
@@ -22,8 +27,10 @@ import time
 from dotenv import load_dotenv
 
 from src.rag.chain import stream_answer
+from src.rag.scope_judge import enable_disk_cache
 
 QUESTIONS_PATH = "eval/eval_set_v2.json"
+SCOPE_CACHE_PATH = "data/scope_cache.json"
 OUT_PATH = "data/eval_v2_judge_twostage_v2_5k.json"
 # Fields added by the revised judge prompts (2026-09-28); absent (None) in runs before that.
 JUDGE_EXTRA_FIELDS = ("outcome", "area", "personal_dosing", "on_topic", "cross_study_comparison")
@@ -31,7 +38,20 @@ JUDGE_EXTRA_FIELDS = ("outcome", "area", "personal_dosing", "on_topic", "cross_s
 
 def load_questions(path=QUESTIONS_PATH):
     with open(path, encoding="utf-8") as f:
-        return json.load(f)["questions"]
+        data = json.load(f)
+    return data["questions"] if isinstance(data, dict) else data
+
+
+def load_checkpoint(path):
+    """Records already completed by an earlier (interrupted) invocation, keyed by id."""
+    done = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    record = json.loads(line)
+                    done[record["id"]] = record
+    return done
 
 
 def run_one_question(q, namespace):
@@ -102,8 +122,9 @@ def run_one_question(q, namespace):
 
     return {
         "id": q["id"],
-        "topic": q["topic"],
-        "in_scope": q["in_scope"],
+        "topic": q.get("topic"),
+        "in_scope": q.get("in_scope"),
+        "label": q.get("label"),
         "question": q["question"],
         "reference_answer": q.get("reference_answer"),
         "status": status,
@@ -138,6 +159,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run all 43 questions through the two-stage judge exactly once.")
     parser.add_argument("--namespace", required=True, help="Pinecone namespace to evaluate against, e.g. v2_5k.")
     parser.add_argument("--out", default=OUT_PATH, help="Output path.")
+    parser.add_argument("--questions", default=QUESTIONS_PATH, help="Question file ({'questions': [...]} or a bare list).")
     parser.add_argument("--label", default="two-stage judge (scope + evidence audit)", help="Pipeline label stored in the output file.")
     parser.add_argument("--force", action="store_true", help="Overwrite an existing output file. Use only to replace a run invalidated by a code bug, never after seeing results you don't like.")
     args = parser.parse_args()
@@ -150,19 +172,31 @@ def main():
         )
 
     load_dotenv()
-    questions = load_questions()
-    print(f"Loaded {len(questions)} questions. Namespace: {args.namespace!r}")
+    questions = load_questions(args.questions)
+    print(f"Loaded {len(questions)} questions from {args.questions}. Namespace: {args.namespace!r}")
+    print(f"Stage A disk cache: {enable_disk_cache(SCOPE_CACHE_PATH)} entries loaded from {SCOPE_CACHE_PATH}")
+
+    checkpoint_path = args.out + ".partial.jsonl"
+    done = load_checkpoint(checkpoint_path)
+    if done:
+        print(f"Resuming: {len(done)} question(s) already completed in {checkpoint_path}, skipping them.")
 
     results = []
     for q in questions:
-        print(f"  [{q['topic']:30s}] id={q['id']} {q['question'][:60]!r}")
+        if q["id"] in done:
+            results.append(done[q["id"]])
+            continue
+        print(f"  [{str(q.get('topic') or q.get('label')):30s}] id={q['id']} {q['question'][:60]!r}")
         record = run_one_question(q, namespace=args.namespace)
         results.append(record)
+        with open(checkpoint_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
         print(f"    -> status={record['status']} scope={record['scope']} evidence_verdict={record['evidence_verdict']}")
 
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump({"pipeline": args.label, "namespace": args.namespace, "results": results}, f, ensure_ascii=False, indent=2)
 
+    os.remove(checkpoint_path)
     status_counts = {}
     for r in results:
         status_counts[r["status"]] = status_counts.get(r["status"], 0) + 1

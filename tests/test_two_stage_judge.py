@@ -446,3 +446,34 @@ def test_judge_fields_surfaces_new_fields_and_tolerates_bypassed_results():
                       "on_topic": True, "cross_study_comparison": False}
     bypassed = _judge_fields({"scope": "in_charter", "topic": None, "reason": "forced"})
     assert bypassed["personal_dosing"] is False and bypassed["on_topic"] is None
+
+
+def test_scope_disk_cache_persists_and_is_keyed_by_prompt(tmp_path, monkeypatch):
+    import src.rag.scope_judge as scope_judge
+
+    cache_file = tmp_path / "scope_cache.json"
+    monkeypatch.setattr(scope_judge, "_disk_cache_path", None)
+    monkeypatch.setattr(scope_judge, "_disk_cache", {})
+    scope_judge.get_scope_cache().clear()
+    assert scope_judge.enable_disk_cache(cache_file) == 0
+
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(json.dumps(
+        {"scope": "in_charter", "area": "glycemic_control", "personal_dosing": False, "reason": "ok"}))
+    scope_judge.judge_scope(mock_client, "Does CGM lower HbA1c?")
+    assert cache_file.exists()
+
+    # A fresh process (empty memory cache) reuses the disk entry with no API call.
+    scope_judge.get_scope_cache().clear()
+    assert scope_judge.enable_disk_cache(cache_file) == 1
+    fresh_client = MagicMock()
+    result = scope_judge.judge_scope(fresh_client, "does cgm lower  HbA1c?")
+    assert result["cached"] is True and result["area"] == "glycemic_control"
+    fresh_client.messages.create.assert_not_called()
+
+    # A changed prompt (e.g. charter edit) invalidates the entry.
+    scope_judge.get_scope_cache().clear()
+    monkeypatch.setattr(scope_judge, "build_scope_prompt", lambda: "a different prompt")
+    scope_judge.judge_scope(mock_client, "Does CGM lower HbA1c?")
+    assert mock_client.messages.create.call_count == 2
+    monkeypatch.setattr(scope_judge, "_disk_cache_path", None)

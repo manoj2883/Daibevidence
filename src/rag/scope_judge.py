@@ -13,6 +13,7 @@ unrelated. The prompt's wording (user-written, 2026-09-28) decides by the questi
 than by the terms it uses; the four-area list and the adjacent examples inside it are read from the
 charter's "## Areas" and "## Adjacent examples" sections, never duplicated here.
 """
+import hashlib
 import json
 import logging
 import os
@@ -91,6 +92,10 @@ _charter_lock = threading.Lock()
 _charter_text: Optional[str] = None
 _cache_lock = threading.Lock()
 _scope_cache: Dict[str, Dict[str, Any]] = {}
+# Optional on-disk layer, enabled by eval scripts (enable_disk_cache) so Stage A results are reused
+# across runs. Off by default: the API process keeps the in-memory cache only.
+_disk_cache_path: Optional[Path] = None
+_disk_cache: Dict[str, Dict[str, Any]] = {}
 
 
 def load_charter() -> str:
@@ -144,6 +149,30 @@ def build_scope_prompt() -> str:
 
 def _normalize_question(question: str) -> str:
     return re.sub(r"\s+", " ", (question or "").strip().lower())
+
+
+def enable_disk_cache(path) -> int:
+    """
+    Persists Stage A results to a JSON file at `path` and loads any already there. Entries are
+    keyed by a hash of the fully assembled prompt plus the normalized question, so editing the
+    charter or the prompt template automatically invalidates every old entry instead of silently
+    reusing a judgment made under different instructions. Returns the number of entries loaded.
+    """
+    global _disk_cache_path, _disk_cache
+    _disk_cache_path = Path(path)
+    _disk_cache = json.loads(_disk_cache_path.read_text(encoding="utf-8")) if _disk_cache_path.exists() else {}
+    return len(_disk_cache)
+
+
+def _disk_key(question: str) -> str:
+    prompt_hash = hashlib.sha256(build_scope_prompt().encode("utf-8")).hexdigest()[:16]
+    return f"{prompt_hash}|{_normalize_question(question)}"
+
+
+def _save_disk_cache() -> None:
+    tmp = _disk_cache_path.with_suffix(_disk_cache_path.suffix + ".tmp")
+    tmp.write_text(json.dumps(_disk_cache, ensure_ascii=False, indent=1), encoding="utf-8")
+    os.replace(tmp, _disk_cache_path)
 
 
 def get_scope_cache() -> Dict[str, Dict[str, Any]]:
@@ -232,6 +261,10 @@ def judge_scope(client: anthropic.Anthropic, question: str) -> Dict[str, Any]:
     key = _normalize_question(question)
     with _cache_lock:
         cached = _scope_cache.get(key)
+        if cached is None and _disk_cache_path is not None:
+            cached = _disk_cache.get(_disk_key(question))
+            if cached is not None:
+                _scope_cache[key] = cached
     if cached is not None:
         return {**cached, "cached": True}
 
@@ -256,6 +289,9 @@ def judge_scope(client: anthropic.Anthropic, question: str) -> Dict[str, Any]:
             validated["cached"] = False
             with _cache_lock:
                 _scope_cache[key] = {k: v for k, v in validated.items() if k != "cached"}
+                if _disk_cache_path is not None:
+                    _disk_cache[_disk_key(question)] = _scope_cache[key]
+                    _save_disk_cache()
             return validated
         logger.error("Scope judge response failed schema validation (attempt %d): %r", attempt + 1, raw[:500])
 

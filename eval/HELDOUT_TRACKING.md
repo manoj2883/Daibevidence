@@ -20,18 +20,18 @@ Single place to track the held-out run of the revised judge prompts. Update the 
 |---|---|---|---|
 | Dev/regression run on the 43 | done | `f74c6b7` | 14/24 in-scope answered vs predicted 14/24 |
 | Held-out questions | done (Claude-drafted, see deviations) | `eval/heldout_v1.json` | 8 in_scope / 5 adjacent / 3 unrelated |
-| Held-out run | **partial: 8/16 valid, blocked** | `data/eval_heldout_v1_v2_5k.json` | |
-| Faithfulness grading | **blocked** (3 grades invalid) | `eval/hand_grading_heldout_v1.csv` | |
-| Report section appended | not started | `eval/REPORT_twostage_judge.md` | |
+| Held-out run | done (resumed after API limit) | `data/eval_heldout_v1_v2_5k.json` | |
+| Faithfulness grading | done, 0 grading errors | `eval/hand_grading_heldout_v1.csv` | |
+| Report section appended | done | `eval/REPORT_twostage_judge.md` | |
 
 ## Open items
-- **API usage limit reached mid-run (2026-09-28 ~13:15). Access returns 2026-10-01 00:00 UTC.** Ids 101-108 completed
+- RESOLVED 2026-09-28: limit lifted the same day; run resumed at 109 and completed. Original note: API usage limit reached mid-run (2026-09-28 ~13:15). Access returns 2026-10-01 00:00 UTC.** Ids 101-108 completed
   every stage and are kept in `data/eval_heldout_v1_v2_5k.json.partial.jsonl`. Ids 109-116 failed closed at Stage A on
   the API error ("Scope judge API call failed") and are invalid; all 3 faithfulness grades (105, 106, 108) are invalid
   for the same reason. Invalid outputs are kept as `*.INVALID_api_usage_limit.json`.
   To finish, after the reset, re-run the same run command (it resumes at 109), then the grading and report commands.
   Or raise the usage limit in the Anthropic Console to finish sooner.
-- Mano's step-3 instructions were cut off at "If a run crashes, fix"; the rest is still to come.
+- Mano's step-3 instructions were cut off at "If a run crashes, fix"; the rest never arrived. Mano marked this final on 2026-09-28.
 
 ## Deviations log
 - 2026-09-28: **Questions drafted by Claude, not Mano**, at Mano's explicit request ("generate new 16 questions and run

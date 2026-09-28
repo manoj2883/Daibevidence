@@ -220,3 +220,36 @@ In-scope answered: 14/24 vs predicted 14/24 (ceiling 14; 10 are confirmed corpus
 - Below ceiling: id 18 (in_scope_no_evidence): The core proposition requires a direct comparison of WC versus BMI as predictors of metabolic risk in type 2 diabetes, but C1 addresses prediabetes not diabetes, C2 discusses WWI not WC, C3 and C4 address outcomes other than metabolic risk prediction comparison, and C5 compares WHtR to BMI rather than WC to BMI.
 - Below ceiling: id 19 (out_of_scope): The outcome concerns vitamin B12 status, which is a nutritional biomarker unrelated to glycemic control, body composition, diet, or diet-medication interactions on glucose metabolism.
 - Answered beyond the prediction: ids [11, 23].
+
+## Held-out run: `eval/heldout_v1.json` (revised prompts)
+
+| id | label | scope | evidence verdict | status | faithfulness |
+|---|---|---|---|---|---|
+| 101 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 102 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 103 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 104 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 105 | in_scope | in_charter | partial | answered_partial | PARTIALLY_SUPPORTED |
+| 106 | in_scope | in_charter | sufficient | answered | SUPPORTED |
+| 107 | in_scope | adjacent | insufficient | out_of_scope | n/a |
+| 108 | in_scope | in_charter | partial | answered_partial | UNSUPPORTED |
+| 109 | adjacent | adjacent | insufficient | out_of_scope | n/a |
+| 110 | adjacent | adjacent | insufficient | out_of_scope | n/a |
+| 111 | adjacent | adjacent | insufficient | out_of_scope | n/a |
+| 112 | adjacent | adjacent | insufficient | out_of_scope | n/a |
+| 113 | adjacent | adjacent | insufficient | out_of_scope | n/a |
+| 114 | unrelated | unrelated | None | out_of_scope | n/a |
+| 115 | unrelated | unrelated | None | out_of_scope | n/a |
+| 116 | unrelated | unrelated | None | out_of_scope | n/a |
+
+| Label | n | Answered (95% Wilson CI) |
+|---|---|---|
+| adjacent | 5 | 0/5 = 0.0% (0.0%–43.5%) |
+| in_scope | 8 | 3/8 = 37.5% (13.7%–69.4%) |
+| unrelated | 3 | 0/3 = 0.0% (0.0%–56.1%) |
+
+- Held-out set was Claude-drafted at Mano's request (deviation logged in `eval/HELDOUT_TRACKING.md`): semi-independent, not a clean held-out measurement.
+- Scope: 15/16 correct. Only id 107 (metformin with food, a diet-medication interaction) was misjudged as adjacent.
+- 4 of 8 in-scope questions were "no evidence in index"; id 101's gap is a contrary finding (water did not improve HbA1c) that the audit treated as insufficient.
+- Id 108 (personal dosing) set the dosing flag as intended, but its answer graded UNSUPPORTED.
+- Run was interrupted by an API usage limit and resumed; ids 101-108 are from the first pass, 109-116 from the resume. No pipeline change in between.

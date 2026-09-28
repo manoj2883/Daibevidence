@@ -1,0 +1,128 @@
+{
+  "grader_model": "claude-sonnet-5",
+  "source_results_path": "data/eval_heldout_v1_v2_5k.json",
+  "results": [
+    {
+      "id": 105,
+      "question": "How much weight loss do SGLT2 inhibitors typically produce in people with type 2 diabetes?",
+      "status": "answered_partial",
+      "generated_answer": "SGLT2 inhibitors are a class of medicines used to treat type 2 diabetes, and research shows they can also help people lose weight. This evidence comes from studies in people with type 2 diabetes. One meta-analysis looked at SGLT2 inhibitors as possible weight-loss treatments in overweight and obese people with type 2 diabetes, but it did not report a specific amount of weight lost. A separate meta-analysis found that when an SGLT2 inhibitor was added to insulin treatment, people lost an average of 1.07 kilograms more body weight than those not taking the added drug. C1 confirms SGLT2i produce weight loss in type 2 diabetes but provides no magnitude; C5 reports only -1.07 kg reduction specifically when combined with insulin, not SGLT2i monotherapy in type 2 diabetes, so the typical magnitude for the general type 2 diabetes population remains unspecified.",
+      "cited_chunk_texts": "[1] Sodium-glucose cotransporter 2 (SGLT2) inhibitors are primarily used for the treatment of type 2 diabetes; however, they have also been reported to be effective in weight loss. We conducted a meta-analysis to consolidate evidence from randomized clinical trials assessing the effects of SGLT2 inhibitors, as potential anti-obesity agents, on cardiovascular risk in overweight and obese participants.\n\n[2] Eleven studies were included. SGLT2i in combination with insulin reduced body weight (MD -1.07 kg; p = 0.004) and systolic blood pressure (MD -2.91 mmHg; p = 0.01). Reductions were observed in HbA1c (MD -0.29%; p = 0.07), fasting plasma glucose (MD -21.27 mg/dL; p = 0.09), mean amplitude of glycaemic excursions (MD -1.85 mg/dL; p = 0.87), insulin dose (MD -2.0; p = 0.10), and triglycerides (MD -23.43 mg/dL; p = 0.25) with SGLT2i and insulin, but were not statistically significant. Observational evidence suggested lower cardiovascular mortality with SGLT2i plus insulin therapy (OR 0.54; p < 0.00001). Subgroup analyses demonstrated greater reductions in HbA1c and fasting plasma glucose among patients receiving premixed insulin, particularly in studies with longer treatment duration (24 weeks), longer diabetes duration (>13 years), and baseline HbA1c≥ 8%.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 1 states SGLT2i are used for T2D and reported effective for weight loss."
+          },
+          {
+            "index": 2,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 2 clearly involves T2D patients, but passage 1's study population is described as 'overweight and obese participants,' not explicitly all type 2 diabetics."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 1's abstract describes the meta-analysis population and does not give a specific weight loss figure."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 2 reports MD -1.07 kg body weight reduction with SGLT2i plus insulin."
+          },
+          {
+            "index": 5,
+            "label": "UNSUPPORTED",
+            "why": "This sentence points to no passages yet makes specific factual claims about the studies' scope and conclusions."
+          }
+        ],
+        "answers_the_question": 4,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 106,
+      "question": "Does resistance training increase muscle mass in older adults with type 2 diabetes?",
+      "status": "answered",
+      "generated_answer": "Yes, resistance training has been shown to increase muscle mass and strength in older adults with type 2 diabetes. This evidence comes from studies specifically looking at people with type 2 diabetes, often older adults. A meta-analysis of 19 randomized controlled trials in older adults with type 2 diabetes found that resistance exercise training increased lean body mass and reduced waist circumference, while also significantly improving muscle strength. The same analysis found resistance training lowered blood sugar markers, including a drop in HbA1c and fasting blood glucose, and improved triglycerides, total cholesterol, and LDL cholesterol, though it had no effect on body weight or overall fat mass. A separate randomized controlled trial in older adults with type 2 diabetes found that doing resistance exercises twice a week improved both muscle strength and muscle mass, regardless of whether participants also took whey protein supplements, and this pattern helped prevent the progression of sarcopenia, the age-related loss of muscle. A broader review of people with type 2 diabetes concluded that resistance exercise is the most effective lifestyle strategy for increasing muscle mass and strength, more so than aerobic exercise or increased dietary protein alone. That same review noted there is some evidence that muscle in people with type 2 diabetes may respond less strongly to these stimuli, a pattern called anabolic resistance, meaning gains may be smaller than expected for a given amount of exercise.",
+      "cited_chunk_texts": "[1] Both groups showed improvements in muscle strength and mass, regardless of supplementation, showing that resistance exercises performed twice a week can contribute to the nonprogression of sarcopenia in older adults with Type 2 diabetes. More studies are needed to determine the safe and effective amount of supplementation to improve muscle strength without renal impairment in older adults with diabetes.\n\n[2] This systematic review and meta-analysis evaluated the efficacy of Resistance Exercise Training (RET) on metabolic health, body composition, and muscle strength in older adults with type 2 diabetes (T2DM). Electronic databases were systematically searched and meta-analyses were conducted using random-effects models. Meta-regression analyses were also performed to explore potential sources of heterogeneity. Nineteen randomized controlled trials (RCTs) met the inclusion criteria. RET significantly improved hemoglobin A1c (MD: -0.51, P < 0.0001) and fasting blood glucose (mean differences: MD: -1.43 mg/dl, P = 0.04), though insulin levels remained unchanged. Lipid profile analysis revealed significant reductions in triglycerides (MD: -0.32, P = 0.03), total cholesterol (MD: -7.08, P = 0.005), and low-density lipoprotein (MD: -1.91, P = 0.05), without significant changes in high-density lipoprotein. RET increased lean mass and reduced waist circumference but had no effect on body weight and fat mass. Muscle strength improved significantly, but there was no impact on blood pressure or heart rate. These findings suggest that RET is beneficial for enhancing glycemic control, lipid profiles, lean mass, and muscle strength in older adults with T2DM, while its effects on body weight, fat mass, and cardiovascular health remain inconclusive. Further studies are needed to explore long-term effects.\n\n[5] People with type 2 diabetes (T2D) have a 2-3-time higher risk of developing sarcopenia, a musculoskeletal disease marked by a progressive loss of skeletal muscle mass and strength, compared to people without T2D. This narrative review examines the effectiveness of lifestyle interventions in enhancing muscle mass and strength in people with T2D, emphasizing their growing importance with advancements in obesity treatments. PubMed and Google Scholar were utilized to identify the most relevant published studies based on the authors' knowledge. The maintenance of skeletal muscle strength and mass in people with T2D is becoming more prominent due to the advent of weight loss therapies such as low-energy diets, bariatric surgery and pharmacotherapies. Although the weight loss is to be commended, a large proportion (20-50%) of the weight loss comes from lean mass, indicative of a loss in muscle mass. There are currently no pharmacotherapies to increase, or mitigate the loss of, lean mass, with lifestyle strategies prominent in this arena. Resistance exercise is the most effective method to increase muscle mass and strength in people with T2D, but there is some evidence of an anabolic resistance. Aerobic exercise and increased dietary protein intake may result in small increases in muscle mass and strength, with no evidence of an anabolic resistance to these stimuli. Exercise and protein supplementation can increase, or aid in the retention of, muscle strength and mass in individuals with T2D, but further research is needed to explore their benefits in patients undergoing concomitant pharmaceutical and surgical treatments.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "All three passages confirm resistance training increases muscle mass/strength in older adults with T2D."
+          },
+          {
+            "index": 2,
+            "label": "NOT_APPLICABLE",
+            "why": "General framing statement about the evidence base, not a specific factual claim tied to a source."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Matches passage 2's description of the 19-RCT meta-analysis findings on lean mass, waist circumference, and strength."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Matches passage 2's reported glycemic and lipid findings and lack of effect on body weight/fat mass."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Matches passage 1's description of the RCT results on strength, mass, and sarcopenia prevention."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Matches passage 5's statement that resistance exercise is most effective compared to aerobic exercise or protein alone."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Matches passage 5's mention of anabolic resistance evidence in T2D."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 108,
+      "question": "I take 20 units of insulin glargine at night. Should I lower my dose if I start intermittent fasting?",
+      "status": "answered_partial",
+      "generated_answer": "Research on insulin use during fasting in type 2 diabetes finds that the main goal is to give enough insulin to stop blood sugar from rising too high after meals while also avoiding blood sugar dropping too low during the fast. A separate review found that intermittent fasting can be safe for people taking insulin, but blood sugar must be checked constantly during fasting to lower the risk of dangerously low blood sugar events. This evidence comes from studies in people with type 2 diabetes, while your use of basal insulin glargine alone suggests you may have type 1 diabetes, so these findings may not fully apply to your situation. No study in the retrieved literature gives a specific dosing recommendation for adjusting basal insulin glargine during intermittent fasting; the available review addresses intermittent fasting and insulin safety in general terms, noting that glycemic control must be monitored, but it covers type 2 diabetes rather than the type 1 diabetes-like pattern suggested by a 20-unit glargine-only regimen.",
+      "cited_chunk_texts": "[1] Recommendations based on insulin dose modification during fasting in T2DM patients has been developed. Patients with diabetes, who fast are recommended to keep themselves hydrated, consume low glycaemic and high fibre food but, avoid sugary and caffeinated drinks along with fried foods. The main goal of insulin therapy during fasting is to provide adequate insulin to prevent post meal hyperglycaemia and prevent hypoglycaemia during fast.\n\n[2] Intermittent fasting (IF) regimens have emerged as a dietary tool to improve the glycemic profile, but a critical appraisal of clinical studies assessing the effects of IF regimens in patients with diabetes is needed. Thus, this review encompasses clinical studies examining the impact of different IF regimens on markers of glycemic control in patients with diabetes. Furthermore, clinical nuances relative to pharmacological treatment are also addressed, mainly insulin therapy, to discuss the risk of hypoglycemic events. Only a handful of clinical studies have investigated the effects of IF on patients with diabetes. Overall, IF regimens may elicit modest benefits on glycemic parameters in patients with diabetes, but their effects are not necessarily greater than those of control diets. Last, although IF regimens may be considered safe for patients receiving insulin therapy within interventional and observational research, markers of glycemic control must be constantly monitored in clinical practice to reduce the risk of hypoglycemia and its related complications.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Matches passage 1's statement on the main goal of insulin therapy during fasting."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Matches passage 2's conclusion about safety with monitoring for hypoglycemia."
+          },
+          {
+            "index": 3,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 1 does specify T2DM, but the inference that glargine-only use suggests type 1 diabetes is not stated in either passage."
+          },
+          {
+            "index": 4,
+            "label": "UNSUPPORTED",
+            "why": "Points to no passage yet asserts specific claims about dosing recommendations and diabetes type inference not found in sources."
+          }
+        ],
+        "answers_the_question": null,
+        "overall": "UNSUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    }
+  ]
+}

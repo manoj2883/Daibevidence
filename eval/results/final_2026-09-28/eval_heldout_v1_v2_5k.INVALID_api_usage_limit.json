@@ -1,0 +1,1403 @@
+{
+  "pipeline": "held-out v1 (Claude-drafted), revised prompts",
+  "namespace": "v2_5k",
+  "results": [
+    {
+      "id": 101,
+      "topic": "diet_nutrition",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "Does replacing sugar-sweetened beverages with water improve HbA1c in adults with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "in_scope_no_evidence",
+      "scope": "in_charter",
+      "scope_reason": "The question asks about HbA1c, a direct measure of glycemic control, which is one of the four in-charter outcome areas.",
+      "evidence_verdict": "insufficient",
+      "evidence_reason": "C3 provides evidence that water substitution did NOT improve HbA1c over 24 weeks in the tested population, which is the opposite of the improvement claimed in the question, making this directly contradictory rather than supportive evidence.",
+      "propositions": [
+        {
+          "claim": "Replacing sugar-sweetened beverages with water improves HbA1c in adults with type 2 diabetes",
+          "core": true,
+          "direct": [],
+          "partial": [
+            3
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The intervention is replacement of sugar-sweetened beverages with water",
+          "core": false,
+          "direct": [
+            1,
+            3
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "The outcome measured is HbA1c",
+          "core": false,
+          "direct": [
+            1,
+            3
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "The effect direction is improvement (reduction in HbA1c)",
+          "core": false,
+          "direct": [],
+          "partial": [
+            3
+          ],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "question_population": "adults with type 2 diabetes",
+      "evidence_populations": [
+        "type 2 diabetes (C1, C3)"
+      ],
+      "outcome": "HbA1c",
+      "area": "glycemic_control",
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.715652466,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.715652466,
+          0.690732956,
+          0.685508251,
+          0.677089691,
+          0.674295425,
+          0.672660351,
+          0.672539294,
+          0.66702795,
+          0.661211,
+          0.658962727
+        ],
+        "surviving_count": 5,
+        "top_score": 0.715652466
+      },
+      "generated_answer": null,
+      "refusal_message": "This is a question DiabEvidence is meant to answer, but the literature in the index doesn't address it.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1559.8,
+        "retrieval": 1217.2,
+        "evidence": 3317.7
+      },
+      "wall_ms": 6119.3,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 102,
+      "topic": "diet_nutrition",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "Is regular nut consumption associated with lower fasting glucose in people with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "in_scope_no_evidence",
+      "scope": "in_charter",
+      "scope_reason": "The question asks about fasting glucose, a glycemic control outcome, in adults with type 2 diabetes, regardless of the intervention (nut consumption).",
+      "evidence_verdict": "insufficient",
+      "evidence_reason": "No passage directly states that nut consumption is associated with lower fasting glucose in type 2 diabetes; C1 says nuts may have a potential role but notes 'limited definitive evidence,' and C4 reports associations for nuts were 'generally neutral and not statistically significant.'",
+      "propositions": [
+        {
+          "claim": "Regular nut consumption is associated with lower fasting glucose in people with type 2 diabetes",
+          "core": true,
+          "direct": [],
+          "partial": [
+            1,
+            4
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The association is specifically with fasting glucose (not other glucose measures)",
+          "core": false,
+          "direct": [],
+          "partial": [
+            1
+          ],
+          "absent": true
+        },
+        {
+          "claim": "The effect applies to people with type 2 diabetes",
+          "core": false,
+          "direct": [
+            1
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "question_population": "people with type 2 diabetes",
+      "evidence_populations": [
+        "type2 (C1)",
+        "mixed (C4)"
+      ],
+      "outcome": "fasting glucose levels",
+      "area": "glycemic_control",
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.768775,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.768775,
+          0.725119114,
+          0.72066021,
+          0.718700886,
+          0.715935707,
+          0.712086678,
+          0.70433,
+          0.699848175,
+          0.695543766,
+          0.691299915
+        ],
+        "surviving_count": 5,
+        "top_score": 0.768775
+      },
+      "generated_answer": null,
+      "refusal_message": "This is a question DiabEvidence is meant to answer, but the literature in the index doesn't address it.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1358.3,
+        "retrieval": 115.5,
+        "evidence": 6778.1
+      },
+      "wall_ms": 8254.7,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 103,
+      "topic": "glycemic_control",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "How does sleep duration affect HbA1c in adults with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "in_scope_no_evidence",
+      "scope": "in_charter",
+      "scope_reason": "The question asks about HbA1c, a core glycemic control outcome, in adults with type 2 diabetes.",
+      "evidence_verdict": "insufficient",
+      "evidence_reason": "The core proposition about HbA1c effects of sleep duration in type 2 diabetes has no direct evidence in the target population; C1 discusses the relationship in mixed/general diabetic populations but provides only epidemiological patterns without specific HbA1c magnitudes, and all intervention data (C3, C5) are from type 1 diabetes, not type 2.",
+      "propositions": [
+        {
+          "claim": "Sleep duration affects HbA1c in adults with type 2 diabetes (core: relationship exists and direction/magnitude)",
+          "core": true,
+          "direct": [],
+          "partial": [
+            1
+          ],
+          "absent": false
+        },
+        {
+          "claim": "Short sleep duration is associated with worse HbA1c/glycemia",
+          "core": false,
+          "direct": [
+            1
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Long sleep duration is associated with worse metabolic outcomes",
+          "core": false,
+          "direct": [
+            1
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Sleep interventions improve HbA1c in adults with type 2 diabetes",
+          "core": false,
+          "direct": [],
+          "partial": [],
+          "absent": true
+        }
+      ],
+      "population_mismatch": true,
+      "question_population": "adults with type 2 diabetes",
+      "evidence_populations": [
+        "mixed (C1)",
+        "type 1 diabetes (C2, C3, C4, C5)"
+      ],
+      "outcome": "HbA1c",
+      "area": "glycemic_control",
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.756177902,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.756177902,
+          0.749964714,
+          0.735518456,
+          0.7319718,
+          0.727220535,
+          0.72663784,
+          0.703169882,
+          0.702914238,
+          0.699908257,
+          0.698806822
+        ],
+        "surviving_count": 5,
+        "top_score": 0.756177902
+      },
+      "generated_answer": null,
+      "refusal_message": "This is a question DiabEvidence is meant to answer, but the literature in the index doesn't address it.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1089.8,
+        "retrieval": 101.1,
+        "evidence": 3971.3
+      },
+      "wall_ms": 5165.8,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 104,
+      "topic": "glycemic_control",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "Is hypoglycemia more common with sulfonylureas than with DPP-4 inhibitors in older adults with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "in_scope_no_evidence",
+      "scope": "in_charter",
+      "scope_reason": "The outcome is hypoglycemia, which is a glycemic control outcome, making this question in charter regardless of the intervention being medications.",
+      "evidence_verdict": "insufficient",
+      "evidence_reason": "No passage directly compares hypoglycemia rates between sulfonylureas and DPP-4 inhibitors; C3 discusses glucagon response mechanisms in elderly on DPP-4 inhibitors but does not state actual hypoglycemia frequency, and C4 mentions sulfonylurea-related neonatal hypoglycemia in gestational diabetes, not type 2 diabetes in older adults.",
+      "propositions": [
+        {
+          "claim": "Hypoglycemia is more common with sulfonylureas than with DPP-4 inhibitors",
+          "core": true,
+          "direct": [],
+          "partial": [
+            3,
+            5
+          ],
+          "absent": false
+        },
+        {
+          "claim": "This comparison applies to older adults",
+          "core": false,
+          "direct": [
+            3,
+            5
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "This comparison applies to type 2 diabetes",
+          "core": false,
+          "direct": [
+            2,
+            3,
+            5
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "question_population": "older adults with type 2 diabetes",
+      "evidence_populations": [
+        "elderly subjects with metformin-treated T2D (C3)",
+        "elderly patients (C5)",
+        "drug-naive Japanese patients with T2DM (C2)"
+      ],
+      "outcome": "hypoglycemia risk comparison between two drug classes",
+      "area": "glycemic_control",
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.724243164,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.724243164,
+          0.71840477,
+          0.680634499,
+          0.678166389,
+          0.676983833,
+          0.666079581,
+          0.660038948,
+          0.640981674,
+          0.633628845,
+          0.631065369
+        ],
+        "surviving_count": 5,
+        "top_score": 0.724243164
+      },
+      "generated_answer": null,
+      "refusal_message": "This is a question DiabEvidence is meant to answer, but the literature in the index doesn't address it.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1450.4,
+        "retrieval": 183.6,
+        "evidence": 3922.2
+      },
+      "wall_ms": 5559.9,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 105,
+      "topic": "body_composition_weight",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "How much weight loss do SGLT2 inhibitors typically produce in people with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "answered_partial",
+      "scope": "in_charter",
+      "scope_reason": "The outcome is body weight, which maps directly to the body_composition_weight area, making this in-charter regardless of the intervention being a medication.",
+      "evidence_verdict": "partial",
+      "evidence_reason": "C1 confirms SGLT2i produce weight loss in type 2 diabetes but provides no magnitude; C5 reports only -1.07 kg reduction specifically when combined with insulin, not SGLT2i monotherapy in type 2 diabetes, so the typical magnitude for the general type 2 diabetes population remains unspecified.",
+      "propositions": [
+        {
+          "claim": "SGLT2 inhibitors produce weight loss in people with type 2 diabetes",
+          "core": true,
+          "direct": [
+            1
+          ],
+          "partial": [
+            2
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The typical magnitude of weight loss from SGLT2 inhibitors in type 2 diabetes",
+          "core": false,
+          "direct": [
+            5
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "question_population": "people with type 2 diabetes",
+      "evidence_populations": [
+        "type 2 diabetes (C1, C2, C4, C5)",
+        "overweight/obese individuals (C3 - non-diabetic focus)",
+        "patients on insulin + SGLT2i (C5)"
+      ],
+      "outcome": "body weight change from SGLT2 inhibitors",
+      "area": "body_composition_weight",
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.765648901,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.765648901,
+          0.764876425,
+          0.762506545,
+          0.75577265,
+          0.751757681,
+          0.741298735,
+          0.74013716,
+          0.716199,
+          0.715429366,
+          0.71484381
+        ],
+        "surviving_count": 5,
+        "top_score": 0.765648901
+      },
+      "generated_answer": "SGLT2 inhibitors are a class of medicines used to treat type 2 diabetes, and research shows they can also help people lose weight. This evidence comes from studies in people with type 2 diabetes. One meta-analysis looked at SGLT2 inhibitors as possible weight-loss treatments in overweight and obese people with type 2 diabetes, but it did not report a specific amount of weight lost. A separate meta-analysis found that when an SGLT2 inhibitor was added to insulin treatment, people lost an average of 1.07 kilograms more body weight than those not taking the added drug. C1 confirms SGLT2i produce weight loss in type 2 diabetes but provides no magnitude; C5 reports only -1.07 kg reduction specifically when combined with insulin, not SGLT2i monotherapy in type 2 diabetes, so the typical magnitude for the general type 2 diabetes population remains unspecified.",
+      "refusal_message": null,
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "40116200",
+          "title": "Sodium-glucose cotransporter 2 (SGLT2) inhibitors, as potential (off-label) anti-obesity agents and effects on cardiovascular risk: A systematic review and meta-analysis.",
+          "journal": "International journal of clinical pharmacology and therapeutics",
+          "year": "2025",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Sodium-glucose cotransporter 2 (SGLT2) inhibitors are primarily used for the treatment of type 2 diabetes; however, they have also been reported to be effective in weight loss. We conducted a meta-analysis to consolidate evidence from randomized clinical trials assessing the effects of SGLT2 inhibitors, as potential anti-obesity agents, on cardiovascular risk in overweight and obese participants.",
+          "score": 0.765648901
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41905822",
+          "title": "Beyond insulin therapy: Comparing relative benefits of adding SGLT2 versus DPP4 inhibitors in poorly controlled type 2 diabetic patients: A systematic review and meta-analysis.",
+          "journal": "Primary care diabetes",
+          "year": "2026",
+          "publication_type": "Systematic Review; Meta-Analysis; Journal Article",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Eleven studies were included. SGLT2i in combination with insulin reduced body weight (MD -1.07 kg; p = 0.004) and systolic blood pressure (MD -2.91 mmHg; p = 0.01). Reductions were observed in HbA1c (MD -0.29%; p = 0.07), fasting plasma glucose (MD -21.27 mg/dL; p = 0.09), mean amplitude of glycaemic excursions (MD -1.85 mg/dL; p = 0.87), insulin dose (MD -2.0; p = 0.10), and triglycerides (MD -23.43 mg/dL; p = 0.25) with SGLT2i and insulin, but were not statistically significant. Observational evidence suggested lower cardiovascular mortality with SGLT2i plus insulin therapy (OR 0.54; p < 0.00001). Subgroup analyses demonstrated greater reductions in HbA1c and fasting plasma glucose among patients receiving premixed insulin, particularly in studies with longer treatment duration (24 weeks), longer diabetes duration (>13 years), and baseline HbA1c≥ 8%.",
+          "score": 0.751757681
+        }
+      ],
+      "sentence_records": [
+        {
+          "sentence": "SGLT2 inhibitors are a class of medicines used to treat type 2 diabetes, and research shows they can also help people lose weight.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "40116200"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This evidence comes from studies in people with type 2 diabetes.",
+          "chunk_ids": [
+            1,
+            2
+          ],
+          "pmids": [
+            "40116200",
+            "41905822"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "One meta-analysis looked at SGLT2 inhibitors as possible weight-loss treatments in overweight and obese people with type 2 diabetes, but it did not report a specific amount of weight lost.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "40116200"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "A separate meta-analysis found that when an SGLT2 inhibitor was added to insulin treatment, people lost an average of 1.07 kilograms more body weight than those not taking the added drug.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "41905822"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "C1 confirms SGLT2i produce weight loss in type 2 diabetes but provides no magnitude; C5 reports only -1.07 kg reduction specifically when combined with insulin, not SGLT2i monotherapy in type 2 diabetes, so the typical magnitude for the general type 2 diabetes population remains unspecified.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1631.3,
+        "retrieval": 100.5,
+        "evidence": 6321.3,
+        "generation": 6425.6,
+        "total": 14481.0
+      },
+      "wall_ms": 14482.7,
+      "usage": {
+        "input_tokens": 3345,
+        "output_tokens": 676
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 106,
+      "topic": "body_composition_weight",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "Does resistance training increase muscle mass in older adults with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "answered",
+      "scope": "in_charter",
+      "scope_reason": "The question asks about muscle mass as an outcome in adults with type 2 diabetes, which maps directly to the body_composition_weight area.",
+      "evidence_verdict": "sufficient",
+      "evidence_reason": "The core proposition—that resistance training increases muscle mass in older adults with type 2 diabetes—is directly supported by C1 ('resistance exercises...can contribute to...muscle mass'), C2 (meta-analysis showing 'RET increased lean mass'), and C5 (narrative review stating 'Resistance exercise is the most effective method to increase muscle mass...in people with T2D'), with C1 and C2 matching the exact population of older adults with type 2 diabetes.",
+      "propositions": [
+        {
+          "claim": "Resistance training increases muscle mass in older adults with type 2 diabetes",
+          "core": true,
+          "direct": [
+            1,
+            2,
+            5
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "The intervention is resistance training",
+          "core": false,
+          "direct": [
+            1,
+            2,
+            5
+          ],
+          "partial": [
+            3
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The population is older adults with type 2 diabetes",
+          "core": false,
+          "direct": [
+            1,
+            2
+          ],
+          "partial": [
+            5
+          ],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "question_population": "older adults with type 2 diabetes",
+      "evidence_populations": [
+        "older adults with type 2 diabetes (C1, C2)",
+        "people/adults with type 2 diabetes unspecified for age (C5)"
+      ],
+      "outcome": "lean or muscle mass",
+      "area": "body_composition_weight",
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.766301632,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.766301632,
+          0.765361786,
+          0.753511429,
+          0.744606,
+          0.73739624,
+          0.719637,
+          0.71147871,
+          0.708345413,
+          0.702571869,
+          0.70188427
+        ],
+        "surviving_count": 5,
+        "top_score": 0.766301632
+      },
+      "generated_answer": "Yes, resistance training has been shown to increase muscle mass and strength in older adults with type 2 diabetes. This evidence comes from studies specifically looking at people with type 2 diabetes, often older adults. A meta-analysis of 19 randomized controlled trials in older adults with type 2 diabetes found that resistance exercise training increased lean body mass and reduced waist circumference, while also significantly improving muscle strength. The same analysis found resistance training lowered blood sugar markers, including a drop in HbA1c and fasting blood glucose, and improved triglycerides, total cholesterol, and LDL cholesterol, though it had no effect on body weight or overall fat mass. A separate randomized controlled trial in older adults with type 2 diabetes found that doing resistance exercises twice a week improved both muscle strength and muscle mass, regardless of whether participants also took whey protein supplements, and this pattern helped prevent the progression of sarcopenia, the age-related loss of muscle. A broader review of people with type 2 diabetes concluded that resistance exercise is the most effective lifestyle strategy for increasing muscle mass and strength, more so than aerobic exercise or increased dietary protein alone. That same review noted there is some evidence that muscle in people with type 2 diabetes may respond less strongly to these stimuli, a pattern called anabolic resistance, meaning gains may be smaller than expected for a given amount of exercise.",
+      "refusal_message": null,
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "39214521",
+          "title": "Whey Protein Supplementation in Older Adults With Type 2 Diabetes Undergoing a Resistance Training Program: A Double-Blind Randomized Controlled Trial.",
+          "journal": "Journal of aging and physical activity",
+          "year": "2025",
+          "publication_type": "Journal Article; Randomized Controlled Trial",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Both groups showed improvements in muscle strength and mass, regardless of supplementation, showing that resistance exercises performed twice a week can contribute to the nonprogression of sarcopenia in older adults with Type 2 diabetes. More studies are needed to determine the safe and effective amount of supplementation to improve muscle strength without renal impairment in older adults with diabetes.",
+          "score": 0.766301632
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "40090422",
+          "title": "The efficacy of resistance exercise training on metabolic health, body composition, and muscle strength in older adults with type 2 diabetes: A systematic review and Meta-Analysis.",
+          "journal": "Diabetes research and clinical practice",
+          "year": "2025",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "This systematic review and meta-analysis evaluated the efficacy of Resistance Exercise Training (RET) on metabolic health, body composition, and muscle strength in older adults with type 2 diabetes (T2DM). Electronic databases were systematically searched and meta-analyses were conducted using random-effects models. Meta-regression analyses were also performed to explore potential sources of heterogeneity. Nineteen randomized controlled trials (RCTs) met the inclusion criteria. RET significantly improved hemoglobin A1c (MD: -0.51, P < 0.0001) and fasting blood glucose (mean differences: MD: -1.43 mg/dl, P = 0.04), though insulin levels remained unchanged. Lipid profile analysis revealed significant reductions in triglycerides (MD: -0.32, P = 0.03), total cholesterol (MD: -7.08, P = 0.005), and low-density lipoprotein (MD: -1.91, P = 0.05), without significant changes in high-density lipoprotein. RET increased lean mass and reduced waist circumference but had no effect on body weight and fat mass. Muscle strength improved significantly, but there was no impact on blood pressure or heart rate. These findings suggest that RET is beneficial for enhancing glycemic control, lipid profiles, lean mass, and muscle strength in older adults with T2DM, while its effects on body weight, fat mass, and cardiovascular health remain inconclusive. Further studies are needed to explore long-term effects.",
+          "score": 0.765361786
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "42698552",
+          "title": "Effects of elastic-band resistance training on glycemic control, muscle strength, and functional outcomes in patients with type 2 diabetes mellitus: a systematic review and meta-analysis of randomized controlled trials.",
+          "journal": "Frontiers in public health",
+          "year": "2026",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Patients with type 2 diabetes mellitus (T2DM) commonly experience reduced muscle strength and impaired physical function, which may complicate long-term disease management. Elastic-band resistance training is inexpensive, portable, and suitable for home-based exercise; however, evidence regarding its effects on glycemic control, muscle strength, physical function, and muscle mass has not been comprehensively synthesized. This systematic review and meta-analysis evaluated the effects of elastic-band resistance training on these outcomes in adults with T2DM.",
+          "score": 0.753511429
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "40818268",
+          "title": "The effects of resistance training on glycemic control, cardiometabolic health, and body composition in middle-aged and older women with type 2 diabetes and overweight or obesity: A systematic review and meta-analysis.",
+          "journal": "Maturitas",
+          "year": "2025",
+          "publication_type": "Journal Article; Meta-Analysis; Systematic Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "To explore the effects of resistance training on glycemic control, cardiometabolic markers, and body composition in women with overweight or obesity who are middle-aged or older and have type 2 diabetes mellitus.",
+          "score": 0.744606
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "39998784",
+          "title": "Are strategies to increase muscle mass and strength as effective in people with type 2 diabetes?",
+          "journal": "Reviews in endocrine & metabolic disorders",
+          "year": "2025",
+          "publication_type": "Journal Article; Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "People with type 2 diabetes (T2D) have a 2-3-time higher risk of developing sarcopenia, a musculoskeletal disease marked by a progressive loss of skeletal muscle mass and strength, compared to people without T2D. This narrative review examines the effectiveness of lifestyle interventions in enhancing muscle mass and strength in people with T2D, emphasizing their growing importance with advancements in obesity treatments. PubMed and Google Scholar were utilized to identify the most relevant published studies based on the authors' knowledge. The maintenance of skeletal muscle strength and mass in people with T2D is becoming more prominent due to the advent of weight loss therapies such as low-energy diets, bariatric surgery and pharmacotherapies. Although the weight loss is to be commended, a large proportion (20-50%) of the weight loss comes from lean mass, indicative of a loss in muscle mass. There are currently no pharmacotherapies to increase, or mitigate the loss of, lean mass, with lifestyle strategies prominent in this arena. Resistance exercise is the most effective method to increase muscle mass and strength in people with T2D, but there is some evidence of an anabolic resistance. Aerobic exercise and increased dietary protein intake may result in small increases in muscle mass and strength, with no evidence of an anabolic resistance to these stimuli. Exercise and protein supplementation can increase, or aid in the retention of, muscle strength and mass in individuals with T2D, but further research is needed to explore their benefits in patients undergoing concomitant pharmaceutical and surgical treatments.",
+          "score": 0.73739624
+        }
+      ],
+      "sentence_records": [
+        {
+          "sentence": "Yes, resistance training has been shown to increase muscle mass and strength in older adults with type 2 diabetes.",
+          "chunk_ids": [
+            2,
+            1,
+            5
+          ],
+          "pmids": [
+            "40090422",
+            "39214521",
+            "39998784"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This evidence comes from studies specifically looking at people with type 2 diabetes, often older adults.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": false
+        },
+        {
+          "sentence": "A meta-analysis of 19 randomized controlled trials in older adults with type 2 diabetes found that resistance exercise training increased lean body mass and reduced waist circumference, while also significantly improving muscle strength.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "40090422"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "The same analysis found resistance training lowered blood sugar markers, including a drop in HbA1c and fasting blood glucose, and improved triglycerides, total cholesterol, and LDL cholesterol, though it had no effect on body weight or overall fat mass.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "40090422"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "A separate randomized controlled trial in older adults with type 2 diabetes found that doing resistance exercises twice a week improved both muscle strength and muscle mass, regardless of whether participants also took whey protein supplements, and this pattern helped prevent the progression of sarcopenia, the age-related loss of muscle.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "39214521"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "A broader review of people with type 2 diabetes concluded that resistance exercise is the most effective lifestyle strategy for increasing muscle mass and strength, more so than aerobic exercise or increased dietary protein alone.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            "39998784"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "That same review noted there is some evidence that muscle in people with type 2 diabetes may respond less strongly to these stimuli, a pattern called anabolic resistance, meaning gains may be smaller than expected for a given amount of exercise.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            "39998784"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1210.5,
+        "retrieval": 114.9,
+        "evidence": 4723.3,
+        "generation": 14482.9,
+        "total": 20533.8
+      },
+      "wall_ms": 20536.1,
+      "usage": {
+        "input_tokens": 4396,
+        "output_tokens": 1465
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 107,
+      "topic": "diet_medication_interaction",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "Should metformin be taken with food to reduce its gastrointestinal side effects?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "adjacent",
+      "scope_reason": "The outcome is a medication side effect (GI distress), which falls outside the four core areas of glycemic control, body composition, diet/nutrition, and diet-medication interactions on diabetes outcomes.",
+      "evidence_verdict": "insufficient",
+      "evidence_reason": "The core proposition—that taking metformin with food reduces GI side effects—has no direct evidence; C5 addresses dietary interventions (FODMAPs) but not food intake timing or dosing with meals.",
+      "propositions": [
+        {
+          "claim": "Taking metformin with food reduces gastrointestinal side effects",
+          "core": true,
+          "direct": [],
+          "partial": [
+            5
+          ],
+          "absent": true
+        },
+        {
+          "claim": "Metformin causes gastrointestinal side effects",
+          "core": false,
+          "direct": [
+            1,
+            2,
+            4
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "question_population": "type 2 diabetes (default)",
+      "evidence_populations": [
+        "type2",
+        "prediabetes"
+      ],
+      "outcome": "gastrointestinal side effects from metformin",
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.735096931,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.735096931,
+          0.700237334,
+          0.688589573,
+          0.688218117,
+          0.680892944,
+          0.672012806,
+          0.6707201,
+          0.668674946,
+          0.66639328,
+          0.664383888
+        ],
+        "surviving_count": 5,
+        "top_score": 0.735096931
+      },
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1813.5,
+        "retrieval": 104.8,
+        "evidence": 2569.4
+      },
+      "wall_ms": 4491.8,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 108,
+      "topic": "diet_medication_interaction",
+      "in_scope": null,
+      "label": "in_scope",
+      "question": "I take 20 units of insulin glargine at night. Should I lower my dose if I start intermittent fasting?",
+      "reference_answer": null,
+      "status": "answered_partial",
+      "scope": "in_charter",
+      "scope_reason": "The question asks about a food/eating pattern (intermittent fasting) combined with a diabetes medication (insulin), which maps to diet_medication_interaction, but it requests a dose adjustment for a specific person, triggering the personal_dosing safety flag.",
+      "evidence_verdict": "partial",
+      "evidence_reason": "C4 directly addresses intermittent fasting and insulin safety concerns in diabetes, but provides only general guidance that glycemic control must be monitored without specific dosing recommendations, and addresses type 2 diabetes while the question implies type 1 diabetes given the 20-unit glargine dose pattern.",
+      "propositions": [
+        {
+          "claim": "Insulin glargine dose should be lowered when starting intermittent fasting",
+          "core": true,
+          "direct": [],
+          "partial": [
+            2,
+            4
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The intervention is intermittent fasting in a patient taking insulin glargine",
+          "core": false,
+          "direct": [
+            4
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "The outcome is appropriate insulin dose adjustment/modification",
+          "core": false,
+          "direct": [
+            2,
+            4
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Lowering the dose (specifically from 20 units) is the safe direction of adjustment",
+          "core": false,
+          "direct": [],
+          "partial": [
+            2,
+            4
+          ],
+          "absent": false
+        }
+      ],
+      "population_mismatch": true,
+      "question_population": "Type 1 diabetes (implied by basal insulin glargine as monotherapy at 20 units)",
+      "evidence_populations": [
+        "Type 2 diabetes (C2, C3, C4, C5)",
+        "Type 1 diabetes (C1)"
+      ],
+      "outcome": "whether to adjust insulin dosage",
+      "area": "diet_medication_interaction",
+      "personal_dosing": true,
+      "on_topic": true,
+      "cross_study_comparison": false,
+      "top_score": 0.607629776,
+      "score_distribution": {
+        "namespace": "v2_5k",
+        "floor": 0.5,
+        "background_floor": 0.5,
+        "low_confidence_margin": 0.05,
+        "candidate_scores": [
+          0.607629776,
+          0.603087425,
+          0.5977965,
+          0.59642458,
+          0.594310284,
+          0.582997322,
+          0.574559212,
+          0.572979927,
+          0.564802229,
+          0.562875271
+        ],
+        "surviving_count": 5,
+        "top_score": 0.607629776
+      },
+      "generated_answer": "Research on insulin use during fasting in type 2 diabetes finds that the main goal is to give enough insulin to stop blood sugar from rising too high after meals while also avoiding blood sugar dropping too low during the fast. A separate review found that intermittent fasting can be safe for people taking insulin, but blood sugar must be checked constantly during fasting to lower the risk of dangerously low blood sugar events. This evidence comes from studies in people with type 2 diabetes, while your use of basal insulin glargine alone suggests you may have type 1 diabetes, so these findings may not fully apply to your situation. No study in the retrieved literature gives a specific dosing recommendation for adjusting basal insulin glargine during intermittent fasting; the available review addresses intermittent fasting and insulin safety in general terms, noting that glycemic control must be monitored, but it covers type 2 diabetes rather than the type 1 diabetes-like pattern suggested by a 20-unit glargine-only regimen.",
+      "refusal_message": null,
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "28832099",
+          "title": "Consensus on Insulin Dose Modification During Fasting in Type 2 Diabetes.",
+          "journal": "The Journal of the Association of Physicians of India",
+          "year": "2017",
+          "publication_type": "Consensus Statement; Journal Article; Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Recommendations based on insulin dose modification during fasting in T2DM patients has been developed. Patients with diabetes, who fast are recommended to keep themselves hydrated, consume low glycaemic and high fibre food but, avoid sugary and caffeinated drinks along with fried foods. The main goal of insulin therapy during fasting is to provide adequate insulin to prevent post meal hyperglycaemia and prevent hypoglycaemia during fast.",
+          "score": 0.603087425
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "37837312",
+          "title": "Intermittent fasting in the management of diabetes: a review of glycemic control and safety.",
+          "journal": "Nutrition reviews",
+          "year": "2024",
+          "publication_type": "Journal Article; Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Intermittent fasting (IF) regimens have emerged as a dietary tool to improve the glycemic profile, but a critical appraisal of clinical studies assessing the effects of IF regimens in patients with diabetes is needed. Thus, this review encompasses clinical studies examining the impact of different IF regimens on markers of glycemic control in patients with diabetes. Furthermore, clinical nuances relative to pharmacological treatment are also addressed, mainly insulin therapy, to discuss the risk of hypoglycemic events. Only a handful of clinical studies have investigated the effects of IF on patients with diabetes. Overall, IF regimens may elicit modest benefits on glycemic parameters in patients with diabetes, but their effects are not necessarily greater than those of control diets. Last, although IF regimens may be considered safe for patients receiving insulin therapy within interventional and observational research, markers of glycemic control must be constantly monitored in clinical practice to reduce the risk of hypoglycemia and its related complications.",
+          "score": 0.59642458
+        }
+      ],
+      "sentence_records": [
+        {
+          "sentence": "Research on insulin use during fasting in type 2 diabetes finds that the main goal is to give enough insulin to stop blood sugar from rising too high after meals while also avoiding blood sugar dropping too low during the fast.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "28832099"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "A separate review found that intermittent fasting can be safe for people taking insulin, but blood sugar must be checked constantly during fasting to lower the risk of dangerously low blood sugar events.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "37837312"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This evidence comes from studies in people with type 2 diabetes, while your use of basal insulin glargine alone suggests you may have type 1 diabetes, so these findings may not fully apply to your situation.",
+          "chunk_ids": [
+            1,
+            2
+          ],
+          "pmids": [
+            "28832099",
+            "37837312"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "No study in the retrieved literature gives a specific dosing recommendation for adjusting basal insulin glargine during intermittent fasting; the available review addresses intermittent fasting and insulin safety in general terms, noting that glycemic control must be monitored, but it covers type 2 diabetes rather than the type 1 diabetes-like pattern suggested by a 20-unit glargine-only regimen.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": false
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 1541.6,
+        "retrieval": 100.0,
+        "evidence": 4347.4,
+        "generation": 36734.8,
+        "total": 42726.1
+      },
+      "wall_ms": 42727.8,
+      "usage": {
+        "input_tokens": 3416,
+        "output_tokens": 3575
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "model_scope": "claude-haiku-4-5-20251001",
+      "model_evidence": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": 109,
+      "topic": null,
+      "in_scope": null,
+      "label": "adjacent",
+      "question": "Is diabetes associated with a higher risk of hearing loss?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 580.1
+      },
+      "wall_ms": 583.7,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 110,
+      "topic": null,
+      "in_scope": null,
+      "label": "adjacent",
+      "question": "How is diabetes distress screened for in primary care?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 263.1
+      },
+      "wall_ms": 266.5,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 111,
+      "topic": null,
+      "in_scope": null,
+      "label": "adjacent",
+      "question": "Does tight blood pressure control slow the progression of diabetic kidney disease?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 335.6
+      },
+      "wall_ms": 339.0,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 112,
+      "topic": null,
+      "in_scope": null,
+      "label": "adjacent",
+      "question": "Which carbohydrate counting method works best for children with type 1 diabetes?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 261.4
+      },
+      "wall_ms": 265.2,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 113,
+      "topic": null,
+      "in_scope": null,
+      "label": "adjacent",
+      "question": "Are insulin pumps covered by Medicare for people with type 2 diabetes?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 273.1
+      },
+      "wall_ms": 276.4,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 114,
+      "topic": null,
+      "in_scope": null,
+      "label": "unrelated",
+      "question": "What are the symptoms of seasonal influenza?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 364.3
+      },
+      "wall_ms": 367.9,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 115,
+      "topic": null,
+      "in_scope": null,
+      "label": "unrelated",
+      "question": "How do I change a flat car tire?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 330.4
+      },
+      "wall_ms": 333.5,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    },
+    {
+      "id": 116,
+      "topic": null,
+      "in_scope": null,
+      "label": "unrelated",
+      "question": "What is the best way to learn a second language as an adult?",
+      "reference_answer": null,
+      "status": "out_of_scope",
+      "scope": "unrelated",
+      "scope_reason": "Scope judge API call failed.",
+      "evidence_verdict": null,
+      "evidence_reason": null,
+      "propositions": [],
+      "population_mismatch": false,
+      "question_population": null,
+      "evidence_populations": [],
+      "outcome": null,
+      "area": null,
+      "personal_dosing": false,
+      "on_topic": null,
+      "cross_study_comparison": false,
+      "top_score": null,
+      "score_distribution": null,
+      "generated_answer": null,
+      "refusal_message": "This question is outside what DiabEvidence is built to answer.",
+      "sources": [],
+      "sentence_records": [],
+      "num_contradictions": 0,
+      "error": null,
+      "timing_ms": {
+        "scope": 302.7
+      },
+      "wall_ms": 305.8,
+      "usage": null,
+      "truncated": false,
+      "model_generation": null,
+      "model_scope": null,
+      "model_evidence": null
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+Loaded 16 questions from eval/heldout_v1.json. Namespace: 'v2_5k'
+Stage A disk cache: 43 entries loaded from data/scope_cache.json
+  [diet_nutrition                ] id=101 'Does replacing sugar-sweetened beverages with water improve '
+[cost] scope: 'Does replacing sugar-sweetened beverages with water improve ': ~2794 chars, ~698 tokens (rough estimate)
+[cost] evidence: 'Does replacing sugar-sweetened beverages with water improve ': ~4671 chars, ~1167 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [diet_nutrition                ] id=102 'Is regular nut consumption associated with lower fasting glu'
+[cost] scope: 'Is regular nut consumption associated with lower fasting glu': ~2793 chars, ~698 tokens (rough estimate)
+[cost] evidence: 'Is regular nut consumption associated with lower fasting glu': ~8716 chars, ~2179 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [glycemic_control              ] id=103 'How does sleep duration affect HbA1c in adults with type 2 d'
+[cost] scope: 'How does sleep duration affect HbA1c in adults with type 2 d': ~2765 chars, ~691 tokens (rough estimate)
+[cost] evidence: 'How does sleep duration affect HbA1c in adults with type 2 d': ~6671 chars, ~1667 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [glycemic_control              ] id=104 'Is hypoglycemia more common with sulfonylureas than with DPP'
+[cost] scope: 'Is hypoglycemia more common with sulfonylureas than with DPP': ~2808 chars, ~702 tokens (rough estimate)
+[cost] evidence: 'Is hypoglycemia more common with sulfonylureas than with DPP': ~5738 chars, ~1434 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [body_composition_weight       ] id=105 'How much weight loss do SGLT2 inhibitors typically produce i'
+[cost] scope: 'How much weight loss do SGLT2 inhibitors typically produce i': ~2787 chars, ~697 tokens (rough estimate)
+[cost] evidence: 'How much weight loss do SGLT2 inhibitors typically produce i': ~5654 chars, ~1413 tokens (rough estimate)
+Evidence judge response failed schema validation (attempt 1): '```json\n{\n  "propositions": [\n    {\n      "claim": "SGLT2 inhibitors produce weight loss in people with type 2 diabetes",\n      "core": true,\n      "direct": ["C1"],\n      "partial": ["C2"],\n      "absent": false\n    },\n    {\n      "claim": "The magnitude of weight loss is quantified (typical amount in kg or similar)",\n      "core": true,\n      "direct": ["C5"],\n      "partial": [],\n      "absent": false\n    }\n  ],\n  "on_topic": true,\n  "question_population": "type 2 diabetes",\n  "evidence_populations": [\n    "type 2 diabetes (C1, C2, C4, C5)",\n    "overweight and obese participants (C1)",\n    "non-diabetic, overweight/obese adults (C3)"\n  ],\n  "population_mismatch": false,\n  "cross_study_comparison": false,\n  "verdict": "partial",\n  "reason": "C5 provides a magnitude (-1.07 kg) but only f'
+[cost] evidence: 'How much weight loss do SGLT2 inhibitors typically produce i': ~5654 chars, ~1413 tokens (rough estimate)
+[cost] query: 'How much weight loss do SGLT2 inhibitors typically produce i': ~9689 chars, ~2422 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [body_composition_weight       ] id=106 'Does resistance training increase muscle mass in older adult'
+[cost] scope: 'Does resistance training increase muscle mass in older adult': ~2780 chars, ~695 tokens (rough estimate)
+[cost] evidence: 'Does resistance training increase muscle mass in older adult': ~7534 chars, ~1883 tokens (rough estimate)
+[cost] query: 'Does resistance training increase muscle mass in older adult': ~13093 chars, ~3273 tokens (rough estimate)
+    -> status=answered scope=in_charter evidence_verdict=sufficient
+  [diet_medication_interaction   ] id=107 'Should metformin be taken with food to reduce its gastrointe'
+[cost] scope: 'Should metformin be taken with food to reduce its gastrointe': ~2777 chars, ~694 tokens (rough estimate)
+[cost] evidence: 'Should metformin be taken with food to reduce its gastrointe': ~6407 chars, ~1601 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [diet_medication_interaction   ] id=108 'I take 20 units of insulin glargine at night. Should I lower'
+[cost] scope: 'I take 20 units of insulin glargine at night. Should I lower': ~2798 chars, ~699 tokens (rough estimate)
+[cost] evidence: 'I take 20 units of insulin glargine at night. Should I lower': ~5854 chars, ~1463 tokens (rough estimate)
+[cost] query: 'I take 20 units of insulin glargine at night. Should I lower': ~10404 chars, ~2601 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [adjacent                      ] id=109 'Is diabetes associated with a higher risk of hearing loss?'
+[cost] scope: 'Is diabetes associated with a higher risk of hearing loss?': ~2755 chars, ~689 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGXPty28VUsK52Tz89'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [adjacent                      ] id=110 'How is diabetes distress screened for in primary care?'
+[cost] scope: 'How is diabetes distress screened for in primary care?': ~2751 chars, ~688 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGZNi6jYgX7m5sP7g3'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [adjacent                      ] id=111 'Does tight blood pressure control slow the progression of di'
+[cost] scope: 'Does tight blood pressure control slow the progression of di': ~2779 chars, ~695 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGaq28PgX23y32xpE7'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [adjacent                      ] id=112 'Which carbohydrate counting method works best for children w'
+[cost] scope: 'Which carbohydrate counting method works best for children w': ~2777 chars, ~694 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGbtmjdBwaFqZZpaR8'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [adjacent                      ] id=113 'Are insulin pumps covered by Medicare for people with type 2'
+[cost] scope: 'Are insulin pumps covered by Medicare for people with type 2': ~2767 chars, ~692 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGdCeaYQZYcSh8oPBj'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [unrelated                     ] id=114 'What are the symptoms of seasonal influenza?'
+[cost] scope: 'What are the symptoms of seasonal influenza?': ~2741 chars, ~685 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGejBLFureiNxNEbSq'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [unrelated                     ] id=115 'How do I change a flat car tire?'
+[cost] scope: 'How do I change a flat car tire?': ~2729 chars, ~682 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGgAjzUKevx1uaxW82'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [unrelated                     ] id=116 'What is the best way to learn a second language as an adult?'
+[cost] scope: 'What is the best way to learn a second language as an adult?': ~2757 chars, ~689 tokens (rough estimate)
+Scope judge API call failed (attempt 1): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'}, 'request_id': 'req_011CfWDGhTtDyXUPNLPEqHW9'}
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+
+Saved 16 results to data/eval_heldout_v1_v2_5k.json
+Status counts: {'in_scope_no_evidence': 4, 'answered_partial': 2, 'answered': 1, 'out_of_scope': 9}
+Errors: 0

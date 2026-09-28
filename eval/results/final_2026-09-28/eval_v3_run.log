@@ -1,0 +1,192 @@
+Loaded 43 questions. Namespace: 'v2_5k'
+  [diet_nutrition                ] id=1 'Does adherence to a Mediterranean-style diet reduce the risk'
+[cost] scope: 'Does adherence to a Mediterranean-style diet reduce the risk': ~2808 chars, ~702 tokens (rough estimate)
+[cost] evidence: 'Does adherence to a Mediterranean-style diet reduce the risk': ~5747 chars, ~1436 tokens (rough estimate)
+[cost] query: 'Does adherence to a Mediterranean-style diet reduce the risk': ~11303 chars, ~2826 tokens (rough estimate)
+    -> status=answered scope=in_charter evidence_verdict=sufficient
+  [diet_nutrition                ] id=2 'How does dietary fiber intake affect the risk of developing '
+[cost] scope: 'How does dietary fiber intake affect the risk of developing ': ~2773 chars, ~693 tokens (rough estimate)
+[cost] evidence: 'How does dietary fiber intake affect the risk of developing ': ~7726 chars, ~1931 tokens (rough estimate)
+[cost] query: 'How does dietary fiber intake affect the risk of developing ': ~13057 chars, ~3264 tokens (rough estimate)
+    -> status=answered scope=in_charter evidence_verdict=sufficient
+  [diet_nutrition                ] id=3 'What is the evidence for low-carbohydrate diets versus low-f'
+[cost] scope: 'What is the evidence for low-carbohydrate diets versus low-f': ~2794 chars, ~698 tokens (rough estimate)
+[cost] evidence: 'What is the evidence for low-carbohydrate diets versus low-f': ~7118 chars, ~1779 tokens (rough estimate)
+[cost] query: 'What is the evidence for low-carbohydrate diets versus low-f': ~12142 chars, ~3035 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [diet_nutrition                ] id=4 'Is there evidence that plant-based diets improve glycemic co'
+[cost] scope: 'Is there evidence that plant-based diets improve glycemic co': ~2794 chars, ~698 tokens (rough estimate)
+[cost] evidence: 'Is there evidence that plant-based diets improve glycemic co': ~10558 chars, ~2639 tokens (rough estimate)
+[cost] query: 'Is there evidence that plant-based diets improve glycemic co': ~15824 chars, ~3956 tokens (rough estimate)
+    -> status=answered scope=in_charter evidence_verdict=sufficient
+  [diet_nutrition                ] id=5 'Does time-restricted eating (intermittent fasting) improve m'
+[cost] scope: 'Does time-restricted eating (intermittent fasting) improve m': ~2784 chars, ~696 tokens (rough estimate)
+[cost] evidence: 'Does time-restricted eating (intermittent fasting) improve m': ~7265 chars, ~1816 tokens (rough estimate)
+[cost] query: 'Does time-restricted eating (intermittent fasting) improve m': ~12928 chars, ~3232 tokens (rough estimate)
+    -> status=answered scope=in_charter evidence_verdict=sufficient
+  [diet_nutrition                ] id=6 'What role does the DASH diet play in glycemic and blood pres'
+[cost] scope: 'What role does the DASH diet play in glycemic and blood pres': ~2796 chars, ~699 tokens (rough estimate)
+[cost] evidence: 'What role does the DASH diet play in glycemic and blood pres': ~6601 chars, ~1650 tokens (rough estimate)
+[cost] query: 'What role does the DASH diet play in glycemic and blood pres': ~10831 chars, ~2708 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [glycemic_control              ] id=7 'What HbA1c target is generally recommended for most nonpregn'
+[cost] scope: 'What HbA1c target is generally recommended for most nonpregn': ~2789 chars, ~697 tokens (rough estimate)
+[cost] evidence: 'What HbA1c target is generally recommended for most nonpregn': ~6733 chars, ~1683 tokens (rough estimate)
+[cost] query: 'What HbA1c target is generally recommended for most nonpregn': ~8697 chars, ~2174 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [glycemic_control              ] id=8 'Does continuous glucose monitoring (CGM) improve glycemic co'
+[cost] scope: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~2810 chars, ~702 tokens (rough estimate)
+[cost] evidence: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~4759 chars, ~1189 tokens (rough estimate)
+[cost] query: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~9697 chars, ~2424 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [glycemic_control              ] id=9 "What is the 'dawn phenomenon' and how does it affect glycemi"
+[cost] scope: "What is the 'dawn phenomenon' and how does it affect glycemi": ~2767 chars, ~692 tokens (rough estimate)
+[cost] evidence: "What is the 'dawn phenomenon' and how does it affect glycemi": ~9249 chars, ~2312 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [glycemic_control              ] id=10 'How does postprandial exercise timing affect blood glucose c'
+[cost] scope: 'How does postprandial exercise timing affect blood glucose c': ~2783 chars, ~696 tokens (rough estimate)
+[cost] evidence: 'How does postprandial exercise timing affect blood glucose c': ~5933 chars, ~1483 tokens (rough estimate)
+[cost] query: 'How does postprandial exercise timing affect blood glucose c': ~10921 chars, ~2730 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [glycemic_control              ] id=11 'What is glycemic variability and why is it clinically releva'
+[cost] scope: 'What is glycemic variability and why is it clinically releva': ~2760 chars, ~690 tokens (rough estimate)
+[cost] evidence: 'What is glycemic variability and why is it clinically releva': ~7456 chars, ~1864 tokens (rough estimate)
+[cost] query: 'What is glycemic variability and why is it clinically releva': ~8772 chars, ~2193 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [glycemic_control              ] id=12 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu'
+[cost] scope: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~2797 chars, ~699 tokens (rough estimate)
+[cost] evidence: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~5914 chars, ~1478 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [body_composition_weight       ] id=13 'Does bariatric surgery lead to remission of type 2 diabetes?'
+[cost] scope: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~2757 chars, ~689 tokens (rough estimate)
+[cost] evidence: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~4933 chars, ~1233 tokens (rough estimate)
+[cost] query: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~10568 chars, ~2642 tokens (rough estimate)
+    -> status=answered scope=in_charter evidence_verdict=sufficient
+  [body_composition_weight       ] id=14 'Can intensive low-calorie diet interventions induce remissio'
+[cost] scope: 'Can intensive low-calorie diet interventions induce remissio': ~2778 chars, ~694 tokens (rough estimate)
+[cost] evidence: 'Can intensive low-calorie diet interventions induce remissio': ~6725 chars, ~1681 tokens (rough estimate)
+[cost] query: 'Can intensive low-calorie diet interventions induce remissio': ~11005 chars, ~2751 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [body_composition_weight       ] id=15 'How does visceral adiposity relate to insulin resistance com'
+[cost] scope: 'How does visceral adiposity relate to insulin resistance com': ~2785 chars, ~696 tokens (rough estimate)
+[cost] evidence: 'How does visceral adiposity relate to insulin resistance com': ~9020 chars, ~2255 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [body_composition_weight       ] id=16 'Do GLP-1 receptor agonists cause disproportionate loss of le'
+[cost] scope: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~2789 chars, ~697 tokens (rough estimate)
+[cost] evidence: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~6788 chars, ~1697 tokens (rough estimate)
+[cost] query: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~11599 chars, ~2900 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [body_composition_weight       ] id=17 'What is sarcopenic obesity and why is it a concern in older '
+[cost] scope: 'What is sarcopenic obesity and why is it a concern in older ': ~2785 chars, ~696 tokens (rough estimate)
+[cost] evidence: 'What is sarcopenic obesity and why is it a concern in older ': ~11695 chars, ~2923 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [body_composition_weight       ] id=18 'Is waist circumference a better predictor of metabolic risk '
+[cost] scope: 'Is waist circumference a better predictor of metabolic risk ': ~2790 chars, ~697 tokens (rough estimate)
+[cost] evidence: 'Is waist circumference a better predictor of metabolic risk ': ~6814 chars, ~1703 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [diet_medication_interaction   ] id=19 'Does long-term metformin use affect vitamin B12 status?'
+[cost] scope: 'Does long-term metformin use affect vitamin B12 status?': ~2752 chars, ~688 tokens (rough estimate)
+[cost] evidence: 'Does long-term metformin use affect vitamin B12 status?': ~6505 chars, ~1626 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=partial
+  [diet_medication_interaction   ] id=20 'What is the interaction risk between alcohol intake and sulf'
+[cost] scope: 'What is the interaction risk between alcohol intake and sulf': ~2778 chars, ~694 tokens (rough estimate)
+[cost] evidence: 'What is the interaction risk between alcohol intake and sulf': ~5964 chars, ~1491 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [diet_medication_interaction   ] id=21 'How does a high-fiber meal affect the absorption of oral hyp'
+[cost] scope: 'How does a high-fiber meal affect the absorption of oral hyp': ~2774 chars, ~693 tokens (rough estimate)
+[cost] evidence: 'How does a high-fiber meal affect the absorption of oral hyp': ~6888 chars, ~1722 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [diet_medication_interaction   ] id=22 'Is there a known interaction between ketogenic/very-low-carb'
+[cost] scope: 'Is there a known interaction between ketogenic/very-low-carb': ~2793 chars, ~698 tokens (rough estimate)
+[cost] evidence: 'Is there a known interaction between ketogenic/very-low-carb': ~5373 chars, ~1343 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [diet_medication_interaction   ] id=23 'Does dietary protein intake need to be specifically adjusted'
+[cost] scope: 'Does dietary protein intake need to be specifically adjusted': ~2790 chars, ~697 tokens (rough estimate)
+[cost] evidence: 'Does dietary protein intake need to be specifically adjusted': ~5382 chars, ~1345 tokens (rough estimate)
+[cost] query: 'Does dietary protein intake need to be specifically adjusted': ~10458 chars, ~2614 tokens (rough estimate)
+    -> status=answered_partial scope=in_charter evidence_verdict=partial
+  [diet_medication_interaction   ] id=24 'Can grapefruit or grapefruit juice affect the metabolism of '
+[cost] scope: 'Can grapefruit or grapefruit juice affect the metabolism of ': ~2791 chars, ~698 tokens (rough estimate)
+[cost] evidence: 'Can grapefruit or grapefruit juice affect the metabolism of ': ~8736 chars, ~2184 tokens (rough estimate)
+    -> status=in_scope_no_evidence scope=in_charter evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=25 'What eye complications require laser treatment in diabetic r'
+[cost] scope: 'What eye complications require laser treatment in diabetic r': ~2768 chars, ~692 tokens (rough estimate)
+[cost] evidence: 'What eye complications require laser treatment in diabetic r': ~8896 chars, ~2224 tokens (rough estimate)
+Evidence judge response failed schema validation (attempt 1): '```json\n{\n  "propositions": [\n    {\n      "claim": "Laser treatment is used for specific eye complications in diabetic retinopathy",\n      "core": true,\n      "direct": ["C5"],\n      "partial": ["C3"],\n      "absent": false\n    },\n    {\n      "claim": "Identify which eye complications specifically require laser treatment",\n      "core": true,\n      "direct": [],\n      "partial": ["C5"],\n      "absent": false\n    }\n  ],\n  "on_topic": true,\n  "question_population": "diabetes mellitus (mixed type, not specified)",\n  "evidence_populations": ["mixed"],\n  "population_mismatch": false,\n  "cross_study_comparison": false,\n  "verdict": "partial",\n  "reason": "Passages mention laser photocoagulation and panretinal photocoagulation as treatments for diabetic retinopathy but do not specify which partic'
+[cost] evidence: 'What eye complications require laser treatment in diabetic r': ~8896 chars, ~2224 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=partial
+  [out_of_scope_diabetes_adjacent] id=26 'How often should diabetic retinopathy screening (dilated eye'
+[cost] scope: 'How often should diabetic retinopathy screening (dilated eye': ~2777 chars, ~694 tokens (rough estimate)
+[cost] evidence: 'How often should diabetic retinopathy screening (dilated eye': ~6944 chars, ~1736 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=27 "How does an insulin pump's tubing mechanism deliver basal in"
+[cost] scope: "How does an insulin pump's tubing mechanism deliver basal in": ~2763 chars, ~691 tokens (rough estimate)
+[cost] evidence: "How does an insulin pump's tubing mechanism deliver basal in": ~5782 chars, ~1445 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=partial
+  [out_of_scope_diabetes_adjacent] id=28 'How does a continuous glucose monitor (CGM) sensor calibrate'
+[cost] scope: 'How does a continuous glucose monitor (CGM) sensor calibrate': ~2801 chars, ~700 tokens (rough estimate)
+[cost] evidence: 'How does a continuous glucose monitor (CGM) sensor calibrate': ~4553 chars, ~1138 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=29 'How long can a continuous glucose monitor sensor be worn bef'
+[cost] scope: 'How long can a continuous glucose monitor sensor be worn bef': ~2785 chars, ~696 tokens (rough estimate)
+[cost] evidence: 'How long can a continuous glucose monitor sensor be worn bef': ~5150 chars, ~1287 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=partial
+  [out_of_scope_diabetes_adjacent] id=30 'What is the difference in cartridge or reservoir mechanics b'
+[cost] scope: 'What is the difference in cartridge or reservoir mechanics b': ~2790 chars, ~697 tokens (rough estimate)
+[cost] evidence: 'What is the difference in cartridge or reservoir mechanics b': ~7499 chars, ~1874 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=31 'What are the standard treatments for painful diabetic periph'
+[cost] scope: 'What are the standard treatments for painful diabetic periph': ~2773 chars, ~693 tokens (rough estimate)
+[cost] evidence: 'What are the standard treatments for painful diabetic periph': ~7357 chars, ~1839 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=32 'What diagnostic tests are used to confirm diabetic periphera'
+[cost] scope: 'What diagnostic tests are used to confirm diabetic periphera': ~2770 chars, ~692 tokens (rough estimate)
+[cost] evidence: 'What diagnostic tests are used to confirm diabetic periphera': ~7056 chars, ~1764 tokens (rough estimate)
+[cost] query: 'What diagnostic tests are used to confirm diabetic periphera': ~12507 chars, ~3127 tokens (rough estimate)
+    -> status=answered_adjacent scope=adjacent evidence_verdict=sufficient
+  [out_of_scope_diabetes_adjacent] id=33 'What wound care protocol is typically used for treating a di'
+[cost] scope: 'What wound care protocol is typically used for treating a di': ~2775 chars, ~694 tokens (rough estimate)
+[cost] evidence: 'What wound care protocol is typically used for treating a di': ~7463 chars, ~1865 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=partial
+  [out_of_scope_diabetes_adjacent] id=34 'What type of footwear is recommended to prevent diabetic foo'
+[cost] scope: 'What type of footwear is recommended to prevent diabetic foo': ~2773 chars, ~693 tokens (rough estimate)
+[cost] evidence: 'What type of footwear is recommended to prevent diabetic foo': ~7089 chars, ~1772 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=35 'How is peripheral arterial disease assessed during a diabeti'
+[cost] scope: 'How is peripheral arterial disease assessed during a diabeti': ~2769 chars, ~692 tokens (rough estimate)
+[cost] evidence: 'How is peripheral arterial disease assessed during a diabeti': ~7225 chars, ~1806 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=36 'What are the diagnostic criteria for diabetic ketoacidosis?'
+[cost] scope: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~2756 chars, ~689 tokens (rough estimate)
+[cost] evidence: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~6663 chars, ~1665 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=37 'How is diabetic ketoacidosis typically managed in the emerge'
+[cost] scope: 'How is diabetic ketoacidosis typically managed in the emerge': ~2772 chars, ~693 tokens (rough estimate)
+[cost] evidence: 'How is diabetic ketoacidosis typically managed in the emerge': ~10215 chars, ~2553 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=partial
+  [out_of_scope_diabetes_adjacent] id=38 'What blood or urine ketone level indicates diabetic ketoacid'
+[cost] scope: 'What blood or urine ketone level indicates diabetic ketoacid': ~2762 chars, ~690 tokens (rough estimate)
+[cost] evidence: 'What blood or urine ketone level indicates diabetic ketoacid': ~8428 chars, ~2107 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=39 "What are the typical driver's-license medical-review rules f"
+[cost] scope: "What are the typical driver's-license medical-review rules f": ~2781 chars, ~695 tokens (rough estimate)
+[cost] evidence: "What are the typical driver's-license medical-review rules f": ~7296 chars, ~1824 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=40 'Does health insurance typically cover the cost of an insulin'
+[cost] scope: 'Does health insurance typically cover the cost of an insulin': ~2763 chars, ~691 tokens (rough estimate)
+[cost] evidence: 'Does health insurance typically cover the cost of an insulin': ~6812 chars, ~1703 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_diabetes_adjacent] id=41 'What disability benefits are available to people with type 1'
+[cost] scope: 'What disability benefits are available to people with type 1': ~2767 chars, ~692 tokens (rough estimate)
+[cost] evidence: 'What disability benefits are available to people with type 1': ~5729 chars, ~1432 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [out_of_scope_unrelated        ] id=42 'What is the capital of Australia?'
+[cost] scope: 'What is the capital of Australia?': ~2730 chars, ~682 tokens (rough estimate)
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [out_of_scope_unrelated        ] id=43 'How do I refinance a car loan?'
+[cost] scope: 'How do I refinance a car loan?': ~2727 chars, ~682 tokens (rough estimate)
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+
+Saved 43 results to data/eval_v3_revised_prompts_v2_5k.json
+Status counts: {'answered': 5, 'answered_partial': 9, 'in_scope_no_evidence': 9, 'out_of_scope': 19, 'answered_adjacent': 1}
+Errors: 0

@@ -1,0 +1,36 @@
+Loaded 16 questions from eval/heldout_v1.json. Namespace: 'v2_5k'
+Stage A disk cache: 51 entries loaded from data/scope_cache.json
+Resuming: 8 question(s) already completed in data/eval_heldout_v1_v2_5k.json.partial.jsonl, skipping them.
+  [adjacent                      ] id=109 'Is diabetes associated with a higher risk of hearing loss?'
+[cost] scope: 'Is diabetes associated with a higher risk of hearing loss?': ~2755 chars, ~689 tokens (rough estimate)
+[cost] evidence: 'Is diabetes associated with a higher risk of hearing loss?': ~5000 chars, ~1250 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [adjacent                      ] id=110 'How is diabetes distress screened for in primary care?'
+[cost] scope: 'How is diabetes distress screened for in primary care?': ~2751 chars, ~688 tokens (rough estimate)
+[cost] evidence: 'How is diabetes distress screened for in primary care?': ~5530 chars, ~1382 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [adjacent                      ] id=111 'Does tight blood pressure control slow the progression of di'
+[cost] scope: 'Does tight blood pressure control slow the progression of di': ~2779 chars, ~695 tokens (rough estimate)
+[cost] evidence: 'Does tight blood pressure control slow the progression of di': ~7790 chars, ~1947 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [adjacent                      ] id=112 'Which carbohydrate counting method works best for children w'
+[cost] scope: 'Which carbohydrate counting method works best for children w': ~2777 chars, ~694 tokens (rough estimate)
+[cost] evidence: 'Which carbohydrate counting method works best for children w': ~7495 chars, ~1873 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [adjacent                      ] id=113 'Are insulin pumps covered by Medicare for people with type 2'
+[cost] scope: 'Are insulin pumps covered by Medicare for people with type 2': ~2767 chars, ~692 tokens (rough estimate)
+[cost] evidence: 'Are insulin pumps covered by Medicare for people with type 2': ~6960 chars, ~1740 tokens (rough estimate)
+    -> status=out_of_scope scope=adjacent evidence_verdict=insufficient
+  [unrelated                     ] id=114 'What are the symptoms of seasonal influenza?'
+[cost] scope: 'What are the symptoms of seasonal influenza?': ~2741 chars, ~685 tokens (rough estimate)
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [unrelated                     ] id=115 'How do I change a flat car tire?'
+[cost] scope: 'How do I change a flat car tire?': ~2729 chars, ~682 tokens (rough estimate)
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+  [unrelated                     ] id=116 'What is the best way to learn a second language as an adult?'
+[cost] scope: 'What is the best way to learn a second language as an adult?': ~2757 chars, ~689 tokens (rough estimate)
+    -> status=out_of_scope scope=unrelated evidence_verdict=None
+
+Saved 16 results to data/eval_heldout_v1_v2_5k.json
+Status counts: {'in_scope_no_evidence': 4, 'answered_partial': 2, 'answered': 1, 'out_of_scope': 9}
+Errors: 0

@@ -89,6 +89,7 @@ def test_refuses_when_scope_is_unrelated():
     assert data["message"] == OUT_OF_SCOPE_TEXT
     assert data["scope"] == "unrelated"
     assert data["evidence_verdict"] is None
+    assert data["scope_model"] == "m"  # from _UNRELATED's "model" field — never dropped for the refusal path
     assert "medical advice" in data["disclaimer"].lower()
     mock_retrieve.assert_not_called()
     mock_evidence.assert_not_called()
@@ -546,6 +547,7 @@ def test_answered_partial_restricts_generation_to_direct_chunks():
 
     sources_event = next(e for e in events if e["event"] == "sources")
     assert sources_event["data"]["status"] == "answered_partial"
+    assert sources_event["data"]["scope_model"] == "m"  # Stage A's model string is never dropped on the success path either
     pmids_sent = [s["pmid"] for s in sources_event["data"]["sources"]]
     assert pmids_sent == ["1"]  # only the DIRECT chunk, never the partial one
 

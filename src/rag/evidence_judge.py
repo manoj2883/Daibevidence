@@ -17,6 +17,7 @@ results would contaminate the evaluation this rebuild is being judged by).
 """
 import json
 import logging
+import re
 from typing import Any, Dict, List, Optional
 
 import anthropic
@@ -104,17 +105,46 @@ def _default_result(reason: str) -> Dict[str, Any]:
     }
 
 
+_CHUNK_REF_PATTERN = re.compile(r"^c?(\d+)$", re.IGNORECASE)
+
+
+def _normalize_chunk_ref(value: Any) -> Optional[int]:
+    """
+    The prompt labels passages "[C{n}]" — in practice the model sometimes
+    returns direct/partial entries as the bare int n, and sometimes as the
+    string "C{n}" (or "c{n}") matching the label it was just shown. The
+    verbatim prompt (Step 4) doesn't specify which, so both are real,
+    legitimate outputs from the same prompt, not a model error — normalize
+    both to the plain int every other chunk-index convention in this
+    codebase already uses ([Excerpt N], sentence chunk_ids), rather than
+    picking one and silently dropping the other's references.
+    """
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        match = _CHUNK_REF_PATTERN.match(value.strip())
+        if match:
+            return int(match.group(1))
+    return None
+
+
+def _normalize_chunk_refs(value: Any) -> List[int]:
+    if not isinstance(value, list):
+        return []
+    return [ref for ref in (_normalize_chunk_ref(v) for v in value) if ref is not None]
+
+
 def _validate_proposition(p: Any) -> Optional[Dict[str, Any]]:
     if not isinstance(p, dict):
         return None
     claim = p.get("claim")
     if not isinstance(claim, str):
         return None
-    direct = p.get("direct")
-    partial = p.get("partial")
+    direct = _normalize_chunk_refs(p.get("direct"))
+    partial = _normalize_chunk_refs(p.get("partial"))
     absent = p.get("absent")
-    direct = direct if isinstance(direct, list) else []
-    partial = partial if isinstance(partial, list) else []
     absent = bool(absent) if isinstance(absent, bool) else (not direct and not partial)
     return {"claim": claim, "direct": direct, "partial": partial, "absent": absent}
 

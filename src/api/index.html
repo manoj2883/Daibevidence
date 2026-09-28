@@ -219,6 +219,7 @@
 
   /* ---------- Refusal / abstention ---------- */
   .refusal-block { border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--space-6); background: var(--card); }
+  .refusal-block.refusal-no-evidence { border-left: 3px solid var(--blue); }
   .refusal-block h3 { font-size: clamp(20px, 2.6vw, 26px); font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--space-2); }
   .refusal-block > p { margin: 0 0 var(--space-4); color: var(--muted); font-size: 16px; line-height: 1.5; }
   .refusal-scope { font-size: 14.5px; background: var(--bg2); border-radius: var(--r-sm); padding: var(--space-4); margin-bottom: var(--space-4); line-height: 1.5; }
@@ -362,6 +363,13 @@
   .inspector-judge.cleared .judge-verdict { color: var(--green); }
   .inspector-judge.dropped .judge-verdict { color: var(--amber); }
   .inspector-judge .judge-reason { color: var(--muted); }
+  .prop-table-wrap { margin-top: var(--space-3); overflow-x: auto; }
+  .prop-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .prop-table th, .prop-table td { text-align: left; padding: 4px 7px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .prop-table th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: .03em; }
+  .prop-table td:nth-child(2) { color: var(--green); font-variant-numeric: tabular-nums; }
+  .prop-table td:nth-child(3) { color: var(--amber); font-variant-numeric: tabular-nums; }
+  .prop-table td:nth-child(4) { text-align: center; color: var(--amber); }
   .timing-list { margin-top: var(--space-3); border-top: 1px solid var(--line); padding-top: var(--space-2); }
   .timing-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 2px 0; font-variant-numeric: tabular-nums; }
   details.raw-json { margin-top: var(--space-3); position: relative; }
@@ -691,7 +699,11 @@
 
   var GENERIC_REFUSAL_SCOPE = "This system answers questions on four topics, across all diabetes types: diet and nutrition, glycemic control, body composition and weight, and how diet interacts with diabetes medication.";
 
-  function buildRefusalBlockHtml(message, scopeText, closestScores, judge) {
+  function buildRefusalBlockHtml(data) {
+    var message = data.message;
+    var scopeText = data.scope_description;
+    var isNoEvidence = data.status === "in_scope_no_evidence";
+
     var starterQuestions = [];
     document.querySelectorAll("#empty-state .starter-card:not([data-demo-refusal])").forEach(function (btn) {
       starterQuestions.push(btn.getAttribute("data-question"));
@@ -700,20 +712,28 @@
     starterQuestions.slice(0, 4).forEach(function (q) {
       suggestionsHtml += '<button type="button" class="starter-card refusal-starter" data-question="' + escapeHtml(q) + '"><span class="q">' + escapeHtml(q) + "</span></button>";
     });
-    // A judge verdict means chunks *did* clear retrieval — they just don't
-    // answer this specific question — so the old "below the floor" framing
-    // would be wrong here; show the judge's own reason instead. Only the
-    // defensive nothing-retrieved-at-all case (judge is null) still uses
-    // the similarity-floor framing.
+
+    // Prefer the evidence audit's own reason (Stage B) — it explains
+    // *what's missing*, which is more useful than a bare similarity score.
+    // scope_reason (Stage A) is the fallback for a pure scope refusal where
+    // Stage B never ran. closest_scores/judge.reason is the last-resort
+    // fallback for the defensive nothing-retrieved-at-all case.
     var evidenceLine = "";
-    if (judge && judge.reason) {
-      evidenceLine = '<div class="refusal-closest">answerability check: ' + escapeHtml(judge.reason) + "</div>";
-    } else if (closestScores && closestScores.length) {
-      evidenceLine = '<div class="refusal-closest">closest matches found: ' + closestScores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>";
+    if (data.evidence_reason) {
+      evidenceLine = '<div class="refusal-closest">evidence audit: ' + escapeHtml(data.evidence_reason) + "</div>";
+    } else if (data.scope_reason) {
+      evidenceLine = '<div class="refusal-closest">scope check: ' + escapeHtml(data.scope_reason) + "</div>";
+    } else if (data.closest_scores && data.closest_scores.length) {
+      evidenceLine = '<div class="refusal-closest">closest matches found: ' + data.closest_scores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>";
     }
+
+    var heading = isNoEvidence
+      ? "This is a question DiabEvidence is meant to answer"
+      : "No evidence found for this question";
+
     return (
-      '<div class="refusal-block">' +
-      "<h3>No evidence found for this question</h3>" +
+      '<div class="refusal-block' + (isNoEvidence ? " refusal-no-evidence" : "") + '">' +
+      "<h3>" + heading + "</h3>" +
       "<p>" + escapeHtml(message) + "</p>" +
       '<div class="refusal-scope">' + escapeHtml(scopeText || GENERIC_REFUSAL_SCOPE) + "</div>" +
       evidenceLine +
@@ -877,20 +897,40 @@
       onSources: function (data) {
         sourcesData = data.sources || [];
         timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
-        timing.judge = data.timing_ms && data.timing_ms.judge;
+        timing.scope = data.timing_ms && data.timing_ms.scope;
+        timing.evidence = data.timing_ms && data.timing_ms.evidence;
         els.status.textContent = STATUS_STAGES[2];
 
-        if (data.state === "answered_low_confidence") {
-          els.notice.innerHTML =
+        var noticeHtml = "";
+        if (data.status === "answered_partial") {
+          noticeHtml +=
             '<div class="notice">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-            '<span><span class="label">Low confidence</span>The closest evidence found only weakly clears this system’s similarity floor — treat this answer with extra caution.</span>' +
+            '<span><span class="label">Partial evidence</span>' + escapeHtml(data.evidence_reason || "The evidence only partially covers this question.") + "</span>" +
             "</div>";
         }
+        if (data.status === "answered_adjacent") {
+          noticeHtml +=
+            '<div class="notice">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+            '<span><span class="label">Outside core scope</span>This question falls outside DiabEvidence’s four core areas (diet and nutrition, glycemic control, body composition and weight, diet-medication interactions), though the evidence found does answer it.</span>' +
+            "</div>";
+        }
+        els.notice.innerHTML = noticeHtml;
 
-        if (data.mismatch) {
-          var retrievedStr = (data.retrieved_populations || []).join(", ") || "a different population";
-          var requestedStr = (data.requested_population || []).join(", ");
+        // Two independent population-mismatch signals can fire: the old
+        // deterministic classify_population()-based `mismatch`, and Stage
+        // B's own per-question `population_mismatch` audit. Either is
+        // shown; Stage B's populations are preferred when both are present
+        // since they're specific to what was actually judged as DIRECT
+        // evidence, not the whole retrieved set.
+        if (data.mismatch || data.population_mismatch) {
+          var retrievedStr = data.population_mismatch
+            ? (data.evidence_populations || []).join(", ") || "a different population"
+            : (data.retrieved_populations || []).join(", ") || "a different population";
+          var requestedStr = data.population_mismatch
+            ? (data.question_population || "")
+            : (data.requested_population || []).join(", ");
           els.mismatch.innerHTML =
             '<div class="notice">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
@@ -997,7 +1037,7 @@
         }
         if (sentenceRecords.length === 1 && !sentenceRecords[0].supported) {
           els.notice.innerHTML = "";
-          els.answerText.innerHTML = buildRefusalBlockHtml(sentenceRecords[0].sentence, null, null);
+          els.answerText.innerHTML = buildRefusalBlockHtml({ message: sentenceRecords[0].sentence });
           wireRefusalStarters(els.answerText);
         } else if (sentenceRecords.length) {
           els.actionSlot.appendChild(buildActionRow(sentenceRecords, sourcesData));
@@ -1008,7 +1048,7 @@
         els.statusLine.hidden = true;
         els.skeleton.hidden = true;
         els.evidenceColumn.hidden = true;
-        els.answerText.innerHTML = buildRefusalBlockHtml(data.message, data.scope_description, data.closest_scores, data.judge);
+        els.answerText.innerHTML = buildRefusalBlockHtml(data);
         wireRefusalStarters(els.answerText);
         scrollToBottom();
       },
@@ -1065,13 +1105,36 @@
         '<span class="score-num">' + pct + "%</span></div>";
     });
     html += "</div>";
-    if (sourcesEventData.judge) {
-      var judge = sourcesEventData.judge;
-      html += '<div class="inspector-judge ' + (judge.answerable ? "cleared" : "dropped") + '">' +
-        '<span class="idx">' + (judge.answerable ? "✓" : "✗") + "</span>" +
-        '<span class="judge-verdict">' + (judge.answerable ? "answerable" : "not answerable") + "</span>" +
-        '<span class="judge-reason">' + escapeHtml(judge.reason || "") + "</span>" +
-        "</div>";
+
+    // Stage A (scope) + Stage B (evidence) reasons, shown independently —
+    // Stage A always ran; Stage B only ran if scope wasn't "unrelated"
+    // (always true here, since buildInspectorBody is only reached for
+    // answered/answered_partial/answered_adjacent).
+    html += '<div class="inspector-judge cleared">' +
+      '<span class="idx">A</span>' +
+      '<span class="judge-verdict">' + escapeHtml(sourcesEventData.scope || "") + "</span>" +
+      '<span class="judge-reason">' + escapeHtml(sourcesEventData.scope_reason || "") + "</span>" +
+      "</div>";
+    var evidenceCleared = sourcesEventData.evidence_verdict === "sufficient";
+    html += '<div class="inspector-judge ' + (evidenceCleared ? "cleared" : "dropped") + '">' +
+      '<span class="idx">B</span>' +
+      '<span class="judge-verdict">' + escapeHtml(sourcesEventData.evidence_verdict || "") + "</span>" +
+      '<span class="judge-reason">' + escapeHtml(sourcesEventData.evidence_reason || "") + "</span>" +
+      "</div>";
+
+    var propositions = sourcesEventData.propositions || [];
+    if (propositions.length) {
+      html += '<div class="prop-table-wrap"><table class="prop-table">' +
+        "<thead><tr><th>Claim</th><th>Direct</th><th>Partial</th><th>Absent</th></tr></thead><tbody>";
+      propositions.forEach(function (p) {
+        html += "<tr>" +
+          "<td>" + escapeHtml(p.claim || "") + "</td>" +
+          "<td>" + escapeHtml((p.direct || []).join(", ") || "—") + "</td>" +
+          "<td>" + escapeHtml((p.partial || []).join(", ") || "—") + "</td>" +
+          "<td>" + (p.absent ? "✓" : "") + "</td>" +
+          "</tr>";
+      });
+      html += "</tbody></table></div>";
     }
     wrap.innerHTML = html;
 
@@ -1100,7 +1163,7 @@
   }
 
   function renderTimingList(timing) {
-    var rows = [["Embedding + retrieval", timing.retrieval], ["Answerability judge", timing.judge], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
+    var rows = [["Scope check", timing.scope], ["Embedding + retrieval", timing.retrieval], ["Evidence audit", timing.evidence], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
     var html = "";
     rows.forEach(function (r) { if (r[1] != null) html += '<div class="timing-row"><span>' + r[0] + "</span><span>" + r[1] + " ms</span></div>"; });
     if (!html) return null;

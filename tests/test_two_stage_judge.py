@@ -237,3 +237,43 @@ def test_judge_evidence_prompt_excludes_similarity_scores():
     assert "[C1]" in rendered
     assert "population=type2" in rendered
     assert "year=2024" in rendered
+
+
+def test_judge_evidence_normalizes_c_prefixed_chunk_refs():
+    """
+    Live testing found the model sometimes returns direct/partial entries
+    as "C1" (matching the "[C{n}]" passage label) rather than a bare int —
+    both are legitimate outputs of the same verbatim prompt, since it never
+    specifies which. Both must normalize to the same plain int.
+    """
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    payload = {
+        "propositions": [
+            {"claim": "a", "direct": ["C1", "c3"], "partial": [2], "absent": False},
+            {"claim": "b", "direct": [], "partial": ["C4"], "absent": False},
+        ],
+        "question_population": "type2",
+        "evidence_populations": ["type2"],
+        "population_mismatch": False,
+        "verdict": "partial",
+        "reason": "ok",
+    }
+    mock_client.messages.create.return_value = _mock_response(json.dumps(payload))
+    result = judge_evidence(mock_client, "q?", [_chunk("t1"), _chunk("t2"), _chunk("t3"), _chunk("t4")])
+
+    assert result["propositions"][0]["direct"] == [1, 3]
+    assert result["propositions"][0]["partial"] == [2]
+    assert result["propositions"][1]["partial"] == [4]
+
+
+def test_normalize_chunk_ref_rejects_garbage():
+    from src.rag.evidence_judge import _normalize_chunk_ref
+
+    assert _normalize_chunk_ref("C1") == 1
+    assert _normalize_chunk_ref("c12") == 12
+    assert _normalize_chunk_ref(3) == 3
+    assert _normalize_chunk_ref(True) is None  # bool is an int subclass in Python — must not sneak through
+    assert _normalize_chunk_ref("excerpt 1") is None
+    assert _normalize_chunk_ref(None) is None

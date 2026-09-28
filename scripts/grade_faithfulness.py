@@ -1,128 +1,120 @@
 """
-LLM faithfulness grader: for a set of already-generated answers (identified
-by (pipeline, question id) pairs), checks whether each sentence's claim is
-actually supported by the excerpts it cites, using a fixed rubric, and
-saves per-sentence + overall verdicts to data/eval_v1_faithfulness_v2_5k.json.
+Faithfulness grader: checks whether a generated answer's sentences are
+actually backed by the source excerpts they cite, independently of the
+two-stage answerability judge (src.rag.scope_judge / src.rag.evidence_judge).
 
-"Answered" is not "correct" — src.rag.chain's own SYSTEM_PROMPT rules can
-still produce a sentence whose cited excerpt doesn't quite say what the
-sentence claims (over-generalizing a specific finding, stretching a
-combination-therapy result to a monotherapy question, etc.). This grader
-exists to catch that, independently of both the answerability judge and
-the main model's own self-reported "supported" flag.
-
-Which (pipeline, id) pairs get graded is decided by
-scripts/build_judge_report.py from the two full pipeline runs (never
-hand-picked here) — this script just takes that list and grades it.
+Independence, deliberately engineered (Step 8 of the two-stage-judge
+rebuild), not assumed:
+- Different model. Stage A/B both use src.rag.judge.get_judge_model()
+  (Haiku). This grader uses src.rag.chain.get_model() (Sonnet) — a model
+  already configured in the repo for generation, reused here rather than
+  introducing a third model name, per the task's instruction to prefer an
+  already-configured model over a new one.
+- Different wording. GRADER_SYSTEM_PROMPT below shares no phrasing with
+  EVIDENCE_SYSTEM_PROMPT_TEMPLATE in src/rag/evidence_judge.py — no
+  DECOMPOSE/AUDIT/DIRECT/PARTIAL/ABSENT vocabulary, no "topical similarity
+  is not evidence" framing. It grades sentence-by-sentence against cited
+  excerpts using its own rubric (SUPPORTED/PARTIALLY_SUPPORTED/
+  UNSUPPORTED/NOT_APPLICABLE + one overall verdict), arrived at
+  independently of how Stage B frames the same underlying problem.
+If the two systems still agree most of the time, that agreement means
+something; if this grader shared Stage B's model and phrasing, agreement
+would be far less informative (correlated blind spots, not independent
+confirmation) — see eval/REPORT_twostage_judge.md's limitations section.
 
 Usage:
-    python -m scripts.grade_faithfulness
+    python -m scripts.grade_faithfulness data/eval_v2_judge_twostage_v2_5k.json
+    python -m scripts.grade_faithfulness data/eval_v2_judge_twostage_v2_5k.json --out data/eval_v2_faithfulness.json
+
+Grades every record whose status is answered/answered_partial/
+answered_adjacent (every status that actually generated text) — not a
+hand-picked subset. Also writes eval/hand_grading.csv: one row per graded
+case with id, question, answer, cited chunk texts, automated grade, and an
+empty human_grade column for manual spot-checking.
 """
+import argparse
+import csv
 import json
 import logging
-import os
 
 import anthropic
 from dotenv import load_dotenv
 
-from src.rag.chain import get_client
+from src.rag.chain import get_client, get_model
 from src.rag.judge import _strip_code_fences
 
 load_dotenv()
 
 logger = logging.getLogger("diabevidence.grader")
 
-GRADER_MODEL_DEFAULT = "claude-haiku-4-5"
+ANSWERED_STATUSES = {"answered", "answered_partial", "answered_adjacent"}
 
-NEW_PIPELINE_PATH = "data/eval_v1_summary_v2_5k_judge_v2.json"
-OLD_PIPELINE_PATH = "data/eval_v1_old_pipeline_full_v2_5k.json"
-OUT_PATH = "data/eval_v1_faithfulness_v2_5k.json"
+GRADER_SYSTEM_PROMPT = """You check whether a written answer's sentences are actually true according to the sources \
+it points to. You will see a question, a list of source passages (each with a number), and an answer broken into \
+numbered sentences, each sentence showing which passage numbers it points to.
 
-GRADER_SYSTEM_PROMPT = """You are a faithfulness grader for a retrieval-augmented question-answering system. You will \
-be given a question, the numbered excerpts that were available to the system, and the system's answer as a numbered \
-list of sentences with the excerpt numbers each sentence cites.
+Read each sentence and check it against ONLY the passages it points to (ignore other passages, even if they'd help). \
+Assign one of these labels:
+- SUPPORTED — the passages it points to actually say this, plainly and specifically.
+- PARTIALLY_SUPPORTED — the passages are on-topic and back up part of the sentence, but the sentence adds something \
+extra the passages never said (a number, a group of people, a comparison, a stronger or broader claim than the \
+passages make).
+- UNSUPPORTED — the passages it points to don't say this at all, the sentence points to nothing but still asserts a \
+fact, or the sentence leans on a background/informational passage to make a research claim that needs a study.
+- NOT_APPLICABLE — the sentence isn't a factual claim at all (a transition, a framing remark).
 
-For each sentence, grade whether its claim is actually supported by its cited excerpts, using exactly this rubric:
-- SUPPORTED: the sentence's claim is directly and specifically stated in at least one cited excerpt.
-- PARTIALLY_SUPPORTED: the cited excerpts are relevant and support part of the claim, but the sentence adds a \
-specific detail, magnitude, population, or generalization not actually stated in the excerpts, or only loosely \
-implies the claim.
-- UNSUPPORTED: the cited excerpts do not support the claim, the sentence cites nothing but makes a factual claim, \
-or a background-tier excerpt is cited as if it were research evidence.
-- NOT_APPLICABLE: pure transition/framing with no factual claim (e.g. "Here is what the evidence shows.").
+Then answer one more question, separately from the sentence labels: taking the answer as a whole, did it actually \
+resolve what the question was asking? Sometimes every sentence checks out as SUPPORTED individually, and the answer \
+still never gets around to the thing the question asked — for instance, three sentences accurately describe related \
+background, and a fourth sentence truthfully says "nothing here answers that specific question." Each of those four \
+sentences can be perfectly SUPPORTED on its own, but the reader still walks away without an answer. In a case like \
+that, your overall judgment should be UNSUPPORTED, because the question itself went unanswered, even though nothing \
+in the answer was factually wrong. Give this overall judgment as one of SUPPORTED / PARTIALLY_SUPPORTED / \
+UNSUPPORTED, based on whether the question got a real answer, not on whether the individual sentences were accurate.
 
-Then identify which sentence (by number) most directly answers the specific claim in the question — the "central \
-claim" — and separately give one overall verdict for the whole answer (SUPPORTED / PARTIALLY_SUPPORTED / \
-UNSUPPORTED).
-
-The overall verdict asks "did this answer actually resolve the question," which is a different question from \
-"is the central-claim sentence itself factually accurate." Two cases need different handling, and it is important \
-not to conflate them:
-1. The central claim is a substantive answer to the question, and it is (or isn't) borne out by its excerpts — grade \
-this normally: overall verdict follows the central claim's own SUPPORTED/PARTIALLY_SUPPORTED/UNSUPPORTED verdict.
-2. The central claim is itself a hedge — a statement that no excerpt addresses the question's specific claim (e.g. \
-"no study directly tests X," "no excerpt addresses Y"). Such a hedge can be a perfectly accurate sentence (the \
-excerpts genuinely don't address it) and would normally grade SUPPORTED as a claim about the evidence — but that \
-accuracy does NOT mean the question was answered. Whenever the central claim is this kind of hedge, the overall \
-verdict must be UNSUPPORTED regardless of how accurate the hedge itself is, and regardless of how well-supported \
-the other, tangential sentences are. Do not let accurate surrounding context upgrade the overall verdict when the \
-question itself was never actually resolved. An answer with no sentence that actually addresses the question's \
-central claim (every sentence graded NOT_APPLICABLE or only tangential, or the central claim is a hedge per case 2) \
-has central_claim_index: null and overall_verdict "UNSUPPORTED".
-
-Apply this identically across every answer you grade — the same shape (tangential background + an accurate hedge \
-that the specific claim isn't addressed) must always get the same overall_verdict "UNSUPPORTED", never SUPPORTED \
-just because the hedge sentence itself checks out as accurate.
-
-Respond with ONLY a JSON object and nothing else — no markdown code fences, no explanation outside the object — in \
-exactly this shape:
-{"sentence_verdicts": [{"index": <int>, "verdict": "<SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|NOT_APPLICABLE>", \
-"note": "<one short sentence>"}, ...], "central_claim_index": <int or null>, "overall_verdict": \
-"<SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED>"}"""
+Reply with ONLY a JSON object, nothing else, no code fences, in exactly this shape:
+{"sentence_grades": [{"index": <int>, "label": "<SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|NOT_APPLICABLE>", \
+"why": "<one short sentence>"}, ...], "answers_the_question": <int sentence index that most directly resolves the \
+question, or null>, "overall": "<SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED>"}"""
 
 
-def get_grader_model():
-    return os.environ.get("ANTHROPIC_GRADER_MODEL", GRADER_MODEL_DEFAULT)
-
-
-def _format_excerpts(sources):
+def _format_sources(sources):
     blocks = []
     for i, s in enumerate(sources, start=1):
         label = f"PMID {s.get('pmid')}" if s.get("source_type") != "background" else s.get("publisher", "background")
-        blocks.append(f"[Excerpt {i}] ({s.get('source_type')}, {label}) {s.get('title', '')}\n{s.get('excerpt', '')}")
+        blocks.append(f"[{i}] ({s.get('source_type')}, {label}) {s.get('title', '')}\n{s.get('excerpt', '')}")
     return "\n\n".join(blocks)
 
 
 def _format_answer(sentence_records):
     lines = []
     for i, s in enumerate(sentence_records, start=1):
-        cites = ",".join(str(c) for c in (s.get("chunk_ids") or [])) or "none"
-        lines.append(f"{i}. [cites: {cites}] {s.get('sentence', '')}")
+        cites = ", ".join(str(c) for c in (s.get("chunk_ids") or [])) or "none"
+        lines.append(f"{i}. [points to: {cites}] {s.get('sentence', '')}")
     return "\n".join(lines)
 
 
 def _default_verdict(reason):
-    return {"sentence_verdicts": [], "central_claim_index": None, "overall_verdict": "UNSUPPORTED", "grading_error": reason}
+    return {"sentence_grades": [], "answers_the_question": None, "overall": "UNSUPPORTED", "grading_error": reason}
 
 
 def grade_answer(client, question, sources, sentence_records):
     """
-    Never raises: a malformed grader response or API failure defaults to
-    overall_verdict UNSUPPORTED with grading_error set, rather than
-    silently treating a grading failure as a pass.
+    Never raises: an API failure or malformed response both default to
+    overall=UNSUPPORTED with grading_error set, never a silent pass.
     """
     if not sentence_records:
         return _default_verdict("no sentences to grade")
 
     user_content = (
         f"Question: {question}\n\n"
-        f"Excerpts available to the system:\n{_format_excerpts(sources)}\n\n"
-        f"System's answer:\n{_format_answer(sentence_records)}"
+        f"Source passages:\n{_format_sources(sources)}\n\n"
+        f"Answer:\n{_format_answer(sentence_records)}"
     )
 
     try:
         response = client.messages.create(
-            model=get_grader_model(),
+            model=get_model(),
             max_tokens=1500,
             system=GRADER_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_content}],
@@ -140,55 +132,85 @@ def grade_answer(client, question, sources, sentence_records):
         logger.error("Grader returned malformed JSON: %r", raw[:500])
         return _default_verdict("malformed grader JSON")
 
-    if not isinstance(parsed, dict) or "overall_verdict" not in parsed:
-        logger.error("Grader response missing overall_verdict: %r", raw[:500])
-        return _default_verdict("grader response missing overall_verdict")
+    if not isinstance(parsed, dict) or "overall" not in parsed:
+        logger.error("Grader response missing 'overall': %r", raw[:500])
+        return _default_verdict("grader response missing 'overall'")
 
-    overall = parsed.get("overall_verdict")
+    overall = parsed.get("overall")
     if overall not in ("SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED"):
-        logger.error("Grader returned invalid overall_verdict %r", overall)
-        return _default_verdict(f"invalid overall_verdict: {overall!r}")
+        logger.error("Grader returned invalid overall %r", overall)
+        return _default_verdict(f"invalid overall: {overall!r}")
 
     parsed["model"] = model_used
-    parsed.setdefault("sentence_verdicts", [])
-    parsed.setdefault("central_claim_index", None)
+    parsed.setdefault("sentence_grades", [])
+    parsed.setdefault("answers_the_question", None)
     return parsed
 
 
-def load_pipeline_results(path):
+def load_results(path):
     with open(path, encoding="utf-8") as f:
-        return {r["id"]: r for r in json.load(f)["results"]}
+        return json.load(f)["results"]
+
+
+def write_hand_grading_csv(path, graded_rows):
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["id", "question", "answer", "cited_chunk_texts", "automated_grade", "human_grade"])
+        for row in graded_rows:
+            writer.writerow([
+                row["id"],
+                row["question"],
+                row["generated_answer"] or "",
+                row["cited_chunk_texts"],
+                row["verdict"].get("overall", ""),
+                "",
+            ])
+
+
+def _cited_chunk_texts(sources, sentence_records):
+    cited_indices = sorted({i for s in sentence_records for i in (s.get("chunk_ids") or [])})
+    parts = []
+    for i in cited_indices:
+        if 1 <= i <= len(sources):
+            parts.append(f"[{i}] {sources[i - 1].get('excerpt', '')}")
+    return "\n\n".join(parts)
 
 
 def main():
-    load_dotenv()
-    with open("data/eval_v1_grading_targets.json", encoding="utf-8") as f:
-        targets = json.load(f)["targets"]  # [{"pipeline": "old"|"new", "id": int}, ...]
+    parser = argparse.ArgumentParser(description="Grade every answered case in a pipeline results file for faithfulness.")
+    parser.add_argument("results_path", help="Path to a pipeline results JSON (must have a top-level 'results' list).")
+    parser.add_argument("--out", default=None, help="Output path for verdicts JSON. Defaults to <results_path stem>_faithfulness.json.")
+    parser.add_argument("--csv-out", default="eval/hand_grading.csv", help="Output path for the hand-grading CSV.")
+    args = parser.parse_args()
 
-    new_results = load_pipeline_results(NEW_PIPELINE_PATH)
-    old_results = load_pipeline_results(OLD_PIPELINE_PATH)
+    out_path = args.out or args.results_path.replace(".json", "_faithfulness.json")
+
+    results = load_results(args.results_path)
+    targets = [r for r in results if r.get("status") in ANSWERED_STATUSES]
+    print(f"Grading {len(targets)} of {len(results)} records (status in {sorted(ANSWERED_STATUSES)}).")
+
     client = get_client()
-
     graded = []
-    for t in targets:
-        pipeline, qid = t["pipeline"], t["id"]
-        record = (new_results if pipeline == "new" else old_results)[qid]
-        print(f"  grading pipeline={pipeline} id={qid} {record['question'][:60]!r}")
+    for record in targets:
+        print(f"  id={record['id']} status={record['status']} {record['question'][:60]!r}")
         verdict = grade_answer(client, record["question"], record.get("sources") or [], record.get("sentence_records") or [])
-        graded.append({
-            "pipeline": pipeline,
-            "id": qid,
+        row = {
+            "id": record["id"],
             "question": record["question"],
-            "final_state": record["final_state"],
+            "status": record["status"],
             "generated_answer": record.get("generated_answer"),
+            "cited_chunk_texts": _cited_chunk_texts(record.get("sources") or [], record.get("sentence_records") or []),
             "verdict": verdict,
-        })
-        print(f"    -> overall_verdict={verdict.get('overall_verdict')}")
+        }
+        graded.append(row)
+        print(f"    -> overall={verdict.get('overall')}")
 
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump({"grader_model_default": get_grader_model(), "results": graded}, f, ensure_ascii=False, indent=2)
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump({"grader_model": get_model(), "source_results_path": args.results_path, "results": graded}, f, ensure_ascii=False, indent=2)
+    print(f"\nSaved {len(graded)} gradings to {out_path}")
 
-    print(f"\nSaved {len(graded)} gradings to {OUT_PATH}")
+    write_hand_grading_csv(args.csv_out, graded)
+    print(f"Saved hand-grading CSV to {args.csv_out}")
 
 
 if __name__ == "__main__":

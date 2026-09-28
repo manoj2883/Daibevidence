@@ -30,6 +30,7 @@ NEW_PATH = "data/eval_v2_judge_twostage_v2_5k.json"
 NEW_FAITH_PATH = "data/eval_v2_judge_twostage_v2_5k_faithfulness.json"
 PREV_JUDGE_PATH = "data/eval_v1_summary_v2_5k_judge_v2.json"
 OLD_FLOOR_PATH = "data/eval_v1_old_pipeline_full_v2_5k.json"
+PREV_FAITH_PATH = "data/eval_v1_faithfulness_v2_5k.json"
 
 FIGURES_OUT = "data/eval_v2_report_figures.json"
 RELABEL_OUT = "eval/relabel_proposals.md"
@@ -240,7 +241,7 @@ def build_relabel_proposals(eval_set, core, new_p, faith_by_id):
     return priority + rest
 
 
-def render_relabel_md(eval_set, new_p, candidate_ids):
+def render_relabel_md(eval_set, new_p, candidate_ids, prev_faith_by_id):
     lines = [
         "# Relabel proposals",
         "",
@@ -251,7 +252,11 @@ def render_relabel_md(eval_set, new_p, candidate_ids):
         "",
     ]
     if not candidate_ids:
-        lines.append("No candidates found in this run.")
+        lines.append("No candidates found in this run: no adjacent-labeled question was answered by the new "
+                     "pipeline (Stage B returned `partial` or `insufficient` for all 17, which the decision matrix "
+                     "routes to `out_of_scope`).")
+        lines.append("")
+        lines.append(render_prev_pipeline_relabel(eval_set, new_p, prev_faith_by_id))
     for i in candidate_ids:
         r = new_p[i]
         q = eval_set[i]
@@ -273,6 +278,55 @@ def render_relabel_md(eval_set, new_p, candidate_ids):
             "**For relabeling to in_charter:** the corpus has direct, faithful evidence for this question — a user asking it gets a real answer today, and the charter's own four areas are somewhat arbitrary boundaries that don't reflect what the corpus can actually do.",
             "",
             "**Against relabeling:** the charter defines scope by subject matter, not by what one snapshot of the corpus happens to contain — a future re-ingestion could easily remove this coverage, and broadening the charter to match today's incidental corpus contents risks scope creep untethered from the product's actual four-area design intent.",
+            "",
+        ]
+    return "\n".join(lines)
+
+
+def render_prev_pipeline_relabel(eval_set, new_p, prev_faith_by_id):
+    """
+    Ids 25, 33, 37 are named by the task as adjacent questions that got SUPPORTED answers under the
+    previous pipeline. The new pipeline refused them, so their evidence comes from the v1 grading file,
+    which has per-sentence verdicts only (no overall) — tallied here, never collapsed into a grade.
+    """
+    lines = [
+        "## Named in the task: ids 25, 33, 37 (evidence from the previous pipeline)",
+        "",
+        f"Answers and sentence verdicts below are from `{PREV_FAITH_PATH}` (previous pipeline, previous grader), "
+        "not from this run. That file grades each sentence separately and has no overall verdict, so the tally is "
+        "shown as-is. Passages are cited in each verdict note; full passage text is in that file's source run.",
+        "",
+    ]
+    for i in (25, 33, 37):
+        g = prev_faith_by_id.get(i)
+        q = eval_set[i]
+        r = new_p[i]
+        lines += [f"### id {i} — {q['topic']} / {q.get('sub_area', '')}", "", f"**Question:** {q['question']}", ""]
+        if not g:
+            lines += ["(not present in the previous grading file)", ""]
+            continue
+        verdicts = g["verdict"].get("sentence_verdicts") or []
+        tally = {}
+        for v in verdicts:
+            tally[v.get("verdict")] = tally.get(v.get("verdict"), 0) + 1
+        lines += [
+            f"**Previous-pipeline answer:** {g.get('generated_answer', '')}",
+            "",
+            "**Sentence verdicts (previous grader):** " + ", ".join(f"{k} {n}" for k, n in sorted(tally.items())),
+            "",
+        ]
+        lines += [f"- [{v.get('index')}] {v.get('verdict')}: {v.get('note', '')}" for v in verdicts]
+        lines += [
+            "",
+            f"**This run:** scope={r.get('scope')}, evidence verdict={r.get('evidence_verdict')}, status={r.get('status')}. "
+            f"Stage B reason: {r.get('evidence_reason') or '(none)'}",
+            "",
+            "**For relabeling to in_scope:** the previous pipeline produced a mostly sentence-supported answer, so the "
+            "corpus demonstrably holds relevant evidence, and users with type 2 diabetes plausibly ask this.",
+            "",
+            "**Against relabeling:** it falls in an area the charter lists as adjacent by design (complications "
+            "management), the new Stage B judged the retrieved evidence only partial, and broadening the charter to "
+            "fit incidental corpus coverage would drift from the four-area product intent.",
             "",
         ]
     return "\n".join(lines)
@@ -325,7 +379,8 @@ def main():
     print(f"\nWrote figures to {FIGURES_OUT}")
 
     with open(RELABEL_OUT, "w", encoding="utf-8") as f:
-        f.write(render_relabel_md(eval_set, new_p, relabel_candidates))
+        prev_faith_by_id = {r["id"]: r for r in load_json(PREV_FAITH_PATH)["results"] if r.get("pipeline") == "new"}
+        f.write(render_relabel_md(eval_set, new_p, relabel_candidates, prev_faith_by_id))
     print(f"Wrote {RELABEL_OUT}")
 
     # Per-question table + callouts + report assembled in build_full_report_markdown.py-equivalent below.
@@ -464,11 +519,32 @@ def build_report_markdown(eval_set, core, stats, confusion, faith_dist, lat_cost
                  "informative than if they shared a model, but it does not make the grader a validated ground truth "
                  "instrument — it is itself an LLM judgment, unreplicated by a second grading pass or a human rater "
                  "beyond the `eval/hand_grading.csv` spot-check.")
-    lines.append("- **No prompt iteration**: per the task's explicit rule, neither judge prompt was changed based on "
-                 "this run's results — this run happened exactly once. Two real bugs were fixed before this run "
-                 "(the `direct`/`partial` chunk-ref parsing accepting both int and \"C{n}\" string forms, and the "
-                 "id-20 classifier misroute) — both caught by direct testing before the eval, not by tuning against "
-                 "its output.")
+    lines.append("- **No prompt iteration, and the run history in full**: neither judge prompt was changed at any "
+                 "point after implementation. The pipeline eval completed exactly once, but it was *launched* four "
+                 "times: attempt 1 was aborted when Stage B's model wrapped its JSON in a code fence followed by "
+                 "prose, which the parser could not recover — fixed in parsing code only (`extract_json_object`, "
+                 "commit e1444aa), no prompt text touched; attempt 2 was killed by the OS for low memory; attempt 3 "
+                 "was killed by a machine restart. None of the aborted attempts wrote a results file, so no results "
+                 "were seen before the completed run. Separately, two bugs were fixed before any attempt (the "
+                 "`direct`/`partial` chunk-ref parsing accepting both int and \"C{n}\" string forms, and the id-20 "
+                 "classifier misroute), both caught by direct testing.")
+    lines.append("- **The faithfulness grader was run twice.** The first pass returned 6 of 10 grades as parse "
+                 "failures (fail-closed to UNSUPPORTED): the grading model emits a thinking block that counts against "
+                 "`max_tokens`, and 1500 was not enough, truncating or emptying the JSON. That pass is preserved as "
+                 "`data/eval_v2_judge_twostage_v2_5k_faithfulness.INVALID_max_tokens.json`. The fix raised "
+                 "`max_tokens` to 8000 and made a max_tokens stop an explicit grading error; the grader prompt was "
+                 "not changed, and the pipeline outputs being graded were not re-run. The grades in §4 are from the "
+                 "second pass, which had zero grading errors.")
+    lines.append("- **The grader is not deterministic.** During diagnosis of the failure above, a one-off grading "
+                 "call on id 1 returned PARTIALLY_SUPPORTED; the official second pass graded it SUPPORTED. Single "
+                 "grades near the SUPPORTED/PARTIALLY_SUPPORTED boundary should be read as uncertain — this is what "
+                 "`eval/hand_grading.csv` is for.")
+    lines.append("- **Result flagged, not tuned: Stage A labels 7 of 24 in-scope questions `adjacent`** (ids 10, "
+                 "12, 13, 16, 17, 20, 23 — see §3), which routes them to `out_of_scope` and accounts for all 7 "
+                 "in-scope refusals in §2. This includes id 20: the classifier fix is in place, but Stage A now "
+                 "refuses it independently. Per the task's rule this was reported, not fixed by editing the scope "
+                 "prompt or charter against these 43 questions. Whether the charter wording or the Stage A prompt "
+                 "is the cause needs a decision from the maintainer and a held-out set to test the change on.")
     lines.append("- **Single run, no variance estimate** beyond the Wilson intervals on the rates themselves — "
                  "every judge/evidence/generation/grading call is a real, non-deterministic LLM call (this SDK build "
                  "has no `temperature` parameter to reduce variance with — see `src/rag/scope_judge.py`'s note). "

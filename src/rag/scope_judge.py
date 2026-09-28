@@ -125,7 +125,14 @@ def _call_scope_model(client: anthropic.Anthropic, question: str) -> str:
     response = client.messages.create(
         model=get_judge_model(),
         max_tokens=300,
-        temperature=0,
+        # Step 3 asks for temperature 0; the installed anthropic SDK's
+        # Messages.create() has no temperature parameter at all in this
+        # environment (verified against the live signature, not assumed —
+        # it raises TypeError: unexpected keyword argument 'temperature'),
+        # so determinism can't be forced here. Caching (see judge_scope's
+        # in-process cache) still makes a repeated identical question
+        # deterministic within a process; a genuinely new call to the
+        # model is not. Noted as a limitation, not silently dropped.
         system=system_prompt,
         messages=[{"role": "user", "content": question}],
     )

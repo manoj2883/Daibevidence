@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from src.ingest.config import RETRIEVAL_CANDIDATE_K
 from src.ingest.population import classify_population
 from src.rag.cost import assert_chunk_cap, print_prompt_estimate
-from src.rag.judge import judge_answerability
+from src.rag.evidence_judge import judge_evidence
 from src.rag.query_classifier import classify_and_decompose, overall_question_type
 from src.rag.query_log import log_query_event
 from src.rag.retriever import (
@@ -29,22 +29,30 @@ from src.rag.retriever import (
     resolve_namespace,
     retrieve,
 )
+from src.rag.scope_judge import judge_scope
 from src.rag.types import RetrievalDecision, RetrievedChunk
 
 # Load environment variables
 load_dotenv()
 
-OUT_OF_SCOPE_TEXT = "The retrieved literature does not contain sufficient evidence to answer this question."
+# Defensive fallback only — fires when nothing was retrieved at all (e.g. an
+# empty namespace). Not part of the scope/evidence decision matrix below.
+NOTHING_RETRIEVED_TEXT = "The retrieved literature does not contain sufficient evidence to answer this question."
 
-# The answerability judge's refusal message — distinct from OUT_OF_SCOPE_TEXT
-# above, which now only fires in the defensive case of zero retrieved
-# candidates (see _retrieve_for_question / stream_answer).
-JUDGE_REFUSAL_TEXT = "I couldn't find evidence in the literature I have that answers this question."
+# status="out_of_scope" refusal text — used for both Stage A "unrelated" and
+# Stage A "adjacent" + Stage B verdict in (partial, insufficient). Deliberately
+# the same message either way: from the user's side, "not something this
+# system answers" reads the same regardless of which stage caught it.
+OUT_OF_SCOPE_TEXT = "This question is outside what DiabEvidence is built to answer."
 
-# How many top-scoring chunks the answerability judge sees. Deliberately
-# small: the judge's job is a quick answerability check, not a full review
-# of every candidate that cleared retrieval.
-JUDGE_CHUNK_LIMIT = 5
+# status="in_scope_no_evidence" — a valid, in-charter question the corpus
+# just doesn't have evidence for. Deliberately never says "out of scope":
+# the question is in scope, the corpus coverage is the gap, and those are
+# different problems with different fixes (ask a narrower question vs. this
+# system will never cover this topic).
+IN_SCOPE_NO_EVIDENCE_TEXT = (
+    "This is a question DiabEvidence is meant to answer, but the literature in the index doesn't address it."
+)
 
 SCOPE_DESCRIPTION = (
     "This system answers questions on four topics, across all diabetes types (type 1, "
@@ -148,8 +156,9 @@ informational, mechanistic terms (e.g., how a drug class interacts with diet or 
 dosing instructions, prescribing guidance, or advice to start, stop, or adjust a medication.
 10. Be precise: prefer specific numbers, effect sizes, and study populations stated in the excerpts \
 over vague language — from "study" excerpts only, per rule 2.
+11. {status_instruction}
 
-{sub_question_note}Source excerpts:
+{sub_question_note}{evidence_audit_note}Source excerpts:
 {context}"""
 
 
@@ -322,6 +331,81 @@ def _sub_question_note(classified: List[Dict[str, Any]]) -> str:
         "This question was split into the following parts — answer each, in this order:\n"
         + "\n".join(lines)
         + "\n\n"
+    )
+
+
+def _direct_chunk_indices(evidence_result: Dict[str, Any]) -> Set[int]:
+    """
+    Every chunk index ([C{n}] position, 1-based, matching the exact chunk
+    list passed to judge_evidence — see evidence_judge._format_passages)
+    that at least one proposition's "direct" list names.
+    """
+    indices: Set[int] = set()
+    for prop in evidence_result.get("propositions") or []:
+        for idx in prop.get("direct") or []:
+            if isinstance(idx, int):
+                indices.add(idx)
+    return indices
+
+
+def filter_chunks_to_direct(chunks: List[RetrievedChunk], evidence_result: Dict[str, Any]) -> List[RetrievedChunk]:
+    """
+    For status="answered_partial": restrict generation's context to only
+    the chunks the evidence audit marked DIRECT for at least one
+    proposition, per Step 5 ("generate, restricted to DIRECT passages").
+    Falls back to the full chunk list if the audit's "partial" verdict
+    somehow named no direct chunks at all (e.g. the mismatch alone drove
+    "partial") — generating against zero context would be worse than
+    generating against everything retrieved.
+    """
+    indices = sorted(i for i in _direct_chunk_indices(evidence_result) if 1 <= i <= len(chunks))
+    filtered = [chunks[i - 1] for i in indices]
+    return filtered if filtered else chunks
+
+
+def _status_instruction(status: str, evidence_result: Dict[str, Any]) -> str:
+    """
+    Rule 11's text — the one place the generation prompt is told which of
+    the two "evidence exists but isn't the full picture" statuses applies,
+    and what to do about it. Both statuses reuse rule 5's "caveat after the
+    direct answer, never before" ordering rather than inventing a new rule.
+    """
+    if status == "answered_partial":
+        gap = evidence_result.get("reason") or "the evidence audit found a gap it did not name."
+        return (
+            "The evidence for this question is PARTIAL, not complete — you have been given only the excerpts "
+            "the evidence audit marked as directly relevant to at least one proposition in the question. Answer "
+            f"only what these excerpts directly support, then end with exactly one closing sentence, per rule 5, "
+            f'naming the specific gap the audit found: "{gap}"'
+        )
+    if status == "answered_adjacent":
+        return (
+            "This question falls outside DiabEvidence's four core areas (diet and nutrition, glycemic control, "
+            "body composition and weight, diet-medication interactions) even though the evidence found does "
+            "answer it. State this plainly as a caveat, after your direct answer, per rule 5: this system is "
+            "built to answer the four core areas, and this question is adjacent to them, not one of them."
+        )
+    return "Not applicable to this answer — answer normally, per rules 1-10."
+
+
+def _evidence_audit_note(evidence_result: Dict[str, Any]) -> str:
+    """
+    A supplementary note surfaced only when Stage B's own audit flagged a
+    population mismatch — independent of, and in addition to, rule 6's
+    existing population-mismatch mechanism (driven by the keyword-based
+    classify_population()/is_population_mismatch(), computed over all
+    merged chunks rather than per-proposition). The two signals usually
+    agree; when they don't, both still reach the model, since each is
+    genuinely informative on its own and neither supersedes the other.
+    """
+    if not evidence_result.get("population_mismatch"):
+        return ""
+    question_population = evidence_result.get("question_population") or "an unspecified population"
+    evidence_populations = ", ".join(evidence_result.get("evidence_populations") or []) or "a different population"
+    return (
+        f"The evidence audit separately found a population mismatch: this question concerns "
+        f'"{question_population}", but the directly relevant evidence covers "{evidence_populations}". State '
+        "plainly, as a caveat sentence per rule 5, which population the evidence you actually cite covers.\n\n"
     )
 
 
@@ -678,77 +762,73 @@ def stream_answer(
 ) -> Generator[Dict[str, Any], None, None]:
     """
     Run the grounded RAG pipeline for one question, yielding a sequence of
-    event dicts: {"event": ..., "data": ...}. Possible events:
+    event dicts: {"event": ..., "data": ...}.
 
-    - "sources": retrieved chunks + population info + a *provisional*
-      state guess + score distribution + the judge's verdict, sent once,
-      before generation. question_type ("definitional"/"evidence_seeking"/
-      "compound") and sub_questions (the classify_and_decompose()
-      breakdown — a list of one if the question wasn't compound) show how
-      the question was routed: a definitional sub-question retrieves from
-      the background tier only, an evidence-seeking one from the study
-      tier only (see _retrieve_for_question). requested_population is now
-      a list (can name more than one population, e.g. ["type1", "type2"]).
-    - "contradictions": conflicting findings detected across excerpts (an
-      empty list if none), sent once, before any "sentence" events
+    Two-stage answerability judge, run in this order:
+
+    1. Stage A (src.rag.scope_judge.judge_scope) — question only, never
+       shown retrieved chunks, so retrieval quality can't bias the scope
+       call. Returns scope in {"in_charter", "adjacent", "unrelated"}. If
+       "unrelated", refuses immediately — no retrieval, no Stage B.
+    2. Retrieval (_retrieve_for_question) — only for in_charter/adjacent.
+    3. Stage B (src.rag.evidence_judge.judge_evidence) — question + every
+       retrieved chunk, auditing per-proposition DIRECT/PARTIAL/ABSENT
+       support rather than a single answerable yes/no (the old boolean
+       judge, src.rag.judge, accepted on topical overlap — see
+       docs/findings-retrieval-floor.md and RECON.md for why that broke
+       down). Returns verdict in {"sufficient", "partial", "insufficient"}.
+
+    scope x verdict routes to one of five statuses:
+
+    | scope      | verdict      | status                | generation                          |
+    |------------|--------------|------------------------|--------------------------------------|
+    | in_charter | sufficient   | answered               | normal, all retrieved chunks         |
+    | in_charter | partial      | answered_partial       | DIRECT chunks only + names the gap   |
+    | in_charter | insufficient | in_scope_no_evidence   | none — valid question, no evidence   |
+    | adjacent   | sufficient   | answered_adjacent      | normal, with a scope caveat          |
+    | adjacent   | partial/insufficient | out_of_scope  | none — refusal                       |
+    | unrelated  | (Stage B never runs) | out_of_scope  | none — refusal                       |
+
+    Events:
+    - "sources": chunks actually used for generation + population info +
+      scope/evidence audit fields + score distribution, sent once before
+      generation (answered / answered_partial / answered_adjacent only)
+    - "contradictions": conflicting findings across excerpts (empty list
+      if none), sent once before any "sentence" events
     - "sentence": one {sentence, chunk_ids, pmids, supported, source_type,
-      new_paragraph} object, sent as soon as it completes in the stream —
-      source_type is "evidence"/"background"/None, computed from chunk_ids
-      so the frontend and eval harness never need to re-derive it from the
-      sources list themselves; new_paragraph signals a paragraph break
-      (see SYSTEM_PROMPT rule 3)
-    - "done": generation finished — carries the *authoritative* state, the
-      disclaimer, and the groundedness summary (share of sentences with a
-      supporting chunk)
-    - "refusal": either nothing was retrieved at all (state="out_of_scope",
-      a defensive fallback — see below) or the answerability judge decided
-      the retrieved excerpts don't actually answer the question
-      (state="out_of_scope", judge.answerable=false) — refusal message,
-      closest scores found, what the system covers, the score
-      distribution, and the judge's verdict+reason. No main-model call is
-      made either way (the judge call, on a smaller model, still runs).
-    - "error": something is misconfigured (e.g. missing API key) or
-      generation itself failed
+      new_paragraph} object, sent as soon as it completes in the stream
+    - "done": generation finished — status (unchanged from the
+      pre-generation decision; nothing here re-classifies it post-hoc),
+      disclaimer, groundedness, per-stage timing, usage, model
+    - "refusal": in_scope_no_evidence or out_of_scope — message, what the
+      system covers, the scope/evidence audit fields, score distribution.
+      No generation call is made for either.
+    - "error": misconfiguration or a generation failure
 
-    The API's state enum is answered / answered_low_confidence /
-    no_evidence_for_claim / out_of_scope. "out_of_scope" is now decided by
-    src.rag.judge.judge_answerability, not a similarity threshold —
-    docs/findings-retrieval-floor.md found cosine similarity measures
-    topical relatedness, not answerability, so it can't separate a
-    diabetes-adjacent-but-out-of-scope question from a genuinely in-scope
-    one. The similarity floor is still computed and logged (see
-    _retrieve_for_question) and still used for score_distribution in the
-    inspector, but no longer gates generation on its own; the one place it
-    still can is the defensive "nothing retrieved at all" case handled
-    just below (e.g. an empty namespace), which the judge is never even
-    asked about. Beyond the judge's gate, the remaining three states
-    depend on which chunks the model actually cites — a chunk can pass the
-    judge and still go unused if the model correctly decides it doesn't
-    answer the question, which is exactly "no_evidence_for_claim": in
-    scope, and (when background chunks exist) the model still gives the
-    definitional context, but no study addresses the specific claim
-    asked. That's why "sources" carries a provisional guess (usually
-    right, cheap, lets the frontend show something immediately) while
-    "done" carries the real answer, computed by determine_final_state()
-    from what was actually cited.
+    Every event's data also carries the retired top-level fields this
+    replaces (`state`, mirroring `status`; `judge`, mirroring whichever of
+    scope_result/evidence_result is the most recent judgment) so a
+    consumer reading only the old field names still gets a sensible value.
 
-    Retrieves a wide candidate pool (RETRIEVAL_CANDIDATE_K) per
-    sub-question for scoring, but only the top get_retriever_k() by raw
-    score are used for the judge/generation. Never sends more than
-    RETRIEVAL_CANDIDATE_K chunks to the main model — enforced by a hard
-    assertion, not just a printed warning.
+    The similarity floor (src.rag.retriever.decide_retrieval_state) no
+    longer gates anything — see RECON.md §3 — but candidate_scores/
+    top_score are still computed and returned in `score_distribution` for
+    the retrieval inspector. The one place a purely-retrieval signal can
+    still short-circuit the pipeline is the defensive "nothing retrieved
+    at all" branch below (e.g. an empty namespace) — Stage B is never even
+    asked about a question with literally nothing to audit.
 
     retrieval_mode and force_judge are diagnostic-only, keyword-only
-    parameters for eval scripts reconstructing the pre-judge pipeline for
+    parameters for eval scripts reconstructing an earlier pipeline for
     comparison (see scripts/run_old_pipeline_full.py) — the live /query
-    path never passes them, so production behavior is unchanged by their
-    existence. retrieval_mode="floor" selects only floor-surviving chunks
-    (see _retrieve_for_question) instead of the top-k-by-raw-score default.
-    force_judge, when not None, skips the real judge call entirely and
-    uses this boolean as the verdict; the emitted judge payload still
-    carries {"answerable": force_judge, "bypassed": True, "reason": ...}
-    so any record built from these events is visibly marked as using a
-    forced verdict, never mistaken for a real judge call.
+    path never passes them. retrieval_mode="floor" selects only
+    floor-surviving chunks instead of the top-k-by-raw-score default.
+    force_judge, when not None, skips both real judge stages: True forces
+    scope="in_charter" + verdict="sufficient" (generation proceeds on
+    whatever retrieval_mode selected); False forces an immediate
+    scope="unrelated" refusal with no retrieval. Either way the emitted
+    scope/evidence result carries "bypassed": True so a record built from
+    these events is never mistaken for a real judge call.
     """
     t_start = time.monotonic()
 
@@ -762,69 +842,136 @@ def stream_answer(
     requested_population_str = ", ".join(sorted(requested_population))
     resolved_namespace = resolve_namespace(namespace)
 
+    # --- Stage A: scope (question only, no retrieval yet) ------------------
+    t_scope_start = time.monotonic()
+    if force_judge is False:
+        scope_result = {"scope": "unrelated", "topic": None, "reason": "forced (diagnostic run)", "model": None, "bypassed": True}
+    elif force_judge is True:
+        scope_result = {"scope": "in_charter", "topic": None, "reason": "forced (diagnostic run)", "model": None, "bypassed": True}
+    else:
+        scope_result = judge_scope(client, question)
+    scope_ms = round((time.monotonic() - t_scope_start) * 1000, 1)
+
+    if scope_result["scope"] == "unrelated":
+        log_query_event(question, sorted(requested_population), [], OUT_OF_SCOPE_TEXT, state="out_of_scope")
+        yield {
+            "event": "refusal",
+            "data": {
+                "status": "out_of_scope",
+                "state": "out_of_scope",
+                "message": OUT_OF_SCOPE_TEXT,
+                "scope_description": SCOPE_DESCRIPTION,
+                "scope": scope_result["scope"],
+                "scope_reason": scope_result["reason"],
+                "evidence_verdict": None,
+                "evidence_reason": None,
+                "propositions": [],
+                "population_mismatch": False,
+                "question_population": None,
+                "evidence_populations": [],
+                "closest_scores": [],
+                "score_distribution": None,
+                "judge": scope_result,
+                "disclaimer": DISCLAIMER,
+                "timing_ms": {"scope": scope_ms},
+            },
+        }
+        return
+
+    # --- Retrieval (in_charter or adjacent only) ----------------------------
+    t_retrieval_start = time.monotonic()
     try:
         decision, classified_sub_questions = _retrieve_for_question(question, namespace, retrieval_mode=retrieval_mode)
     except ValueError as e:
         yield {"event": "error", "data": {"message": str(e)}}
         return
+    retrieval_ms = round((time.monotonic() - t_retrieval_start) * 1000, 1)
 
     question_type = overall_question_type(classified_sub_questions)
-
-    t_after_retrieval = time.monotonic()
-    retrieval_ms = round((t_after_retrieval - t_start) * 1000, 1)
 
     assert_chunk_cap(decision.surviving_chunks, RETRIEVAL_CANDIDATE_K)
 
     if decision.state == "out_of_scope":
         # Defensive fallback only — fires when nothing was retrieved at all
-        # (e.g. an empty namespace), not as the answerability gate: that's
-        # the judge's job now, below. Never asks the judge about a question
-        # with literally nothing to show it.
-        closest_scores = decision.candidate_scores[:3]
-        log_query_event(question, sorted(requested_population), [], OUT_OF_SCOPE_TEXT, state="out_of_scope")
+        # (e.g. an empty namespace). Stage B is never asked about a
+        # question with literally nothing to audit.
+        log_query_event(question, sorted(requested_population), [], NOTHING_RETRIEVED_TEXT, state="out_of_scope")
         yield {
             "event": "refusal",
             "data": {
+                "status": "out_of_scope",
                 "state": "out_of_scope",
-                "message": OUT_OF_SCOPE_TEXT,
+                "message": NOTHING_RETRIEVED_TEXT,
                 "scope_description": SCOPE_DESCRIPTION,
-                "closest_scores": closest_scores,
+                "scope": scope_result["scope"],
+                "scope_reason": scope_result["reason"],
+                "evidence_verdict": None,
+                "evidence_reason": None,
+                "propositions": [],
+                "population_mismatch": False,
+                "question_population": None,
+                "evidence_populations": [],
+                "closest_scores": decision.candidate_scores[:3],
                 "score_distribution": _score_distribution_payload(decision, resolved_namespace),
-                "judge": None,
+                "judge": scope_result,
                 "disclaimer": DISCLAIMER,
-                "timing_ms": {"retrieval": retrieval_ms},
+                "timing_ms": {"scope": scope_ms, "retrieval": retrieval_ms},
             },
         }
         return
 
-    chunks = decision.surviving_chunks
+    retrieved_chunks = decision.surviving_chunks
 
-    t_before_judge = time.monotonic()
-    if force_judge is not None:
-        judge_result = {
-            "answerable": force_judge,
-            "reason": "judge bypassed (diagnostic run) — verdict forced by caller, not a real judge call",
-            "bypassed": True,
+    # --- Stage B: evidence audit (question + every retrieved chunk) --------
+    t_evidence_start = time.monotonic()
+    if force_judge is True:
+        evidence_result = {
+            "propositions": [], "question_population": None, "evidence_populations": [],
+            "population_mismatch": False, "verdict": "sufficient",
+            "reason": "forced (diagnostic run)", "model": None, "bypassed": True,
         }
     else:
-        judge_result = judge_answerability(client, question, chunks[:JUDGE_CHUNK_LIMIT])
-    judge_ms = round((time.monotonic() - t_before_judge) * 1000, 1)
+        evidence_result = judge_evidence(client, question, retrieved_chunks)
+    evidence_ms = round((time.monotonic() - t_evidence_start) * 1000, 1)
 
-    if not judge_result["answerable"]:
-        log_query_event(question, sorted(requested_population), [], JUDGE_REFUSAL_TEXT, state="out_of_scope")
-        yield {
-            "event": "refusal",
-            "data": {
-                "state": "out_of_scope",
-                "message": JUDGE_REFUSAL_TEXT,
-                "scope_description": SCOPE_DESCRIPTION,
-                "closest_scores": decision.candidate_scores[:3],
-                "score_distribution": _score_distribution_payload(decision, resolved_namespace),
-                "judge": judge_result,
-                "disclaimer": DISCLAIMER,
-                "timing_ms": {"retrieval": retrieval_ms, "judge": judge_ms},
-            },
-        }
+    scope = scope_result["scope"]
+    verdict = evidence_result["verdict"]
+
+    if scope == "in_charter" and verdict == "sufficient":
+        status, chunks = "answered", retrieved_chunks
+    elif scope == "in_charter" and verdict == "partial":
+        status, chunks = "answered_partial", filter_chunks_to_direct(retrieved_chunks, evidence_result)
+    elif scope == "in_charter":  # insufficient
+        status, chunks = "in_scope_no_evidence", None
+    elif scope == "adjacent" and verdict == "sufficient":
+        status, chunks = "answered_adjacent", retrieved_chunks
+    else:  # adjacent + (partial or insufficient)
+        status, chunks = "out_of_scope", None
+
+    common_refusal_fields = {
+        "scope": scope,
+        "scope_reason": scope_result["reason"],
+        "evidence_verdict": verdict,
+        "evidence_reason": evidence_result["reason"],
+        "propositions": evidence_result["propositions"],
+        "population_mismatch": evidence_result["population_mismatch"],
+        "question_population": evidence_result["question_population"],
+        "evidence_populations": evidence_result["evidence_populations"],
+        "closest_scores": decision.candidate_scores[:3],
+        "score_distribution": _score_distribution_payload(decision, resolved_namespace),
+        "judge": evidence_result,
+        "disclaimer": DISCLAIMER,
+        "timing_ms": {"scope": scope_ms, "retrieval": retrieval_ms, "evidence": evidence_ms},
+    }
+
+    if status == "in_scope_no_evidence":
+        log_query_event(question, sorted(requested_population), [], IN_SCOPE_NO_EVIDENCE_TEXT, state=status)
+        yield {"event": "refusal", "data": {"status": status, "state": status, "message": IN_SCOPE_NO_EVIDENCE_TEXT, "scope_description": SCOPE_DESCRIPTION, **common_refusal_fields}}
+        return
+
+    if status == "out_of_scope":
+        log_query_event(question, sorted(requested_population), [], OUT_OF_SCOPE_TEXT, state=status)
+        yield {"event": "refusal", "data": {"status": status, "state": status, "message": OUT_OF_SCOPE_TEXT, "scope_description": SCOPE_DESCRIPTION, **common_refusal_fields}}
         return
 
     retrieved = retrieved_population_set(chunks)
@@ -833,16 +980,25 @@ def stream_answer(
     yield {
         "event": "sources",
         "data": {
-            "state": _provisional_state(decision),
+            "status": status,
+            "state": status,
             "question_type": question_type,
             "sub_questions": classified_sub_questions,
             "requested_population": sorted(requested_population),
             "retrieved_populations": sorted(retrieved),
             "mismatch": mismatch,
+            "scope": scope,
+            "scope_reason": scope_result["reason"],
+            "evidence_verdict": verdict,
+            "evidence_reason": evidence_result["reason"],
+            "propositions": evidence_result["propositions"],
+            "population_mismatch": evidence_result["population_mismatch"],
+            "question_population": evidence_result["question_population"],
+            "evidence_populations": evidence_result["evidence_populations"],
             "score_distribution": _score_distribution_payload(decision, resolved_namespace),
-            "judge": judge_result,
+            "judge": evidence_result,
             "sources": [_source_payload(c) for c in chunks],
-            "timing_ms": {"retrieval": retrieval_ms, "judge": judge_ms},
+            "timing_ms": {"scope": scope_ms, "retrieval": retrieval_ms, "evidence": evidence_ms},
         },
     }
 
@@ -852,10 +1008,14 @@ def stream_answer(
         requested_population=requested_population_str,
         retrieved_populations=retrieved_populations_str,
         sub_question_note=_sub_question_note(classified_sub_questions),
+        status_instruction=_status_instruction(status, evidence_result),
+        evidence_audit_note=_evidence_audit_note(evidence_result),
         contra_start=CONTRA_START,
         contra_end=CONTRA_END,
         context=context_str,
     )
+
+    t_after_retrieval = time.monotonic()  # marks generation start; contradiction_check/generation timing measure from here
 
     print_prompt_estimate(f"query: {question[:60]!r}", system_prompt, question)
 
@@ -987,24 +1147,36 @@ def stream_answer(
 
     full_answer = " ".join(s["sentence"] for s in full_sentences)
     groundedness = compute_groundedness(full_sentences, chunks)
-    final_state = determine_final_state(chunks, full_sentences, decision)
+    # status does not get re-classified post-generation — it was fully
+    # determined by scope x evidence-verdict before generation ever ran
+    # (see the routing table in this function's docstring). Retired:
+    # determine_final_state()'s post-hoc no_evidence_for_claim/
+    # answered_low_confidence demotion, which depended on the similarity
+    # floor's confidence margin — the evidence audit's per-proposition
+    # DIRECT/PARTIAL/ABSENT labeling is the replacement signal, already
+    # baked into `status` and surfaced in `propositions` above.
     t_end = time.monotonic()
     timing_ms = {
+        "scope": scope_ms,
         "retrieval": retrieval_ms,
-        "judge": judge_ms,
-        "generation": round((t_end - t_after_retrieval) * 1000 - judge_ms, 1),
+        "evidence": evidence_ms,
+        "generation": round((t_end - t_after_retrieval) * 1000, 1),
         "total": round((t_end - t_start) * 1000, 1),
     }
 
     log_query_event(
         question, sorted(requested_population), chunks, full_answer,
-        state=final_state, sentences=full_sentences, groundedness=groundedness["groundedness"],
+        state=status, sentences=full_sentences, groundedness=groundedness["groundedness"],
     )
 
     yield {
         "event": "done",
         "data": {
-            "state": final_state,
+            "status": status,
+            "state": status,
+            "scope": scope,
+            "evidence_verdict": verdict,
+            "population_mismatch": evidence_result["population_mismatch"],
             "disclaimer": DISCLAIMER,
             "groundedness": groundedness,
             "timing_ms": timing_ms,

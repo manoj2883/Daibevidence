@@ -163,7 +163,9 @@ def _call_evidence_model(client: anthropic.Anthropic, question: str, chunks: Lis
     response = client.messages.create(
         model=get_judge_model(),
         max_tokens=1500,
-        temperature=0,
+        # No temperature param here — see the matching note in
+        # src.rag.scope_judge._call_scope_model; this SDK build's
+        # Messages.create() doesn't accept one at all.
         system=system_prompt,
         messages=[{"role": "user", "content": "Perform the audit now."}],
     )

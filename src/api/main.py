@@ -135,42 +135,45 @@ async def health():
 @app.post("/query", tags=["RAG"])
 async def query_rag(request: QueryRequest):
     """
-    Submit a query to the RAG pipeline. Streams a server-sent-events response:
+    Submit a query to the RAG pipeline. Streams a server-sent-events response.
 
-    State enum: answered / answered_low_confidence / no_evidence_for_claim /
-    out_of_scope. Only out_of_scope is known before generation (nothing
-    cleared the floor in either the evidence or background tier); the
-    others depend on which chunks the model actually cites, so "sources"
-    carries a provisional guess and "done" carries the authoritative state.
+    Two-stage answerability judge (src.rag.chain.stream_answer — see its
+    docstring for the full routing table): Stage A decides scope
+    (in_charter/adjacent/unrelated) from the question alone; Stage B, run
+    only when Stage A doesn't already reject the question, audits the
+    retrieved chunks per-proposition (question + chunks). `status` is the
+    primary field going forward — `answered`, `answered_partial` (evidence
+    only partially covers the question; generation is restricted to the
+    directly-relevant chunks and names the gap), `in_scope_no_evidence`
+    (a valid, in-charter question the corpus has no evidence for — never
+    called "out of scope"), `answered_adjacent` (evidence is sufficient but
+    the question falls outside the four core areas), or `out_of_scope`
+    (unrelated, or adjacent with insufficient/partial evidence). `state`
+    mirrors `status` for older consumers. Every event also carries `scope`,
+    `scope_reason`, `evidence_verdict`, `evidence_reason`, `propositions`,
+    `population_mismatch`, `question_population`, `evidence_populations`,
+    and per-stage `timing_ms` (`scope`/`retrieval`/`evidence`/`generation`/
+    `total`). The similarity floor no longer gates anything — its scores
+    are still returned in `score_distribution` for the retrieval inspector
+    only (see RECON.md).
 
-    - "sources" — retrieved chunks + population info (requested_population
-      is a list — a question can name more than one population) +
-      question_type ("definitional"/"evidence_seeking"/"compound") +
-      sub_questions (how a compound question was decomposed; a
-      definitional sub-question retrieves from the background tier only,
-      an evidence-seeking one from the study tier only) + provisional
-      state + score distribution + timing_ms.retrieval (sent once, before
-      generation)
+    - "sources" — chunks actually used for generation + population info
+      (requested_population is a list) + question_type + sub_questions +
+      the scope/evidence audit fields above + score distribution (sent
+      once, before generation — answered/answered_partial/answered_adjacent
+      only)
     - "contradictions" — conflicting findings detected across excerpts (an
-      empty list if none) + timing_ms.contradiction_check, sent once,
-      before any "sentence" events
+      empty list if none), sent once, before any "sentence" events
     - "sentence" — one {sentence, chunk_ids, pmids, supported, source_type,
       new_paragraph} object, sent as soon as it completes in the stream
-      (citation attribution is structural, not inline text markup);
-      source_type is "evidence"/"background"/None; new_paragraph signals a
-      paragraph break
-    - "done"    — generation finished, carries the authoritative state, the
-      disclaimer, the groundedness summary (overall + evidence-only +
-      background-only, since a background-only answer looking "grounded"
-      would hide that no study actually backs it), timing_ms (retrieval /
-      generation / total), real token usage, and "truncated" (true if the
-      response was cut off by the model's output token limit rather than
-      reaching a natural end — a generation failure, never to be read as
-      "no evidence exists")
-    - "refusal" — out_of_scope: nothing cleared the floor in either tier.
-      Closest scores found, what the system covers, and the score
-      distribution. No Claude call made.
-    - "error"   — misconfiguration or generation failure
+    - "done" — generation finished; status is unchanged from the
+      pre-generation decision (no post-hoc re-classification), plus the
+      disclaimer, groundedness summary, per-stage timing, real token
+      usage, and "truncated"
+    - "refusal" — in_scope_no_evidence or out_of_scope. Message, what the
+      system covers, the scope/evidence audit fields, score distribution.
+      No generation call is made for either.
+    - "error" — misconfiguration or generation failure
 
     `request.namespace` is optional and, if given, must be one of
     ALLOWED_QUERY_NAMESPACES (400 otherwise) — lets a client run the same

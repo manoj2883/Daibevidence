@@ -46,13 +46,61 @@ def test_split_pubmed_documents():
         assert meta["chunk_index"] == i
 
 
+_IN_CHARTER = {"scope": "in_charter", "topic": "diet_nutrition", "reason": "ok", "model": "m"}
+_ADJACENT = {"scope": "adjacent", "topic": None, "reason": "diabetes-adjacent but outside the four areas", "model": "m"}
+_UNRELATED = {"scope": "unrelated", "topic": None, "reason": "not about diabetes", "model": "m"}
+
+
+def _evidence(verdict, reason="ok", direct_map=None, population_mismatch=False, question_population=None, evidence_populations=None):
+    """direct_map: {proposition_claim: [chunk_indices]} — builds a minimal propositions list."""
+    propositions = []
+    for claim, direct in (direct_map or {}).items():
+        propositions.append({"claim": claim, "direct": direct, "partial": [], "absent": not direct})
+    return {
+        "propositions": propositions,
+        "question_population": question_population,
+        "evidence_populations": evidence_populations or [],
+        "population_mismatch": population_mismatch,
+        "verdict": verdict,
+        "reason": reason,
+        "model": "m",
+    }
+
+
+def test_refuses_when_scope_is_unrelated():
+    """
+    Stage A alone can refuse — no retrieval, no Stage B — when the
+    question has nothing to do with diabetes.
+    """
+    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
+        with patch("src.rag.chain.judge_scope", return_value=_UNRELATED):
+            with patch("src.rag.chain._retrieve_for_question") as mock_retrieve:
+                with patch("src.rag.chain.judge_evidence") as mock_evidence:
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        from src.rag.chain import OUT_OF_SCOPE_TEXT, stream_answer
+
+                        events = list(stream_answer("What is the capital of Australia?"))
+
+    assert len(events) == 1
+    assert events[0]["event"] == "refusal"
+    data = events[0]["data"]
+    assert data["status"] == "out_of_scope"
+    assert data["state"] == "out_of_scope"
+    assert data["message"] == OUT_OF_SCOPE_TEXT
+    assert data["scope"] == "unrelated"
+    assert data["evidence_verdict"] is None
+    assert "medical advice" in data["disclaimer"].lower()
+    mock_retrieve.assert_not_called()
+    mock_evidence.assert_not_called()
+    mock_get_client.return_value.messages.stream.assert_not_called()
+
+
 def test_refuses_when_nothing_was_retrieved_at_all():
     """
     Defensive fallback: when retrieval returns literally nothing (e.g. an
-    empty namespace), the chain must refuse without ever calling Claude —
-    including never calling the answerability judge, since there's nothing
-    to judge. Surfaces the closest scores + scope description + score
-    distribution, same as before this became a judge-gated pipeline.
+    empty namespace) for an in_charter/adjacent question, the chain must
+    refuse without ever calling Claude for generation — including never
+    calling Stage B, since there's nothing to audit.
     """
     from src.rag.types import RetrievalDecision
 
@@ -66,67 +114,87 @@ def test_refuses_when_nothing_was_retrieved_at_all():
     classified = [{"question": "What is the airspeed velocity of an unladen swallow?", "type": "evidence_seeking"}]
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability") as mock_judge:
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    from src.rag.chain import OUT_OF_SCOPE_TEXT, stream_answer
+        with patch("src.rag.chain.judge_scope", return_value=_IN_CHARTER):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence") as mock_evidence:
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        from src.rag.chain import NOTHING_RETRIEVED_TEXT, stream_answer
 
-                    events = list(stream_answer("What is the airspeed velocity of an unladen swallow?"))
+                        events = list(stream_answer("What is the airspeed velocity of an unladen swallow?"))
 
-                    assert len(events) == 1
-                    assert events[0]["event"] == "refusal"
-                    data = events[0]["data"]
-                    assert data["state"] == "out_of_scope"
-                    assert data["message"] == OUT_OF_SCOPE_TEXT
-                    assert data["closest_scores"] == [0.31, 0.28, 0.20]
-                    assert "diet and nutrition" in data["scope_description"]
-                    assert data["score_distribution"]["floor"] == 0.5
-                    assert data["score_distribution"]["surviving_count"] == 0
-                    assert data["judge"] is None
-                    assert "medical advice" in data["disclaimer"].lower()
-                    mock_judge.assert_not_called()
-                    mock_get_client.return_value.messages.stream.assert_not_called()
+                        assert len(events) == 1
+                        assert events[0]["event"] == "refusal"
+                        data = events[0]["data"]
+                        assert data["status"] == "out_of_scope"
+                        assert data["state"] == "out_of_scope"
+                        assert data["message"] == NOTHING_RETRIEVED_TEXT
+                        assert data["closest_scores"] == [0.31, 0.28, 0.20]
+                        assert "diet and nutrition" in data["scope_description"]
+                        assert data["score_distribution"]["floor"] == 0.5
+                        assert data["score_distribution"]["surviving_count"] == 0
+                        assert data["evidence_verdict"] is None
+                        assert "medical advice" in data["disclaimer"].lower()
+                        mock_evidence.assert_not_called()
+                        mock_get_client.return_value.messages.stream.assert_not_called()
 
 
-def test_refuses_when_judge_says_not_answerable():
+def test_in_scope_no_evidence_when_in_charter_and_insufficient():
     """
-    The core new behavior: even when chunks clear retrieval, if the
-    answerability judge says they don't actually answer the question, the
-    chain must refuse without calling the main generation model — this is
-    what replaces the old pure similarity-floor abstain decision.
+    The status this rebuild exists to add: an in-charter question with
+    thin retrieval must be told the corpus lacks evidence — never labeled
+    out_of_scope, since the question itself is exactly what this system is
+    meant to answer.
     """
     from src.rag.types import RetrievalDecision, RetrievedChunk
 
-    chunk = RetrievedChunk(
-        text="Diabetic retinopathy laser treatment reduces vision loss risk.",
-        metadata={"pmid": "999", "title": "t", "journal": "j", "year": "2024", "publication_type": "Review", "population": "type2"},
-        score=0.72,
-    )
-    decision = RetrievalDecision(
-        state="answered",
-        surviving_chunks=[chunk],
-        candidate_scores=[0.72],
-        floor=0.5,
-        low_confidence_margin=0.05,
-    )
-    classified = [{"question": "How does diet affect glycemic control?", "type": "evidence_seeking"}]
-    judge_result = {"answerable": False, "reason": "The excerpt is about retinopathy treatment, not diet or glycemic control."}
+    chunk = RetrievedChunk(text="Unrelated tangential excerpt.", metadata={"pmid": "1", "population": "type2"}, score=0.6)
+    decision = RetrievalDecision(state="answered", surviving_chunks=[chunk], candidate_scores=[0.6], floor=0.5, low_confidence_margin=0.05)
+    classified = [{"question": "q", "type": "evidence_seeking"}]
+    evidence_result = _evidence("insufficient", reason="No excerpt states the core proposition.")
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability", return_value=judge_result):
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    from src.rag.chain import JUDGE_REFUSAL_TEXT, stream_answer
+        with patch("src.rag.chain.judge_scope", return_value=_IN_CHARTER):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        from src.rag.chain import IN_SCOPE_NO_EVIDENCE_TEXT, stream_answer
 
-                    events = list(stream_answer("How does diet affect glycemic control?"))
+                        events = list(stream_answer("q"))
 
-                    assert len(events) == 1
-                    assert events[0]["event"] == "refusal"
-                    data = events[0]["data"]
-                    assert data["state"] == "out_of_scope"
-                    assert data["message"] == JUDGE_REFUSAL_TEXT
-                    assert data["judge"] == judge_result
-                    mock_get_client.return_value.messages.stream.assert_not_called()
+    assert len(events) == 1
+    data = events[0]["data"]
+    assert data["status"] == "in_scope_no_evidence"
+    assert data["message"] == IN_SCOPE_NO_EVIDENCE_TEXT
+    assert "out of scope" not in data["message"].lower()
+    assert data["evidence_verdict"] == "insufficient"
+    mock_get_client.return_value.messages.stream.assert_not_called()
+
+
+def test_out_of_scope_when_adjacent_and_insufficient():
+    """adjacent + insufficient routes to out_of_scope, not in_scope_no_evidence."""
+    from src.rag.types import RetrievalDecision, RetrievedChunk
+
+    chunk = RetrievedChunk(text="Retinopathy laser treatment reduces vision loss risk.", metadata={"pmid": "999", "population": "type2"}, score=0.72)
+    decision = RetrievalDecision(state="answered", surviving_chunks=[chunk], candidate_scores=[0.72], floor=0.5, low_confidence_margin=0.05)
+    classified = [{"question": "How does diet affect glycemic control?", "type": "evidence_seeking"}]
+    evidence_result = _evidence("insufficient", reason="The excerpt is about retinopathy treatment, not diet or glycemic control.")
+
+    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
+        with patch("src.rag.chain.judge_scope", return_value=_ADJACENT):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        from src.rag.chain import OUT_OF_SCOPE_TEXT, stream_answer
+
+                        events = list(stream_answer("How does diet affect glycemic control?"))
+
+    assert len(events) == 1
+    data = events[0]["data"]
+    assert data["status"] == "out_of_scope"
+    assert data["message"] == OUT_OF_SCOPE_TEXT
+    assert data["scope"] == "adjacent"
+    assert data["evidence_verdict"] == "insufficient"
+    mock_get_client.return_value.messages.stream.assert_not_called()
 
 
 def test_retrieve_for_question_floor_mode_selects_only_floor_survivors():
@@ -164,11 +232,11 @@ def test_retrieve_for_question_invalid_mode_raises():
         _retrieve_for_question("q", None, retrieval_mode="bogus")
 
 
-def test_stream_answer_force_judge_true_bypasses_real_judge_and_marks_it():
+def test_stream_answer_force_judge_true_bypasses_both_stages_and_marks_it():
     """
-    force_judge is diagnostic-only. When set, the real judge must never be
-    called, and the emitted judge payload must carry bypassed=True so a
-    record built from these events is never mistaken for a real verdict.
+    force_judge is diagnostic-only. When True, neither real judge stage is
+    called, and the emitted scope/evidence payloads carry bypassed=True so
+    a record built from these events is never mistaken for a real verdict.
     """
     from unittest.mock import MagicMock
 
@@ -188,43 +256,43 @@ def test_stream_answer_force_judge_true_bypasses_real_judge_and_marks_it():
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
         with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability") as mock_judge:
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
+            with patch("src.rag.chain.judge_scope") as mock_scope:
+                with patch("src.rag.chain.judge_evidence") as mock_evidence:
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
 
-                    from src.rag.chain import stream_answer
+                        from src.rag.chain import stream_answer
 
-                    events = list(stream_answer("q", force_judge=True))
+                        events = list(stream_answer("q", force_judge=True))
 
-    mock_judge.assert_not_called()
+    mock_scope.assert_not_called()
+    mock_evidence.assert_not_called()
     sources_event = next(e for e in events if e["event"] == "sources")
-    assert sources_event["data"]["judge"]["answerable"] is True
+    assert sources_event["data"]["status"] == "answered"
+    assert sources_event["data"]["scope"] == "in_charter"
+    assert sources_event["data"]["evidence_verdict"] == "sufficient"
     assert sources_event["data"]["judge"]["bypassed"] is True
 
 
-def test_stream_answer_force_judge_false_refuses_without_calling_real_judge():
-    from src.rag.types import RetrievalDecision, RetrievedChunk
-
-    chunk = RetrievedChunk(text="Some evidence text.", metadata={"pmid": "123"}, score=0.9)
-    decision = RetrievalDecision(state="answered", surviving_chunks=[chunk], candidate_scores=[0.9], floor=0.5, low_confidence_margin=0.05)
-    classified = [{"question": "q", "type": "evidence_seeking"}]
-
+def test_stream_answer_force_judge_false_refuses_without_calling_real_stages():
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability") as mock_judge:
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    from src.rag.chain import stream_answer
+        with patch("src.rag.chain._retrieve_for_question") as mock_retrieve:
+            with patch("src.rag.chain.judge_scope") as mock_scope:
+                with patch("src.rag.chain.judge_evidence") as mock_evidence:
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        from src.rag.chain import stream_answer
 
-                    events = list(stream_answer("q", force_judge=False))
+                        events = list(stream_answer("q", force_judge=False))
 
     assert len(events) == 1
     assert events[0]["event"] == "refusal"
-    assert events[0]["data"]["judge"] == {
-        "answerable": False,
-        "reason": "judge bypassed (diagnostic run) — verdict forced by caller, not a real judge call",
-        "bypassed": True,
-    }
-    mock_judge.assert_not_called()
+    data = events[0]["data"]
+    assert data["status"] == "out_of_scope"
+    assert data["scope"] == "unrelated"
+    assert data["judge"]["bypassed"] is True
+    mock_scope.assert_not_called()
+    mock_evidence.assert_not_called()
+    mock_retrieve.assert_not_called()
     mock_get_client.return_value.messages.stream.assert_not_called()
 
 
@@ -252,20 +320,22 @@ def test_generation_failure_yields_error_event_not_silent_death():
         low_confidence_margin=0.05,
     )
     classified = [{"question": "What does the evidence say about type 2 diabetes diet?", "type": "evidence_seeking"}]
+    evidence_result = _evidence("sufficient", direct_map={"diet affects glycemic control": [1]})
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability", return_value={"answerable": True, "reason": "ok"}):
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    mock_client = mock_get_client.return_value
-                    fake_request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
-                    mock_client.messages.stream.side_effect = anthropic.APIConnectionError(request=fake_request)
+        with patch("src.rag.chain.judge_scope", return_value=_IN_CHARTER):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        mock_client = mock_get_client.return_value
+                        fake_request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+                        mock_client.messages.stream.side_effect = anthropic.APIConnectionError(request=fake_request)
 
-                    from src.rag.chain import stream_answer
+                        from src.rag.chain import stream_answer
 
-                    events = list(stream_answer("What does the evidence say about type 2 diabetes diet?"))
+                        events = list(stream_answer("What does the evidence say about type 2 diabetes diet?"))
 
-                    assert [e["event"] for e in events] == ["sources", "error"]
+                        assert [e["event"] for e in events] == ["sources", "error"]
                     assert "Generation failed" in events[1]["data"]["message"]
 
 
@@ -373,6 +443,148 @@ def test_population_mismatch_multi_population_covered_by_neither():
     from src.rag.chain import is_population_mismatch
 
     assert is_population_mismatch({"type1", "type2"}, {"gestational"}) is True
+
+
+def test_filter_chunks_to_direct_keeps_only_direct_indices():
+    from src.rag.chain import filter_chunks_to_direct
+    from src.rag.types import RetrievedChunk
+
+    chunks = [RetrievedChunk(text=f"c{i}", metadata={"pmid": str(i)}, score=0.9) for i in range(1, 4)]
+    evidence_result = {"propositions": [
+        {"claim": "a", "direct": [1], "partial": [2], "absent": False},
+        {"claim": "b", "direct": [3], "partial": [], "absent": False},
+    ]}
+    filtered = filter_chunks_to_direct(chunks, evidence_result)
+    assert [c.metadata["pmid"] for c in filtered] == ["1", "3"]
+
+
+def test_filter_chunks_to_direct_falls_back_to_all_when_nothing_direct():
+    """
+    A "partial" verdict driven purely by a population mismatch (no
+    proposition actually marked DIRECT) must not leave generation with zero
+    context — fall back to the full retrieved set rather than an empty list.
+    """
+    from src.rag.chain import filter_chunks_to_direct
+    from src.rag.types import RetrievedChunk
+
+    chunks = [RetrievedChunk(text="c1", metadata={"pmid": "1"}, score=0.9)]
+    evidence_result = {"propositions": [{"claim": "a", "direct": [], "partial": [1], "absent": False}]}
+    assert filter_chunks_to_direct(chunks, evidence_result) == chunks
+
+
+def test_status_instruction_partial_names_the_gap():
+    from src.rag.chain import _status_instruction
+
+    evidence_result = {"reason": "No excerpt reports a magnitude for weight loss."}
+    text = _status_instruction("answered_partial", evidence_result)
+    assert "PARTIAL" in text
+    assert "No excerpt reports a magnitude for weight loss." in text
+
+
+def test_status_instruction_adjacent_names_the_four_areas():
+    from src.rag.chain import _status_instruction
+
+    text = _status_instruction("answered_adjacent", {})
+    assert "four core areas" in text
+
+
+def test_status_instruction_answered_is_a_no_op():
+    from src.rag.chain import _status_instruction
+
+    assert "Not applicable" in _status_instruction("answered", {})
+
+
+def test_evidence_audit_note_empty_when_no_mismatch():
+    from src.rag.chain import _evidence_audit_note
+
+    assert _evidence_audit_note({"population_mismatch": False}) == ""
+
+
+def test_evidence_audit_note_names_both_populations_on_mismatch():
+    from src.rag.chain import _evidence_audit_note
+
+    note = _evidence_audit_note({
+        "population_mismatch": True,
+        "question_population": "type1",
+        "evidence_populations": ["type2", "mixed"],
+    })
+    assert "type1" in note
+    assert "type2, mixed" in note
+
+
+def test_answered_partial_restricts_generation_to_direct_chunks():
+    """
+    Full flow for status=answered_partial: the model must only ever see
+    the chunks the evidence audit marked DIRECT, not the full retrieved set
+    — verified by checking which chunk texts made it into format_context's
+    output (indirectly, via the "sources" event's chunk list).
+    """
+    from unittest.mock import MagicMock
+
+    from src.rag.types import RetrievalDecision, RetrievedChunk
+
+    direct_chunk = RetrievedChunk(text="Directly relevant excerpt.", metadata={"pmid": "1", "population": "type2"}, score=0.9)
+    partial_chunk = RetrievedChunk(text="Only tangentially related excerpt.", metadata={"pmid": "2", "population": "type2"}, score=0.85)
+    decision = RetrievalDecision(state="answered", surviving_chunks=[direct_chunk, partial_chunk], candidate_scores=[0.9, 0.85], floor=0.5, low_confidence_margin=0.05)
+    classified = [{"question": "q", "type": "evidence_seeking"}]
+    evidence_result = _evidence("partial", reason="Only the core claim is directly supported.", direct_map={"core claim": [1]})
+
+    mock_stream_cm = MagicMock()
+    mock_stream_cm.__enter__.return_value.text_stream = iter(['[{"sentence": "Ok.", "chunk_ids": [1], "supported": true}]'])
+    mock_stream_cm.__exit__.return_value = False
+
+    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
+        with patch("src.rag.chain.judge_scope", return_value=_IN_CHARTER):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
+
+                        from src.rag.chain import stream_answer
+
+                        events = list(stream_answer("q"))
+
+    sources_event = next(e for e in events if e["event"] == "sources")
+    assert sources_event["data"]["status"] == "answered_partial"
+    pmids_sent = [s["pmid"] for s in sources_event["data"]["sources"]]
+    assert pmids_sent == ["1"]  # only the DIRECT chunk, never the partial one
+
+    # The system prompt actually sent to the model must name the gap.
+    call_kwargs = mock_get_client.return_value.messages.stream.call_args.kwargs
+    assert "PARTIAL" in call_kwargs["system"]
+    assert "Only the core claim is directly supported." in call_kwargs["system"]
+
+
+def test_answered_adjacent_generates_with_scope_caveat():
+    from unittest.mock import MagicMock
+
+    from src.rag.types import RetrievalDecision, RetrievedChunk
+
+    chunk = RetrievedChunk(text="Retinopathy screening interval is 1-2 years.", metadata={"pmid": "1", "population": "type2"}, score=0.8)
+    decision = RetrievalDecision(state="answered", surviving_chunks=[chunk], candidate_scores=[0.8], floor=0.5, low_confidence_margin=0.05)
+    classified = [{"question": "q", "type": "evidence_seeking"}]
+    evidence_result = _evidence("sufficient", direct_map={"screening interval": [1]})
+
+    mock_stream_cm = MagicMock()
+    mock_stream_cm.__enter__.return_value.text_stream = iter(['[{"sentence": "Ok.", "chunk_ids": [1], "supported": true}]'])
+    mock_stream_cm.__exit__.return_value = False
+
+    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
+        with patch("src.rag.chain.judge_scope", return_value=_ADJACENT):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
+
+                        from src.rag.chain import stream_answer
+
+                        events = list(stream_answer("q"))
+
+    sources_event = next(e for e in events if e["event"] == "sources")
+    assert sources_event["data"]["status"] == "answered_adjacent"
+    assert sources_event["data"]["scope"] == "adjacent"
+    call_kwargs = mock_get_client.return_value.messages.stream.call_args.kwargs
+    assert "four core areas" in call_kwargs["system"]
 
 
 def test_assert_chunk_cap_raises_over_limit():
@@ -816,15 +1028,18 @@ def test_stream_answer_emits_contradictions_then_sentences():
     mock_stream_cm.__enter__.return_value.text_stream = iter(stream_chunks)
     mock_stream_cm.__exit__.return_value = False
 
+    evidence_result = _evidence("sufficient", direct_map={"Diet A improves HbA1c": [1, 2]})
+
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability", return_value={"answerable": True, "reason": "ok"}):
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
+        with patch("src.rag.chain.judge_scope", return_value=_IN_CHARTER):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
 
-                    from src.rag.chain import stream_answer
+                        from src.rag.chain import stream_answer
 
-                    events = list(stream_answer("Does Diet A improve HbA1c in type 2 diabetes?"))
+                        events = list(stream_answer("Does Diet A improve HbA1c in type 2 diabetes?"))
 
     event_types = [e["event"] for e in events]
     assert event_types[0] == "sources"
@@ -849,13 +1064,14 @@ def test_stream_answer_emits_contradictions_then_sentences():
 
 def test_stream_answer_plain_text_noncompliance_still_degrades_gracefully():
     """
-    The model is always expected to use the JSON array format now (the old
-    "reply with exactly this sentence, no JSON at all" refusal path was
-    retired along with the two-state refusal). If it ever ignores that
-    instruction and emits plain text anyway, the stream must still degrade
-    into the documented {sentence, chunk_ids, supported} shape rather than
-    losing the response — and because no evidence chunk ends up cited, the
-    authoritative final state must come out as no_evidence_for_claim.
+    The model is always expected to use the JSON array format now. If it
+    ever ignores that instruction and emits plain text anyway, the stream
+    must still degrade into the documented {sentence, chunk_ids, supported}
+    shape rather than losing the response. Unlike the retired
+    determine_final_state() behavior, status is fixed by the pre-generation
+    scope/evidence decision and is never demoted post-hoc just because the
+    model didn't cite anything — that's now purely a groundedness/faithfulness
+    signal, not a status change.
     """
     from unittest.mock import MagicMock
 
@@ -872,20 +1088,22 @@ def test_stream_answer_plain_text_noncompliance_still_degrades_gracefully():
         state="answered", surviving_chunks=[chunk], candidate_scores=[0.9], floor=0.5, low_confidence_margin=0.05,
     )
     classified = [{"question": "An unanswerable question.", "type": "evidence_seeking"}]
+    evidence_result = _evidence("sufficient", direct_map={"the question": [1]})
 
     mock_stream_cm = MagicMock()
     mock_stream_cm.__enter__.return_value.text_stream = iter([plain_text_response])
     mock_stream_cm.__exit__.return_value = False
 
     with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "PINECONE_API_KEY": "test-key", "PINECONE_INDEX_NAME": "test-index"}):
-        with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
-            with patch("src.rag.chain.judge_answerability", return_value={"answerable": True, "reason": "ok"}):
-                with patch("src.rag.chain.get_client") as mock_get_client:
-                    mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
+        with patch("src.rag.chain.judge_scope", return_value=_IN_CHARTER):
+            with patch("src.rag.chain._retrieve_for_question", return_value=(decision, classified)):
+                with patch("src.rag.chain.judge_evidence", return_value=evidence_result):
+                    with patch("src.rag.chain.get_client") as mock_get_client:
+                        mock_get_client.return_value.messages.stream.return_value = mock_stream_cm
 
-                    from src.rag.chain import stream_answer
+                        from src.rag.chain import stream_answer
 
-                    events = list(stream_answer("An unanswerable question."))
+                        events = list(stream_answer("An unanswerable question."))
 
     event_types = [e["event"] for e in events]
     assert event_types == ["sources", "contradictions", "sentence", "done"]
@@ -896,7 +1114,8 @@ def test_stream_answer_plain_text_noncompliance_still_degrades_gracefully():
     assert sentence_data["supported"] is False
 
     done_data = [e for e in events if e["event"] == "done"][0]["data"]
-    assert done_data["state"] == "no_evidence_for_claim"
+    assert done_data["status"] == "answered"
+    assert done_data["state"] == "answered"
 
 
 def test_judge_parses_clean_json():

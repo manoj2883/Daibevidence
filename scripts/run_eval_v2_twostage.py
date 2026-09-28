@@ -25,6 +25,8 @@ from src.rag.chain import stream_answer
 
 QUESTIONS_PATH = "eval/eval_set_v2.json"
 OUT_PATH = "data/eval_v2_judge_twostage_v2_5k.json"
+# Fields added by the revised judge prompts (2026-09-28); absent (None) in runs before that.
+JUDGE_EXTRA_FIELDS = ("outcome", "area", "personal_dosing", "on_topic", "cross_study_comparison")
 
 
 def load_questions(path=QUESTIONS_PATH):
@@ -56,6 +58,7 @@ def run_one_question(q, namespace):
     model_evidence = None
     error = None
     refusal_message = None
+    judge_extra = {k: None for k in JUDGE_EXTRA_FIELDS}
 
     for ev in stream_answer(q["question"], namespace=namespace):
         event, data = ev["event"], ev["data"]
@@ -73,6 +76,7 @@ def run_one_question(q, namespace):
             top_score = (score_distribution or {}).get("top_score")
             timing_ms.update(data.get("timing_ms") or {})
             model_scope = data.get("scope_model")
+            judge_extra = {k: data.get(k) for k in JUDGE_EXTRA_FIELDS}
             judge = data.get("judge") or {}
             if judge.get("verdict") is not None:
                 model_evidence = judge.get("model")
@@ -111,6 +115,7 @@ def run_one_question(q, namespace):
         "population_mismatch": population_mismatch,
         "question_population": question_population,
         "evidence_populations": evidence_populations,
+        **judge_extra,
         "top_score": top_score,
         "score_distribution": score_distribution,
         "generated_answer": generated_answer,
@@ -133,6 +138,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run all 43 questions through the two-stage judge exactly once.")
     parser.add_argument("--namespace", required=True, help="Pinecone namespace to evaluate against, e.g. v2_5k.")
     parser.add_argument("--out", default=OUT_PATH, help="Output path.")
+    parser.add_argument("--label", default="two-stage judge (scope + evidence audit)", help="Pipeline label stored in the output file.")
     parser.add_argument("--force", action="store_true", help="Overwrite an existing output file. Use only to replace a run invalidated by a code bug, never after seeing results you don't like.")
     args = parser.parse_args()
 
@@ -155,7 +161,7 @@ def main():
         print(f"    -> status={record['status']} scope={record['scope']} evidence_verdict={record['evidence_verdict']}")
 
     with open(args.out, "w", encoding="utf-8") as f:
-        json.dump({"pipeline": "two-stage judge (scope + evidence audit)", "namespace": args.namespace, "results": results}, f, ensure_ascii=False, indent=2)
+        json.dump({"pipeline": args.label, "namespace": args.namespace, "results": results}, f, ensure_ascii=False, indent=2)
 
     status_counts = {}
     for r in results:

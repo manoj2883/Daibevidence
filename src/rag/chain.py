@@ -388,7 +388,24 @@ def _status_instruction(status: str, evidence_result: Dict[str, Any]) -> str:
     return "Not applicable to this answer — answer normally, per rules 1-10."
 
 
-def _evidence_audit_note(evidence_result: Dict[str, Any]) -> str:
+def _judge_fields(scope_result: Dict[str, Any], evidence_result: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """
+    The revised judges' extra fields (2026-09-28), added to every refusal/sources payload next
+    to the existing ones: Stage A's outcome, area and personal_dosing safety flag, and Stage B's
+    on_topic and cross_study_comparison. Uses .get throughout so forced/bypassed diagnostic
+    results, which don't carry these keys, still produce a complete payload.
+    """
+    evidence_result = evidence_result or {}
+    return {
+        "outcome": scope_result.get("outcome"),
+        "area": scope_result.get("area", scope_result.get("topic")),
+        "personal_dosing": bool(scope_result.get("personal_dosing")),
+        "on_topic": evidence_result.get("on_topic"),
+        "cross_study_comparison": bool(evidence_result.get("cross_study_comparison")),
+    }
+
+
+def _evidence_audit_note(evidence_result: Dict[str, Any], scope_result: Optional[Dict[str, Any]] = None) -> str:
     """
     A supplementary note surfaced only when Stage B's own audit flagged a
     population mismatch — independent of, and in addition to, rule 6's
@@ -398,15 +415,28 @@ def _evidence_audit_note(evidence_result: Dict[str, Any]) -> str:
     agree; when they don't, both still reach the model, since each is
     genuinely informative on its own and neither supersedes the other.
     """
-    if not evidence_result.get("population_mismatch"):
-        return ""
-    question_population = evidence_result.get("question_population") or "an unspecified population"
-    evidence_populations = ", ".join(evidence_result.get("evidence_populations") or []) or "a different population"
-    return (
-        f"The evidence audit separately found a population mismatch: this question concerns "
-        f'"{question_population}", but the directly relevant evidence covers "{evidence_populations}". State '
-        "plainly, as a caveat sentence per rule 5, which population the evidence you actually cite covers.\n\n"
-    )
+    note = ""
+    if evidence_result.get("population_mismatch"):
+        question_population = evidence_result.get("question_population") or "an unspecified population"
+        evidence_populations = ", ".join(evidence_result.get("evidence_populations") or []) or "a different population"
+        note += (
+            f"The evidence audit separately found a population mismatch: this question concerns "
+            f'"{question_population}", but the directly relevant evidence covers "{evidence_populations}". State '
+            "plainly, as a caveat sentence per rule 5, which population the evidence you actually cite covers.\n\n"
+        )
+    if evidence_result.get("cross_study_comparison"):
+        note += (
+            "The evidence audit found that the comparison this question asks for is assembled from separate "
+            "studies, not from any single study comparing both options. State plainly, as a caveat sentence per "
+            "rule 5, that the comparison is drawn across separate studies.\n\n"
+        )
+    if scope_result and scope_result.get("personal_dosing"):
+        note += (
+            "This question asks for a dose, schedule, or medication change for a specific person. Summarize what "
+            "the evidence says in general terms only. Do not recommend any dose, schedule, or medication change for "
+            "the person asking, and do not tell them to start, stop, or adjust a medication.\n\n"
+        )
+    return note
 
 
 def retrieved_population_set(chunks: List[RetrievedChunk]) -> Set[str]:
@@ -863,6 +893,7 @@ def stream_answer(
                 "scope_description": SCOPE_DESCRIPTION,
                 "scope": scope_result["scope"],
                 "scope_reason": scope_result["reason"],
+                **_judge_fields(scope_result),
                 "evidence_verdict": None,
                 "evidence_reason": None,
                 "propositions": [],
@@ -906,6 +937,7 @@ def stream_answer(
                 "scope_description": SCOPE_DESCRIPTION,
                 "scope": scope_result["scope"],
                 "scope_reason": scope_result["reason"],
+                **_judge_fields(scope_result),
                 "evidence_verdict": None,
                 "evidence_reason": None,
                 "propositions": [],
@@ -953,6 +985,7 @@ def stream_answer(
     common_refusal_fields = {
         "scope": scope,
         "scope_reason": scope_result["reason"],
+        **_judge_fields(scope_result, evidence_result),
         "evidence_verdict": verdict,
         "evidence_reason": evidence_result["reason"],
         "propositions": evidence_result["propositions"],
@@ -992,6 +1025,7 @@ def stream_answer(
             "mismatch": mismatch,
             "scope": scope,
             "scope_reason": scope_result["reason"],
+            **_judge_fields(scope_result, evidence_result),
             "evidence_verdict": verdict,
             "evidence_reason": evidence_result["reason"],
             "propositions": evidence_result["propositions"],
@@ -1013,7 +1047,7 @@ def stream_answer(
         retrieved_populations=retrieved_populations_str,
         sub_question_note=_sub_question_note(classified_sub_questions),
         status_instruction=_status_instruction(status, evidence_result),
-        evidence_audit_note=_evidence_audit_note(evidence_result),
+        evidence_audit_note=_evidence_audit_note(evidence_result, scope_result),
         contra_start=CONTRA_START,
         contra_end=CONTRA_END,
         context=context_str,

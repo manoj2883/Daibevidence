@@ -38,7 +38,7 @@ def test_judge_scope_parses_valid_response_and_caches():
     get_scope_cache().clear()
     mock_client = MagicMock()
     mock_client.messages.create.return_value = _mock_response(
-        json.dumps({"scope": "in_charter", "topic": "diet_nutrition", "reason": "Asks about diet and T2D."})
+        json.dumps({"scope": "in_charter", "area": "diet_nutrition", "personal_dosing": False, "reason": "Asks about diet and T2D."})
     )
 
     result = judge_scope(mock_client, "Does a Mediterranean diet help type 2 diabetes?")
@@ -59,7 +59,7 @@ def test_judge_scope_adjacent_with_no_topic():
     get_scope_cache().clear()
     mock_client = MagicMock()
     mock_client.messages.create.return_value = _mock_response(
-        json.dumps({"scope": "adjacent", "topic": None, "reason": "Asks about insulin dosing, not the four core areas."})
+        json.dumps({"scope": "adjacent", "area": None, "personal_dosing": False, "reason": "Asks about insulin dosing, not the four core areas."})
     )
     result = judge_scope(mock_client, "What insulin-to-carb ratio should I use?")
     assert result["scope"] == "adjacent"
@@ -74,7 +74,7 @@ def test_judge_scope_invalid_topic_for_non_in_charter_is_nulled():
     # A model that incorrectly sets a topic on a non-in_charter scope should
     # not propagate that topic — it's only meaningful for in_charter.
     mock_client.messages.create.return_value = _mock_response(
-        json.dumps({"scope": "unrelated", "topic": "diet_nutrition", "reason": "Not about diabetes at all."})
+        json.dumps({"scope": "unrelated", "area": "diet_nutrition", "personal_dosing": False, "reason": "Not about diabetes at all."})
     )
     result = judge_scope(mock_client, "What is the capital of Australia?")
     assert result["scope"] == "unrelated"
@@ -102,7 +102,7 @@ def test_judge_scope_second_attempt_succeeds_after_first_failure():
     mock_client = MagicMock()
     mock_client.messages.create.side_effect = [
         _mock_response("garbage"),
-        _mock_response(json.dumps({"scope": "in_charter", "topic": "glycemic_control", "reason": "ok"})),
+        _mock_response(json.dumps({"scope": "in_charter", "area": "glycemic_control", "personal_dosing": False, "reason": "ok"})),
     ]
     result = judge_scope(mock_client, "What HbA1c target should I aim for?")
     assert result["scope"] == "in_charter"
@@ -127,8 +127,8 @@ def test_judge_scope_invalid_scope_value_rejected():
     get_scope_cache().clear()
     mock_client = MagicMock()
     mock_client.messages.create.side_effect = [
-        _mock_response(json.dumps({"scope": "maybe", "topic": None, "reason": "?"})),
-        _mock_response(json.dumps({"scope": "adjacent", "topic": None, "reason": "retry ok"})),
+        _mock_response(json.dumps({"scope": "maybe", "area": None, "personal_dosing": False, "reason": "?"})),
+        _mock_response(json.dumps({"scope": "adjacent", "area": None, "personal_dosing": False, "reason": "retry ok"})),
     ]
     result = judge_scope(mock_client, "Some question?")
     assert result["scope"] == "adjacent"
@@ -148,7 +148,9 @@ def test_judge_evidence_parses_sufficient_verdict():
 
     mock_client = MagicMock()
     payload = {
-        "propositions": [{"claim": "low-carb reduces HbA1c", "direct": [1], "partial": [], "absent": False}],
+        "propositions": [{"claim": "low-carb reduces HbA1c", "core": True, "direct": [1], "partial": [], "absent": False}],
+        "on_topic": True,
+        "cross_study_comparison": False,
         "question_population": "type2",
         "evidence_populations": ["type2"],
         "population_mismatch": False,
@@ -191,7 +193,9 @@ def test_judge_evidence_missing_verdict_field_fails_schema_then_retries():
     mock_client.messages.create.side_effect = [
         _mock_response(json.dumps({"propositions": [], "reason": "no verdict key"})),
         _mock_response(json.dumps({
-            "propositions": [], "question_population": None, "evidence_populations": [],
+            "propositions": [{"claim": "c", "core": True, "direct": [1], "partial": [], "absent": False}],
+            "on_topic": True, "cross_study_comparison": False,
+            "question_population": None, "evidence_populations": [],
             "population_mismatch": False, "verdict": "partial", "reason": "ok now",
         })),
     ]
@@ -251,9 +255,11 @@ def test_judge_evidence_normalizes_c_prefixed_chunk_refs():
     mock_client = MagicMock()
     payload = {
         "propositions": [
-            {"claim": "a", "direct": ["C1", "c3"], "partial": [2], "absent": False},
-            {"claim": "b", "direct": [], "partial": ["C4"], "absent": False},
+            {"claim": "a", "core": True, "direct": ["C1", "c3"], "partial": [2], "absent": False},
+            {"claim": "b", "core": False, "direct": [], "partial": ["C4"], "absent": False},
         ],
+        "on_topic": True,
+        "cross_study_comparison": False,
         "question_population": "type2",
         "evidence_populations": ["type2"],
         "population_mismatch": False,
@@ -277,3 +283,166 @@ def test_normalize_chunk_ref_rejects_garbage():
     assert _normalize_chunk_ref(True) is None  # bool is an int subclass in Python — must not sneak through
     assert _normalize_chunk_ref("excerpt 1") is None
     assert _normalize_chunk_ref(None) is None
+
+
+# ---------- Revised prompts (2026-09-28): new fields and validation ----------
+
+def _valid_evidence_payload(**overrides):
+    payload = {
+        "propositions": [
+            {"claim": "core claim", "core": True, "direct": [1], "partial": [], "absent": False},
+            {"claim": "secondary", "core": False, "direct": [], "partial": [1], "absent": False},
+        ],
+        "on_topic": True,
+        "question_population": "type 2 diabetes",
+        "evidence_populations": ["type 2 diabetes"],
+        "population_mismatch": False,
+        "cross_study_comparison": True,
+        "verdict": "partial",
+        "reason": "Comparison assembled across studies.",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_scope_prompt_loads_areas_and_adjacent_examples_from_charter():
+    from src.rag.scope_judge import build_scope_prompt, load_charter
+
+    prompt = build_scope_prompt()
+    charter = load_charter()
+    for area in ("glycemic_control", "body_composition_weight", "diet_nutrition", "diet_medication_interaction"):
+        assert f"- {area}:" in prompt
+        assert f"- {area}:" in charter
+    assert "Examples: eye, nerve, kidney, or foot complications; mental health; devices; cost or access to care." in prompt
+    assert "{areas}" not in prompt and "{adjacent_examples}" not in prompt
+
+
+def test_scope_prompt_source_does_not_duplicate_charter_areas():
+    import inspect
+
+    import src.rag.scope_judge as scope_judge
+
+    # The area descriptions live only in the charter; the module must not hardcode them.
+    assert "fat distribution, lean or muscle mass" not in inspect.getsource(scope_judge)
+
+
+def test_scope_prompt_fails_loudly_when_charter_lacks_an_area(monkeypatch):
+    import src.rag.scope_judge as scope_judge
+
+    charter = scope_judge.load_charter().replace("- diet_nutrition:", "- diet:")
+    monkeypatch.setattr(scope_judge, "_charter_text", charter)
+    with pytest.raises(ValueError, match="diet_nutrition"):
+        scope_judge.build_scope_prompt()
+
+
+def test_judge_scope_returns_new_fields_with_topic_alias():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(json.dumps({
+        "outcome": "lean muscle mass", "area": "body_composition_weight", "scope": "in_charter",
+        "personal_dosing": False, "reason": "Outcome is lean mass.",
+    }))
+    result = judge_scope(mock_client, "Do GLP-1 drugs cause loss of lean mass?")
+    assert result["area"] == "body_composition_weight"
+    assert result["topic"] == "body_composition_weight"
+    assert result["outcome"] == "lean muscle mass"
+    assert result["personal_dosing"] is False
+
+
+def test_judge_scope_missing_personal_dosing_is_a_schema_failure():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [
+        _mock_response(json.dumps({"scope": "in_charter", "area": "glycemic_control", "reason": "no flag"})),
+        _mock_response(json.dumps({"scope": "in_charter", "area": "glycemic_control", "personal_dosing": True, "reason": "ok"})),
+    ]
+    result = judge_scope(mock_client, "How much metformin should I take?")
+    assert result["personal_dosing"] is True
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_scope_max_tokens_stop_is_treated_as_parse_failure():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    truncated = _mock_response('{"scope": "in_charter", "area": "glycemic_control", "personal_dosing": false, "reason": "ok"}')
+    truncated.stop_reason = "max_tokens"
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [truncated, truncated]
+    result = judge_scope(mock_client, "Some question?")
+    assert result["scope"] == "unrelated"  # failed closed after retry
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_evidence_returns_on_topic_and_cross_study_comparison():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(json.dumps(_valid_evidence_payload()))
+    result = judge_evidence(mock_client, "Is X better than Y?", [_chunk("t1")])
+    assert result["on_topic"] is True
+    assert result["cross_study_comparison"] is True
+    assert [p["core"] for p in result["propositions"]] == [True, False]
+
+
+@pytest.mark.parametrize("cores", [[False, False], [True, True]])
+def test_judge_evidence_requires_exactly_one_core_proposition(cores):
+    from src.rag.evidence_judge import judge_evidence
+
+    bad = _valid_evidence_payload()
+    for prop, core in zip(bad["propositions"], cores):
+        prop["core"] = core
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [_mock_response(json.dumps(bad)), _mock_response(json.dumps(bad))]
+    result = judge_evidence(mock_client, "q?", [_chunk("t1")])
+    assert result["verdict"] == "insufficient"  # failed closed after retry
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_evidence_missing_cross_study_flag_is_a_schema_failure():
+    from src.rag.evidence_judge import judge_evidence
+
+    bad = _valid_evidence_payload()
+    del bad["cross_study_comparison"]
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [_mock_response(json.dumps(bad)), _mock_response(json.dumps(_valid_evidence_payload()))]
+    result = judge_evidence(mock_client, "q?", [_chunk("t1")])
+    assert result["cross_study_comparison"] is True
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_evidence_max_tokens_stop_is_treated_as_parse_failure():
+    from src.rag.evidence_judge import judge_evidence
+
+    truncated = _mock_response(json.dumps(_valid_evidence_payload()))
+    truncated.stop_reason = "max_tokens"
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [truncated, truncated]
+    result = judge_evidence(mock_client, "q?", [_chunk("t1")])
+    assert result["verdict"] == "insufficient"
+
+
+def test_audit_note_adds_cross_study_and_personal_dosing_lines():
+    from src.rag.chain import _evidence_audit_note
+
+    note = _evidence_audit_note({"population_mismatch": False, "cross_study_comparison": True}, {"personal_dosing": True})
+    assert "separate studies" in note
+    assert "Do not recommend any dose" in note
+    assert _evidence_audit_note({"population_mismatch": False}, {"personal_dosing": False}) == ""
+
+
+def test_judge_fields_surfaces_new_fields_and_tolerates_bypassed_results():
+    from src.rag.chain import _judge_fields
+
+    fields = _judge_fields(
+        {"scope": "in_charter", "area": "diet_nutrition", "outcome": "HbA1c", "personal_dosing": True},
+        {"on_topic": True, "cross_study_comparison": False},
+    )
+    assert fields == {"outcome": "HbA1c", "area": "diet_nutrition", "personal_dosing": True,
+                      "on_topic": True, "cross_study_comparison": False}
+    bypassed = _judge_fields({"scope": "in_charter", "topic": None, "reason": "forced"})
+    assert bypassed["personal_dosing"] is False and bypassed["on_topic"] is None

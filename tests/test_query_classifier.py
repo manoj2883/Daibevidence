@@ -60,3 +60,33 @@ def test_overall_question_type_single():
 def test_overall_question_type_compound():
     classified = classify_and_decompose("What is diabetes and does metformin help with weight loss?")
     assert overall_question_type(classified) == "compound"
+
+
+def test_classify_interaction_risk_question_is_evidence_seeking_not_definitional():
+    """
+    Regression test for the id-20 finding (RECON.md §7 / eval question 20):
+    "What is the interaction risk between X and Y" was mis-tagged
+    "definitional" purely because it starts with the generic "what is"
+    lead, routing retrieval to the background-only tier and missing real
+    study-tier evidence. It's an evidence-seeking question about a
+    relationship, not a request for a definition.
+    """
+    assert classify_question_type(
+        "What is the interaction risk between alcohol intake and sulfonylurea medications?"
+    ) == "evidence_seeking"
+
+
+def test_classify_drug_interaction_and_medication_interaction_cues():
+    assert classify_question_type("What is the drug interaction between grapefruit juice and statins?") == "evidence_seeking"
+    assert classify_question_type("What is the medication interaction risk for metformin and contrast dye?") == "evidence_seeking"
+
+
+def test_classify_genuine_definitional_leads_still_unaffected_by_interaction_fix():
+    """
+    The interaction/risk cue must not overreach into questions that really
+    are asking for a definition and happen to contain neither "interaction"
+    nor "risk between" — guards against the fix being too broad.
+    """
+    assert classify_question_type("What is the dawn phenomenon?") == "definitional"
+    assert classify_question_type("What is gestational diabetes?") == "definitional"
+    assert classify_question_type("What are the symptoms of prediabetes?") == "definitional"

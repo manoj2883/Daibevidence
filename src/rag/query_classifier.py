@@ -27,7 +27,14 @@ EVIDENCE_SEEKING_CUE_PATTERN = re.compile(
     r"\b(study|studies|trial|trials|evidence|research|rct|meta-analysis|"
     r"systematic review|does\b.*\b(improve|reduce|affect|help|increase|decrease|"
     r"cause|lower|raise|worsen)|is there evidence|what does the evidence show|"
-    r"what does the evidence say|how effective|compared to|versus|vs\.)\b",
+    r"what does the evidence say|how effective|compared to|versus|vs\.|"
+    # "What is the interaction/risk between X and Y" is an evidence-seeking
+    # question about a relationship, not a request for a definition, even
+    # though it starts with the generic "what is" lead (see RECON.md's
+    # id-20 finding: this pattern was mis-tagged "definitional" and routed
+    # to the background-only tier, missing real study-tier evidence).
+    r"interaction\s+(risk|between|with)|drug\s+interaction|medication\s+interaction|"
+    r"risk\s+between)\b",
     re.IGNORECASE,
 )
 

@@ -182,3 +182,41 @@ Models actually called (read from each response's own `.model` field, not config
 [PASS] every graded id was actually answered
 [PASS] every answered id was graded (grader ran on every answered case, not a subset)
 ```
+
+## 10. Revised prompts: development/regression run on the 43 (2026-09-28)
+
+Development/regression numbers only: both revised prompts were written from failures on these 43 questions.
+
+| id | label | scope | evidence verdict | status | faithfulness |
+|---|---|---|---|---|---|
+| 1 | in_scope | in_charter | sufficient | answered | PARTIALLY_SUPPORTED |
+| 2 | in_scope | in_charter | sufficient | answered | SUPPORTED |
+| 3 | in_scope | in_charter | partial | answered_partial | SUPPORTED |
+| 4 | in_scope | in_charter | sufficient | answered | SUPPORTED |
+| 5 | in_scope | in_charter | sufficient | answered | SUPPORTED |
+| 6 | in_scope | in_charter | partial | answered_partial | PARTIALLY_SUPPORTED |
+| 7 | in_scope | in_charter | partial | answered_partial | UNSUPPORTED |
+| 8 | in_scope | in_charter | partial | answered_partial | PARTIALLY_SUPPORTED |
+| 9 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 10 | in_scope | in_charter | partial | answered_partial | UNSUPPORTED |
+| 11 | in_scope | in_charter | partial | answered_partial | PARTIALLY_SUPPORTED |
+| 12 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 13 | in_scope | in_charter | sufficient | answered | SUPPORTED |
+| 14 | in_scope | in_charter | partial | answered_partial | SUPPORTED |
+| 15 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 16 | in_scope | in_charter | partial | answered_partial | PARTIALLY_SUPPORTED |
+| 17 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 18 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 19 | in_scope | adjacent | partial | out_of_scope | n/a |
+| 20 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 21 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 22 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+| 23 | in_scope | in_charter | partial | answered_partial | UNSUPPORTED |
+| 24 | in_scope | in_charter | insufficient | in_scope_no_evidence | n/a |
+
+In-scope answered: 14/24 vs predicted 14/24 (ceiling 14; 10 are confirmed corpus gaps).
+
+- Corpus-gap caveat: only ids [9, 20] were confirmed by searching the chunk store; the other 8 are gaps per Stage B's verdict only.
+- Below ceiling: id 18 (in_scope_no_evidence): The core proposition requires a direct comparison of WC versus BMI as predictors of metabolic risk in type 2 diabetes, but C1 addresses prediabetes not diabetes, C2 discusses WWI not WC, C3 and C4 address outcomes other than metabolic risk prediction comparison, and C5 compares WHtR to BMI rather than WC to BMI.
+- Below ceiling: id 19 (out_of_scope): The outcome concerns vitamin B12 status, which is a nutritional biomarker unrelated to glycemic control, body composition, diet, or diet-medication interactions on glucose metabolism.
+- Answered beyond the prediction: ids [11, 23].

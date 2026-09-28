@@ -1,0 +1,239 @@
+"""
+Unit tests for the two-stage answerability judge (src.rag.scope_judge,
+src.rag.evidence_judge) — no live API calls, everything mocked, matching the
+project's existing test style (see tests/test_rag.py).
+"""
+import json
+import os
+from unittest.mock import MagicMock, patch
+
+import anthropic
+import httpx2
+import pytest
+
+
+# ---------- Stage A: scope judge ----------
+
+def _mock_response(text, model="claude-haiku-4-5-20251001"):
+    block = MagicMock()
+    block.type = "text"
+    block.text = text
+    resp = MagicMock()
+    resp.content = [block]
+    resp.model = model
+    return resp
+
+
+def test_load_charter_reads_real_file():
+    from src.rag.scope_judge import load_charter
+
+    text = load_charter()
+    assert "in_charter" in text or "In charter" in text
+    assert "diet_nutrition" in text or "Diet and nutrition" in text
+
+
+def test_judge_scope_parses_valid_response_and_caches():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(
+        json.dumps({"scope": "in_charter", "topic": "diet_nutrition", "reason": "Asks about diet and T2D."})
+    )
+
+    result = judge_scope(mock_client, "Does a Mediterranean diet help type 2 diabetes?")
+    assert result["scope"] == "in_charter"
+    assert result["topic"] == "diet_nutrition"
+    assert result["cached"] is False
+    assert mock_client.messages.create.call_count == 1
+
+    # Second call with the same (normalized) question hits the cache, no new API call.
+    result2 = judge_scope(mock_client, "  Does a Mediterranean diet help type 2 diabetes?  ")
+    assert result2["cached"] is True
+    assert mock_client.messages.create.call_count == 1
+
+
+def test_judge_scope_adjacent_with_no_topic():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(
+        json.dumps({"scope": "adjacent", "topic": None, "reason": "Asks about insulin dosing, not the four core areas."})
+    )
+    result = judge_scope(mock_client, "What insulin-to-carb ratio should I use?")
+    assert result["scope"] == "adjacent"
+    assert result["topic"] is None
+
+
+def test_judge_scope_invalid_topic_for_non_in_charter_is_nulled():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    # A model that incorrectly sets a topic on a non-in_charter scope should
+    # not propagate that topic — it's only meaningful for in_charter.
+    mock_client.messages.create.return_value = _mock_response(
+        json.dumps({"scope": "unrelated", "topic": "diet_nutrition", "reason": "Not about diabetes at all."})
+    )
+    result = judge_scope(mock_client, "What is the capital of Australia?")
+    assert result["scope"] == "unrelated"
+    assert result["topic"] is None
+
+
+def test_judge_scope_retries_once_then_fails_closed_to_unrelated():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [
+        _mock_response("not json at all"),
+        _mock_response("still not json"),
+    ]
+    result = judge_scope(mock_client, "Some question?")
+    assert result["scope"] == "unrelated"
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_scope_second_attempt_succeeds_after_first_failure():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [
+        _mock_response("garbage"),
+        _mock_response(json.dumps({"scope": "in_charter", "topic": "glycemic_control", "reason": "ok"})),
+    ]
+    result = judge_scope(mock_client, "What HbA1c target should I aim for?")
+    assert result["scope"] == "in_charter"
+    assert result["topic"] == "glycemic_control"
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_scope_api_error_fails_closed():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    fake_request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    mock_client.messages.create.side_effect = anthropic.APIConnectionError(request=fake_request)
+    result = judge_scope(mock_client, "Some question?")
+    assert result["scope"] == "unrelated"
+
+
+def test_judge_scope_invalid_scope_value_rejected():
+    from src.rag.scope_judge import get_scope_cache, judge_scope
+
+    get_scope_cache().clear()
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [
+        _mock_response(json.dumps({"scope": "maybe", "topic": None, "reason": "?"})),
+        _mock_response(json.dumps({"scope": "adjacent", "topic": None, "reason": "retry ok"})),
+    ]
+    result = judge_scope(mock_client, "Some question?")
+    assert result["scope"] == "adjacent"
+    assert mock_client.messages.create.call_count == 2
+
+
+# ---------- Stage B: evidence judge ----------
+
+def _chunk(text, population="type2", year="2024"):
+    from src.rag.types import RetrievedChunk
+
+    return RetrievedChunk(text=text, metadata={"population": population, "year": year}, score=0.8)
+
+
+def test_judge_evidence_parses_sufficient_verdict():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    payload = {
+        "propositions": [{"claim": "low-carb reduces HbA1c", "direct": [1], "partial": [], "absent": False}],
+        "question_population": "type2",
+        "evidence_populations": ["type2"],
+        "population_mismatch": False,
+        "verdict": "sufficient",
+        "reason": "Direct evidence found.",
+    }
+    mock_client.messages.create.return_value = _mock_response(json.dumps(payload))
+    result = judge_evidence(mock_client, "Does low-carb reduce HbA1c?", [_chunk("Low-carb reduced HbA1c by 0.5%.")])
+    assert result["verdict"] == "sufficient"
+    assert result["propositions"][0]["direct"] == [1]
+    assert result["population_mismatch"] is False
+
+
+def test_judge_evidence_no_chunks_short_circuits_to_insufficient():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    result = judge_evidence(mock_client, "Some question?", [])
+    assert result["verdict"] == "insufficient"
+    mock_client.messages.create.assert_not_called()
+
+
+def test_judge_evidence_malformed_json_retries_then_fails_closed():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [
+        _mock_response("not json"),
+        _mock_response("also not json"),
+    ]
+    result = judge_evidence(mock_client, "Some question?", [_chunk("some text")])
+    assert result["verdict"] == "insufficient"
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_evidence_missing_verdict_field_fails_schema_then_retries():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = [
+        _mock_response(json.dumps({"propositions": [], "reason": "no verdict key"})),
+        _mock_response(json.dumps({
+            "propositions": [], "question_population": None, "evidence_populations": [],
+            "population_mismatch": False, "verdict": "partial", "reason": "ok now",
+        })),
+    ]
+    result = judge_evidence(mock_client, "Some question?", [_chunk("some text")])
+    assert result["verdict"] == "partial"
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_judge_evidence_invalid_verdict_enum_rejected():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(json.dumps({
+        "propositions": [], "question_population": None, "evidence_populations": [],
+        "population_mismatch": False, "verdict": "yes", "reason": "bad enum value",
+    }))
+    result = judge_evidence(mock_client, "Some question?", [_chunk("some text")])
+    assert result["verdict"] == "insufficient"
+
+
+def test_judge_evidence_api_error_fails_closed():
+    from src.rag.evidence_judge import judge_evidence
+
+    mock_client = MagicMock()
+    fake_request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    mock_client.messages.create.side_effect = anthropic.APIConnectionError(request=fake_request)
+    result = judge_evidence(mock_client, "Some question?", [_chunk("some text")])
+    assert result["verdict"] == "insufficient"
+
+
+def test_judge_evidence_prompt_excludes_similarity_scores():
+    """
+    Step 4 explicitly requires no similarity scores in the Stage B prompt —
+    verify the passages block never renders a chunk's .score.
+    """
+    from src.rag.evidence_judge import _format_passages
+
+    chunk = _chunk("some evidence text")
+    chunk.score = 0.987654
+    rendered = _format_passages([chunk])
+    assert "0.987654" not in rendered
+    assert "0.98" not in rendered
+    assert "[C1]" in rendered
+    assert "population=type2" in rendered
+    assert "year=2024" in rendered

@@ -188,14 +188,27 @@ def main():
             continue
         print(f"  [{str(q.get('topic') or q.get('label')):30s}] id={q['id']} {q['question'][:60]!r}")
         record = run_one_question(q, namespace=args.namespace)
+        # A judge that failed on an API error (e.g. a usage limit) fails closed to a refusal that
+        # looks like a real result. Count it as an error and keep it out of the checkpoint, so a
+        # resumed run retries it instead of treating it as complete.
+        api_failure = next((r for r in (record["scope_reason"], record["evidence_reason"]) if r and "API call failed" in r), None)
+        if api_failure and not record["error"]:
+            record["error"] = f"judge API failure: {api_failure}"
         results.append(record)
+        if record["error"]:
+            print(f"    -> ERROR (not checkpointed; will be retried on resume): {record['error']}")
+            continue
         with open(checkpoint_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
         print(f"    -> status={record['status']} scope={record['scope']} evidence_verdict={record['evidence_verdict']}")
 
+    failed = [r["id"] for r in results if r["error"]]
+    if failed:
+        raise SystemExit(f"{len(failed)} question(s) failed ({failed}); not writing {args.out}. Fix the cause and re-run "
+                         f"the same command: completed questions are kept in {checkpoint_path}.")
+
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump({"pipeline": args.label, "namespace": args.namespace, "results": results}, f, ensure_ascii=False, indent=2)
-
     os.remove(checkpoint_path)
     status_counts = {}
     for r in results:

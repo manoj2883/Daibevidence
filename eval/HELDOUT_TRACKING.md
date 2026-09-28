@@ -20,11 +20,17 @@ Single place to track the held-out run of the revised judge prompts. Update the 
 |---|---|---|---|
 | Dev/regression run on the 43 | done | `f74c6b7` | 14/24 in-scope answered vs predicted 14/24 |
 | Held-out questions | done (Claude-drafted, see deviations) | `eval/heldout_v1.json` | 8 in_scope / 5 adjacent / 3 unrelated |
-| Held-out run | running | `data/eval_heldout_v1_v2_5k.json` | |
-| Faithfulness grading | not started | `eval/hand_grading_heldout_v1.csv` | |
+| Held-out run | **partial: 8/16 valid, blocked** | `data/eval_heldout_v1_v2_5k.json` | |
+| Faithfulness grading | **blocked** (3 grades invalid) | `eval/hand_grading_heldout_v1.csv` | |
 | Report section appended | not started | `eval/REPORT_twostage_judge.md` | |
 
 ## Open items
+- **API usage limit reached mid-run (2026-09-28 ~13:15). Access returns 2026-10-01 00:00 UTC.** Ids 101-108 completed
+  every stage and are kept in `data/eval_heldout_v1_v2_5k.json.partial.jsonl`. Ids 109-116 failed closed at Stage A on
+  the API error ("Scope judge API call failed") and are invalid; all 3 faithfulness grades (105, 106, 108) are invalid
+  for the same reason. Invalid outputs are kept as `*.INVALID_api_usage_limit.json`.
+  To finish, after the reset, re-run the same run command (it resumes at 109), then the grading and report commands.
+  Or raise the usage limit in the Anthropic Console to finish sooner.
 - Mano's step-3 instructions were cut off at "If a run crashes, fix"; the rest is still to come.
 
 ## Deviations log
@@ -33,3 +39,6 @@ Single place to track the held-out run of the revised judge prompts. Update the 
   prompts target. Mitigations: written before any corpus lookup, checked only for near-duplicates of the dev set (max
   token overlap 0.14 after replacing one question), committed before the run, pipeline unchanged. Treat the results as
   semi-independent, not a clean held-out measurement.
+- 2026-09-28: Run interrupted by the API usage limit (see Open items). Runner fixed so a judge API failure counts as an
+  error, is kept out of the checkpoint, and blocks writing the final file; previously such failures were silently
+  recorded as `out_of_scope` with "Errors: 0". No pipeline (prompt, charter, judge) code changed.

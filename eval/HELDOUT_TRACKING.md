@@ -19,8 +19,8 @@ Single place to track the held-out run of the revised judge prompts. Update the 
 | Step | Status | Commit / file | Notes |
 |---|---|---|---|
 | Dev/regression run on the 43 | done | `f74c6b7` | 14/24 in-scope answered vs predicted 14/24 |
-| Held-out questions received from Mano | **waiting** | `eval/heldout_v1.json` | 16 questions expected |
-| Held-out run | not started | `data/eval_heldout_v1_v2_5k.json` | |
+| Held-out questions | done (Claude-drafted, see deviations) | `eval/heldout_v1.json` | 8 in_scope / 5 adjacent / 3 unrelated |
+| Held-out run | running | `data/eval_heldout_v1_v2_5k.json` | |
 | Faithfulness grading | not started | `eval/hand_grading_heldout_v1.csv` | |
 | Report section appended | not started | `eval/REPORT_twostage_judge.md` | |
 
@@ -28,4 +28,8 @@ Single place to track the held-out run of the revised judge prompts. Update the 
 - Mano's step-3 instructions were cut off at "If a run crashes, fix"; the rest is still to come.
 
 ## Deviations log
-(none yet)
+- 2026-09-28: **Questions drafted by Claude, not Mano**, at Mano's explicit request ("generate new 16 questions and run
+  them") after the template stayed empty. This weakens the held-out claim: the drafter knew the failure modes the revised
+  prompts target. Mitigations: written before any corpus lookup, checked only for near-duplicates of the dev set (max
+  token overlap 0.14 after replacing one question), committed before the run, pipeline unchanged. Treat the results as
+  semi-independent, not a clean held-out measurement.

@@ -1,0 +1,117 @@
+{
+  "_provenance": "Drafted by Claude on 2026-09-28 at Mano's explicit request ('generate new 16 questions and run them'), overriding the earlier rule that Mano writes them. Written before any corpus lookup; checked only against eval_set_v2 for near-duplicates. Labels follow config/scope_charter.md. Not a fully independent held-out set: see the tracking log.",
+  "questions": [
+    {
+      "id": 101,
+      "question": "Does replacing sugar-sweetened beverages with water improve HbA1c in adults with type 2 diabetes?",
+      "label": "in_scope",
+      "topic": "diet_nutrition",
+      "notes": ""
+    },
+    {
+      "id": 102,
+      "question": "Is regular nut consumption associated with lower fasting glucose in people with type 2 diabetes?",
+      "label": "in_scope",
+      "topic": "diet_nutrition",
+      "notes": ""
+    },
+    {
+      "id": 103,
+      "question": "How does sleep duration affect HbA1c in adults with type 2 diabetes?",
+      "label": "in_scope",
+      "topic": "glycemic_control",
+      "notes": ""
+    },
+    {
+      "id": 104,
+      "question": "Is hypoglycemia more common with sulfonylureas than with DPP-4 inhibitors in older adults with type 2 diabetes?",
+      "label": "in_scope",
+      "topic": "glycemic_control",
+      "notes": "Comparison question: may trigger cross_study_comparison."
+    },
+    {
+      "id": 105,
+      "question": "How much weight loss do SGLT2 inhibitors typically produce in people with type 2 diabetes?",
+      "label": "in_scope",
+      "topic": "body_composition_weight",
+      "notes": ""
+    },
+    {
+      "id": 106,
+      "question": "Does resistance training increase muscle mass in older adults with type 2 diabetes?",
+      "label": "in_scope",
+      "topic": "body_composition_weight",
+      "notes": ""
+    },
+    {
+      "id": 107,
+      "question": "Should metformin be taken with food to reduce its gastrointestinal side effects?",
+      "label": "in_scope",
+      "topic": "diet_medication_interaction",
+      "notes": ""
+    },
+    {
+      "id": 108,
+      "question": "I take 20 units of insulin glargine at night. Should I lower my dose if I start intermittent fasting?",
+      "label": "in_scope",
+      "topic": "diet_medication_interaction",
+      "notes": "Personal dosing question: should set personal_dosing=true."
+    },
+    {
+      "id": 109,
+      "question": "Is diabetes associated with a higher risk of hearing loss?",
+      "label": "adjacent",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 110,
+      "question": "How is diabetes distress screened for in primary care?",
+      "label": "adjacent",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 111,
+      "question": "Does tight blood pressure control slow the progression of diabetic kidney disease?",
+      "label": "adjacent",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 112,
+      "question": "Which carbohydrate counting method works best for children with type 1 diabetes?",
+      "label": "adjacent",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 113,
+      "question": "Are insulin pumps covered by Medicare for people with type 2 diabetes?",
+      "label": "adjacent",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 114,
+      "question": "What are the symptoms of seasonal influenza?",
+      "label": "unrelated",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 115,
+      "question": "How do I change a flat car tire?",
+      "label": "unrelated",
+      "topic": null,
+      "notes": ""
+    },
+    {
+      "id": 116,
+      "question": "What is the best way to learn a second language as an adult?",
+      "label": "unrelated",
+      "topic": null,
+      "notes": ""
+    }
+  ]
+}

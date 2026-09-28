@@ -916,6 +916,20 @@
             '<span><span class="label">Outside core scope</span>This question falls outside DiabEvidence’s four core areas (diet and nutrition, glycemic control, body composition and weight, diet-medication interactions), though the evidence found does answer it.</span>' +
             "</div>";
         }
+        if (data.cross_study_comparison) {
+          noticeHtml +=
+            '<div class="notice">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+            '<span><span class="label">Comparison across studies</span>No single study compared these options directly. The comparison below is drawn from separate studies, which may differ in design and population.</span>' +
+            "</div>";
+        }
+        if (data.personal_dosing) {
+          noticeHtml +=
+            '<div class="notice">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+            '<span><span class="label">Talk to your clinician</span>This answer summarizes published research and is not personal medical advice. Confirm any dose, schedule, or medication change with your doctor or pharmacist before acting on it.</span>' +
+            "</div>";
+        }
         els.notice.innerHTML = noticeHtml;
 
         // Two independent population-mismatch signals can fire: the old
@@ -1113,21 +1127,26 @@
     html += '<div class="inspector-judge cleared">' +
       '<span class="idx">A</span>' +
       '<span class="judge-verdict">' + escapeHtml(sourcesEventData.scope || "") + "</span>" +
-      '<span class="judge-reason">' + escapeHtml(sourcesEventData.scope_reason || "") + "</span>" +
+      '<span class="judge-reason">' + escapeHtml(sourcesEventData.scope_reason || "") +
+        (sourcesEventData.outcome ? " (outcome: " + escapeHtml(sourcesEventData.outcome) + (sourcesEventData.area ? "; area: " + escapeHtml(sourcesEventData.area) : "") + ")" : "") +
+        "</span>" +
       "</div>";
     var evidenceCleared = sourcesEventData.evidence_verdict === "sufficient";
     html += '<div class="inspector-judge ' + (evidenceCleared ? "cleared" : "dropped") + '">' +
       '<span class="idx">B</span>' +
       '<span class="judge-verdict">' + escapeHtml(sourcesEventData.evidence_verdict || "") + "</span>" +
-      '<span class="judge-reason">' + escapeHtml(sourcesEventData.evidence_reason || "") + "</span>" +
+      '<span class="judge-reason">' + escapeHtml(sourcesEventData.evidence_reason || "") +
+        (sourcesEventData.on_topic === false ? " (no retrieved passage is on topic)" : "") +
+        "</span>" +
       "</div>";
 
     var propositions = sourcesEventData.propositions || [];
     if (propositions.length) {
       html += '<div class="prop-table-wrap"><table class="prop-table">' +
-        "<thead><tr><th>Claim</th><th>Direct</th><th>Partial</th><th>Absent</th></tr></thead><tbody>";
+        "<thead><tr><th>Core</th><th>Claim</th><th>Direct</th><th>Partial</th><th>Absent</th></tr></thead><tbody>";
       propositions.forEach(function (p) {
         html += "<tr>" +
+          "<td>" + (p.core ? "✓" : "") + "</td>" +
           "<td>" + escapeHtml(p.claim || "") + "</td>" +
           "<td>" + escapeHtml((p.direct || []).join(", ") || "—") + "</td>" +
           "<td>" + escapeHtml((p.partial || []).join(", ") || "—") + "</td>" +

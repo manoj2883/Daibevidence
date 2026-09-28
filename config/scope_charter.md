@@ -1,66 +1,85 @@
 <!--
 SOURCE OF TRUTH for what DiabEvidence covers.
 
-This file is the single, editable definition of scope for both judge stages
-(src/rag/scope_judge.py Stage A, src/rag/evidence_judge.py Stage B) and the
-frontend's "what this system covers" refusal text. It is loaded at startup
-and read verbatim into the Stage A prompt — nothing in this file's content
-is duplicated or paraphrased in code. Edit this file to change what counts
-as in-charter, adjacent, or unrelated; no code change is needed for a
-wording or example change, only for a change to which of the two judge
-prompts consumes which section.
+This file is the single, editable definition of scope. src/rag/scope_judge.py (Stage A) reads
+two sections of it into its prompt at startup:
+  - "## Areas": the bulleted area list, inserted verbatim as the prompt's MAP step
+  - "## Adjacent examples": the one-line example list, inserted into the prompt's ADJACENT step
+Nothing in those two sections is duplicated in code. Edit them here to change what counts as
+in_charter or adjacent; restart the process to pick up the edit. The four area keys
+(glycemic_control, body_composition_weight, diet_nutrition, diet_medication_interaction) must
+stay as written: the code validates the judge's "area" field against them, and startup fails
+loudly if the Areas section is missing any of them.
+
+The other sections (the rule, the population note, example questions) document intent for
+maintainers and are not sent to the model.
 -->
 
 # DiabEvidence scope charter
 
 DiabEvidence answers questions from adults with type 2 diabetes, or people caring for them,
-about four specific areas:
+using published research literature. Scope is decided by the **outcome** a question asks
+about, not by the intervention it names.
 
-1. **Diet and nutrition** — what to eat, dietary patterns, and their effect on diabetes.
-2. **Glycemic control** — blood sugar management, monitoring, and targets.
-3. **Body composition and weight** — weight, body fat, and their relationship to diabetes.
-4. **Diet and medication interactions** — how food, nutrients, or eating patterns interact
-   with diabetes medications.
+## Areas
 
-## In charter
+   - glycemic_control: blood glucose, HbA1c, glucose variability, hypoglycemia, insulin
+     sensitivity or resistance, diabetes remission
+   - body_composition_weight: body weight, fat distribution, lean or muscle mass, waist
+     circumference, BMI
+   - diet_nutrition: foods, nutrients, eating patterns, meal timing, alcohol, and
+     supplements taken as part of diet
+   - diet_medication_interaction: any food, drink, or eating pattern combined with any
+     diabetes medication, including insulin
 
-A question is **in_charter** if it asks about one of the four areas above, for adults with
-type 2 diabetes or people caring for them.
+## Rule: outcome, not terms
 
-Examples:
-- "Does a low-carbohydrate diet lower HbA1c in adults with type 2 diabetes?"
-- "How much weight loss is typically needed to see improved insulin sensitivity?"
-- "Can grapefruit juice affect how well metformin works?"
+A question is **in_charter** when its outcome maps to one of the four areas, whatever the
+intervention is: a food, a drug, exercise, or surgery. Words like "insulin", "medication",
+"drug", "exercise", or "surgery" never make a question adjacent on their own. When it is
+uncertain whether a question is in charter or adjacent, it is in charter: the evidence check
+that runs next still prevents unsupported answers.
 
-## Adjacent
+## Population
 
-A question is **adjacent** if it is clearly about diabetes, but outside the four areas above.
-This includes (not an exhaustive list): type 1 or gestational diabetes specifics, exercise
-programming, mental health and diabetes distress, complications (retinopathy, neuropathy,
-nephropathy, foot care, cardiovascular disease), insulin dosing and pump/CGM hardware,
-diabetic ketoacidosis, and insurance, disability, or licensing questions related to diabetes.
+Questions explicitly about type 1 or gestational diabetes are **adjacent**.
 
-Examples:
-- "What insulin-to-carbohydrate ratio should I use for a high-protein meal?" (insulin dosing)
-- "How often should someone with diabetes get a dilated eye exam?" (complications/eye care)
-- "What are the symptoms of diabetic ketoacidosis?" (DKA)
+## Adjacent examples
 
-## Unrelated
+eye, nerve, kidney, or foot complications; mental health; devices; cost or access to care
 
-A question is **unrelated** if it has no connection to diabetes at all.
+A question is **adjacent** only when it is about diabetes but its outcome maps to none of the
+four areas. A question is **unrelated** when it is not about diabetes or metabolic health.
 
-Examples:
+## Personal dosing (safety flag, not a scope category)
+
+A question asking for a dose, schedule, or medication change for a specific person is still
+classified by scope as usual, and is flagged. Flagged questions are answered from the evidence
+with a banner telling the person to confirm any dose or medication change with their
+clinician, and the answer gives no individualized dosing advice.
+
+## Example questions
+
+In charter:
+- "Does a low-carbohydrate diet lower HbA1c in adults with type 2 diabetes?" (diet_nutrition)
+- "Does exercising after meals lower post-meal blood glucose?" (glycemic_control; exercise is the intervention)
+- "Is drinking alcohol risky while taking a sulfonylurea?" (diet_medication_interaction; alcohol is diet)
+
+Adjacent:
+- "How often should someone with diabetes get a dilated eye exam?" (eye complications)
+- "Which continuous glucose monitor has the longest sensor life?" (devices)
+- "What insulin-to-carbohydrate ratio should a person with type 1 diabetes use?" (type 1)
+
+Unrelated:
 - "What is the capital of Australia?"
 - "How do I refinance a car loan?"
 - "What's a good recipe for banana bread?"
 
 ## Notes for maintainers
 
-- This file is the only place scope is defined. If you change a category's description or
-  examples here, both judge stages pick it up automatically at their next call — nothing else
-  needs editing.
-- The four in-charter areas above must stay in sync with `src/ingest/config.py`'s `TOPICS`
-  dict, which drives what actually gets ingested into the corpus. If you add a fifth area
-  here, ingestion needs to catch up before the corpus can actually answer it — the scope
-  judge does not know what's in the corpus, only what this charter says the system is meant
-  to cover (see `src/rag/scope_judge.py`'s docstring for why that separation matters).
+- The four areas above must stay in sync with `src/ingest/config.py`'s `TOPICS` dict, which
+  drives what gets ingested. The scope judge knows only what this charter says the system is
+  meant to cover, not what the corpus contains.
+- Revised 2026-09-28: moved from a topic-based charter (which listed exercise programming and
+  insulin dosing as adjacent) to the outcome-based rule above, together with the rewritten
+  Stage A prompt.

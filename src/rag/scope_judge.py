@@ -9,7 +9,9 @@ what the question is about. Evidence sufficiency is Stage B's job (src/rag/evide
 run only for questions Stage A doesn't already reject as unrelated.
 
 config/scope_charter.md is the single source of truth for what counts as in_charter/adjacent/
-unrelated — this module loads and embeds its text verbatim, never paraphrases or duplicates it.
+unrelated. The prompt's wording (user-written, 2026-09-28) decides by the question's OUTCOME rather
+than by the terms it uses; the four-area list and the adjacent examples inside it are read from the
+charter's "## Areas" and "## Adjacent examples" sections, never duplicated here.
 """
 import json
 import logging
@@ -36,23 +38,54 @@ VALID_TOPICS = {
     "diet_medication_interaction",
 }
 
-SCOPE_SYSTEM_PROMPT_TEMPLATE = """You decide whether a question falls within a system's charter, based only on the \
-question text — you are never shown any retrieved documents, and your decision must not depend on whether good \
-evidence happens to exist. Judge the question's subject matter only.
+# User-written prompt (2026-09-28), verbatim apart from {areas} and {adjacent_examples},
+# which are read from config/scope_charter.md. Literal JSON braces are doubled for str.format.
+SCOPE_SYSTEM_PROMPT_TEMPLATE = """You decide whether a question falls within DiabEvidence's scope. You see only the
+question, not any retrieved evidence, and you are not answering it.
 
-{charter}
+DiabEvidence answers questions from adults with type 2 diabetes, or people caring for
+them, using published research literature.
 
-Decide:
-- "in_charter": the question asks about one of the four numbered areas above, for adults with type 2 diabetes or \
-people caring for them. If so, set "topic" to exactly one of: diet_nutrition, glycemic_control, \
-body_composition_weight, diet_medication_interaction.
-- "adjacent": the question is clearly about diabetes but outside those four areas (see the Adjacent examples above).
-- "unrelated": the question has no connection to diabetes at all.
+Work through these steps in order.
 
-Respond with ONLY a JSON object and nothing else — no markdown code fences, no explanation outside the object — in \
-exactly this shape:
-{{"scope": "in_charter" | "adjacent" | "unrelated", "topic": "<one of the four area names, or null>", "reason": \
-"<one sentence>"}}"""
+1. OUTCOME. In one short phrase, state what the person ultimately wants to know about:
+   the outcome or decision, not the intervention. Examples: "post-meal blood glucose",
+   "lean muscle mass", "HbA1c", "whether a food changes how a drug works".
+
+2. POPULATION. If the question is explicitly about type 1 or gestational diabetes, the
+   scope is "adjacent". Stop and return.
+
+3. MAP. Match the outcome from step 1 to one of these four areas:
+{areas}
+   If the outcome maps to one of these areas, the scope is "in_charter", whatever the
+   intervention is: a food, a drug, exercise, or surgery.
+
+4. TERMS ARE NOT TOPICS. Words like "insulin", "medication", "drug", "exercise", or
+   "surgery" never make a question adjacent on their own. Decide using only the outcome
+   from step 1.
+
+5. ADJACENT. Use "adjacent" only when the question is about diabetes but its outcome maps
+   to none of the four areas. Examples: {adjacent_examples}.
+
+6. UNRELATED. Use "unrelated" when the question is not about diabetes or metabolic health.
+
+7. PERSONAL DOSING. If the question asks for a dose, schedule, or medication change for a
+   specific person, set "personal_dosing" to true. This is a safety flag, separate from
+   scope. Classify scope as usual.
+
+8. CHECK. Reread your reason before answering. If the reason names one of the four areas
+   as the outcome, the scope must be "in_charter". If you are uncertain between
+   "in_charter" and "adjacent", choose "in_charter": a separate evidence check runs next
+   and still prevents unsupported answers.
+
+Return only JSON:
+{{
+  "outcome": "",
+  "area": "glycemic_control" | "body_composition_weight" | "diet_nutrition" | "diet_medication_interaction" | null,
+  "scope": "in_charter" | "adjacent" | "unrelated",
+  "personal_dosing": true | false,
+  "reason": "one sentence"
+}}"""
 
 _charter_lock = threading.Lock()
 _charter_text: Optional[str] = None
@@ -85,6 +118,30 @@ def load_charter() -> str:
     return _charter_text
 
 
+def _charter_section(charter: str, heading: str) -> str:
+    """Body of a "## <heading>" section, up to the next "## " heading. Raises if the section is missing or empty."""
+    match = re.search(rf"^## {re.escape(heading)}[ \t]*\n(.*?)(?=^## |\Z)", charter, re.MULTILINE | re.DOTALL)
+    body = match.group(1).strip("\n") if match else ""
+    if not body.strip():
+        raise ValueError(f"config/scope_charter.md has no non-empty '## {heading}' section; Stage A needs it.")
+    return body
+
+
+def build_scope_prompt() -> str:
+    """
+    Fills the prompt's MAP step with the charter's "## Areas" list (verbatim) and its ADJACENT
+    step with the first line of "## Adjacent examples". Fails loudly if any of the four area keys
+    is missing from the charter's Areas section, since the validator checks "area" against them.
+    """
+    charter = load_charter()
+    areas = _charter_section(charter, "Areas").rstrip()
+    missing = sorted(t for t in VALID_TOPICS if f"- {t}:" not in areas)
+    if missing:
+        raise ValueError(f"config/scope_charter.md '## Areas' is missing area key(s): {missing}")
+    adjacent_examples = _charter_section(charter, "Adjacent examples").strip().splitlines()[0].strip().rstrip(".")
+    return SCOPE_SYSTEM_PROMPT_TEMPLATE.format(areas=areas, adjacent_examples=adjacent_examples)
+
+
 def _normalize_question(question: str) -> str:
     return re.sub(r"\s+", " ", (question or "").strip().lower())
 
@@ -98,33 +155,53 @@ def _default_result(reason: str) -> Dict[str, Any]:
     # Fail closed to "unrelated" — the cheapest, safest failure: it refuses
     # before retrieval rather than risking an in_charter/adjacent
     # misjudgment proceeding ungoverned into Stage B and generation.
-    return {"scope": "unrelated", "topic": None, "reason": reason}
+    return {"scope": "unrelated", "area": None, "topic": None, "outcome": None, "personal_dosing": False, "reason": reason}
 
 
 def _validate_scope_response(parsed: Any) -> Optional[Dict[str, Any]]:
-    """Returns a valid, coerced result dict, or None if the shape is wrong (caller retries or fails closed)."""
+    """
+    Returns a valid, coerced result dict, or None if the shape is wrong (caller retries or fails
+    closed). "topic" is kept as an alias of "area" so existing consumers (API, eval runner, report
+    builder) keep working. personal_dosing must be a real bool: it drives a safety banner, so a
+    missing or malformed flag is a schema failure rather than a silent False.
+    """
     if not isinstance(parsed, dict):
         return None
     scope = parsed.get("scope")
     if scope not in VALID_SCOPES:
         return None
-    topic = parsed.get("topic")
-    if topic is not None and topic not in VALID_TOPICS:
+    area = parsed.get("area", parsed.get("topic"))
+    if area is not None and area not in VALID_TOPICS:
         return None
     if scope != "in_charter":
-        topic = None  # topic is only meaningful for in_charter, per the schema
+        area = None  # area is only meaningful for in_charter
+    personal_dosing = parsed.get("personal_dosing")
+    if not isinstance(personal_dosing, bool):
+        return None
+    outcome = parsed.get("outcome")
+    outcome = outcome.strip() if isinstance(outcome, str) and outcome.strip() else None
     reason = parsed.get("reason")
     if not isinstance(reason, str) or not reason.strip():
         reason = "No reason given."
-    return {"scope": scope, "topic": topic, "reason": reason.strip()}
+    return {
+        "scope": scope,
+        "area": area,
+        "topic": area,
+        "outcome": outcome,
+        "personal_dosing": personal_dosing,
+        "reason": reason.strip(),
+    }
 
 
 def _call_scope_model(client: anthropic.Anthropic, question: str) -> str:
-    system_prompt = SCOPE_SYSTEM_PROMPT_TEMPLATE.format(charter=load_charter())
+    system_prompt = build_scope_prompt()
     print_prompt_estimate(f"scope: {question[:60]!r}", system_prompt, question)
     response = client.messages.create(
         model=get_judge_model(),
-        max_tokens=300,
+        # No extended thinking is enabled for the judge model, so this budget covers only the
+        # JSON (outcome + area + reason). 600 leaves headroom over the ~150 tokens it needs;
+        # a max_tokens stop is still caught below and treated as a parse failure.
+        max_tokens=600,
         # Step 3 asks for temperature 0; the installed anthropic SDK's
         # Messages.create() has no temperature parameter at all in this
         # environment (verified against the live signature, not assumed —
@@ -137,6 +214,9 @@ def _call_scope_model(client: anthropic.Anthropic, question: str) -> str:
         messages=[{"role": "user", "content": question}],
     )
     result = "".join(block.text for block in response.content if block.type == "text")
+    if response.stop_reason == "max_tokens":
+        logger.error("Scope judge hit max_tokens before finishing")
+        result = ""  # truncated JSON: force the parse-failure path (retry, then fail closed)
     return result, response.model
 
 

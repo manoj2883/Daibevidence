@@ -8,6 +8,7 @@ attribution is structural (chunk_ids) rather than text markup.
 """
 import json
 import os
+import re
 import time
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
@@ -363,20 +364,52 @@ def filter_chunks_to_direct(chunks: List[RetrievedChunk], evidence_result: Dict[
     return filtered if filtered else chunks
 
 
+# Stage B labels its passages "[C1]", "[C2]", ... (see evidence_judge._format_passages),
+# and its free-text "reason" refers to them by those labels. Those labels mean
+# nothing to a reader, and after filter_chunks_to_direct they don't even line up
+# with the [Excerpt N] numbering the generation prompt uses.
+_AUDIT_LABEL_PATTERN = re.compile(r"\[?\b[Cc]\d+\b\]?")
+
+
+def _strip_audit_labels(text: str) -> str:
+    return _AUDIT_LABEL_PATTERN.sub("one study", text)
+
+
+def _unsupported_claims(evidence_result: Dict[str, Any]) -> List[str]:
+    """The propositions Stage B found no DIRECT passage for, in the judge's own words."""
+    return [
+        p["claim"].strip()
+        for p in evidence_result.get("propositions") or []
+        if isinstance(p, dict) and isinstance(p.get("claim"), str) and p["claim"].strip() and not p.get("direct")
+    ]
+
+
 def _status_instruction(status: str, evidence_result: Dict[str, Any]) -> str:
     """
     Rule 11's text — the one place the generation prompt is told which of
     the two "evidence exists but isn't the full picture" statuses applies,
     and what to do about it. Both statuses reuse rule 5's "caveat after the
     direct answer, never before" ordering rather than inventing a new rule.
+
+    For answered_partial the gap is described from the unsupported
+    propositions' claims where there are any, falling back to Stage B's
+    reason with its [C{n}] passage labels stripped. The reason used to be
+    passed through verbatim and the model copied it, labels and all, into
+    the user-facing answer.
     """
     if status == "answered_partial":
-        gap = evidence_result.get("reason") or "the evidence audit found a gap it did not name."
+        claims = _unsupported_claims(evidence_result)
+        if claims:
+            gap = "no excerpt directly supports: " + "; ".join(claims)
+        else:
+            gap = _strip_audit_labels(evidence_result.get("reason") or "the evidence audit found a gap it did not name.")
         return (
             "The evidence for this question is PARTIAL, not complete — you have been given only the excerpts "
             "the evidence audit marked as directly relevant to at least one proposition in the question. Answer "
             f"only what these excerpts directly support, then end with exactly one closing sentence, per rule 5, "
-            f'naming the specific gap the audit found: "{gap}"'
+            f"telling the reader in plain language what the retrieved studies do not show. The audit's internal "
+            f'note on the gap is: "{gap}". Do not copy this note; restate the gap for a general reader. Never '
+            "mention excerpt numbers, passage labels, the audit, or how this system works."
         )
     if status == "answered_adjacent":
         return (

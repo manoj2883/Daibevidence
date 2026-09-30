@@ -482,6 +482,35 @@ def test_status_instruction_partial_names_the_gap():
     assert "No excerpt reports a magnitude for weight loss." in text
 
 
+def test_status_instruction_partial_strips_audit_passage_labels():
+    from src.rag.chain import _status_instruction
+
+    evidence_result = {
+        "reason": "C2 states metformin is first-line therapy but does not state it reduces HbA1c; [C4] is a combined intervention."
+    }
+    text = _status_instruction("answered_partial", evidence_result)
+    assert "C2" not in text
+    assert "C4" not in text
+    assert "metformin is first-line therapy" in text
+    assert "Never mention excerpt numbers, passage labels" in text
+
+
+def test_status_instruction_partial_prefers_unsupported_claims_over_reason():
+    from src.rag.chain import _status_instruction
+
+    evidence_result = {
+        "reason": "C2 does not state the effect.",
+        "propositions": [
+            {"claim": "Metformin is used in type 2 diabetes", "core": False, "direct": [2], "partial": [], "absent": False},
+            {"claim": "Metformin reduces HbA1c", "core": True, "direct": [], "partial": [2, 4], "absent": False},
+        ],
+    }
+    text = _status_instruction("answered_partial", evidence_result)
+    assert "Metformin reduces HbA1c" in text
+    assert "Metformin is used in type 2 diabetes" not in text
+    assert "C2" not in text
+
+
 def test_status_instruction_adjacent_names_the_four_areas():
     from src.rag.chain import _status_instruction
 

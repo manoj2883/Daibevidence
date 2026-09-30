@@ -903,10 +903,13 @@
 
         var noticeHtml = "";
         if (data.status === "answered_partial") {
+          // Not evidence_reason: that's Stage B's internal note, written against its
+          // [C{n}] passage labels. The answer's closing sentence names the gap in plain
+          // language, and the raw reason stays visible in the inspector panel.
           noticeHtml +=
             '<div class="notice">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-            '<span><span class="label">Partial evidence</span>' + escapeHtml(data.evidence_reason || "The evidence only partially covers this question.") + "</span>" +
+            '<span><span class="label">Partial evidence</span>The studies found only partly answer this question. The last sentence below says what they don\'t cover.</span>' +
             "</div>";
         }
         if (data.status === "answered_adjacent") {

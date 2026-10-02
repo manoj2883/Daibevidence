@@ -25,3 +25,7 @@ services:
       # secret; override here (or in Render's dashboard) if re-tuning.
       - key: SIMILARITY_FLOOR
         value: "0.50"
+      # v3: the scope judge is off; the evidence judge alone decides. "true" restores the
+      # two-stage pipeline (src.rag.chain.stream_answer) on v2_5k.
+      - key: SCOPE_JUDGE_ENABLED
+        value: "false"

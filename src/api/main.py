@@ -10,17 +10,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
-from src.ingest.config import NAMESPACE_V1_300, NAMESPACE_V2_5K
+from src.ingest.config import NAMESPACE_V1_300, NAMESPACE_V2_5K, NAMESPACE_V3
 from src.ingest.local_embeddings import LocalSentenceTransformerEmbeddings
-from src.rag.chain import stream_answer
+from src.rag.hybrid_retriever import load_corpus
+from src.rag.pipeline import AUDIENCES, run_pipeline, scope_judge_enabled
 from src.rag.retriever import get_namespace, validate_namespace
+
+GLOSSARY_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "glossary.json")
 
 # Namespaces a client is allowed to request via /query's optional
 # `namespace` field (comparison mode) — never pass an arbitrary
 # client-supplied string straight to Pinecone. get_namespace()'s resolved
 # production namespace is always allowed too, even if it's neither of
 # these (e.g. a future namespace set only via PINECONE_NAMESPACE).
-ALLOWED_QUERY_NAMESPACES = {NAMESPACE_V1_300, NAMESPACE_V2_5K}
+# The v3 pipeline (default) can only query v3_5k_recursive: its BM25 index and
+# parent documents come from that namespace's corpus file. The older namespaces
+# stay available for comparison when SCOPE_JUDGE_ENABLED=true (two-stage pipeline).
+ALLOWED_QUERY_NAMESPACES = {NAMESPACE_V1_300, NAMESPACE_V2_5K} if scope_judge_enabled() else {NAMESPACE_V3}
 
 # Load environment variables
 load_dotenv()
@@ -44,6 +50,8 @@ async def lifespan(app: FastAPI):
     index_name = os.environ.get("PINECONE_INDEX_NAME", "").strip()
     vector_count = validate_namespace(namespace)
     app.state.namespace = namespace
+    if not scope_judge_enabled():
+        load_corpus()  # build the BM25 index at boot, not on the first query
     app.state.namespace_vector_count = vector_count
     startup_msg = f"Pinecone namespace resolved: namespace={namespace!r} vector_count={vector_count} index={index_name!r}"
     logger.info(startup_msg)
@@ -86,14 +94,15 @@ class QueryRequest(BaseModel):
             "production namespace."
         ),
     )
+    audience: str = Field("patient", description=f"Who the answer is written for: one of {list(AUDIENCES)}.")
 
 
 def _sse_event(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
-def _sse_stream(question: str, namespace: Optional[str] = None):
-    for item in stream_answer(question, namespace=namespace):
+def _sse_stream(question: str, namespace: Optional[str] = None, audience: str = "patient"):
+    for item in run_pipeline(question, namespace=namespace, audience=audience):
         yield _sse_event(item["event"], item["data"])
 
 
@@ -129,13 +138,30 @@ async def health():
         # accept — single source of truth, so the frontend never hardcodes
         # a duplicate of ALLOWED_QUERY_NAMESPACES that could drift from it.
         "available_namespaces": sorted(ALLOWED_QUERY_NAMESPACES),
+        "scope_judge_enabled": scope_judge_enabled(),
     }
+
+
+@app.get("/glossary", tags=["Frontend"])
+async def glossary():
+    """Plain-English one-line definitions for hover tooltips (config/glossary.json)."""
+    with open(GLOSSARY_PATH, encoding="utf-8") as f:
+        return json.load(f)["terms"]
 
 
 @app.post("/query", tags=["RAG"])
 async def query_rag(request: QueryRequest):
     """
     Submit a query to the RAG pipeline. Streams a server-sent-events response.
+
+    Default (SCOPE_JUDGE_ENABLED=false): the v3 pipeline in src.rag.pipeline —
+    query step, hybrid retrieval, evidence judge, audience-specific generation.
+    Statuses: answered | answered_partial | not_covered | see_clinician. Events:
+    "query" (retrieval-inspector data only), "sources", "contradictions",
+    "sentence", "done", "refusal", "error". `audience` is "patient" (default)
+    or "clinician"; only generation changes between them.
+
+    With SCOPE_JUDGE_ENABLED=true, the retired two-stage pipeline below runs instead:
 
     Two-stage answerability judge (src.rag.chain.stream_answer — see its
     docstring for the full routing table): Stage A decides scope
@@ -187,4 +213,9 @@ async def query_rag(request: QueryRequest):
             status_code=400,
             detail=f"Invalid namespace {request.namespace!r}. Must be one of {sorted(ALLOWED_QUERY_NAMESPACES)}.",
         )
-    return StreamingResponse(_sse_stream(request.question, namespace=request.namespace), media_type="text/event-stream")
+    if request.audience not in AUDIENCES:
+        raise HTTPException(status_code=400, detail=f"Invalid audience {request.audience!r}. Must be one of {list(AUDIENCES)}.")
+    return StreamingResponse(
+        _sse_stream(request.question, namespace=request.namespace, audience=request.audience),
+        media_type="text/event-stream",
+    )

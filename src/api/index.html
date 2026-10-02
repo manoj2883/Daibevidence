@@ -397,6 +397,23 @@
     .cite-marker { background: #eee !important; color: #333 !important; }
     a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 10px; color: #666; }
   }
+  /* v3: audience toggle, evidence badges, glossary, medication note */
+  .audience-toggle { display: inline-flex; background: var(--bg2); border-radius: var(--r-pill); padding: 2px; }
+  .audience-toggle button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 12.5px; font-weight: 600;
+    padding: 5px 12px; border-radius: var(--r-pill); cursor: pointer; }
+  .audience-toggle button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .evidence-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--r-pill);
+    background: var(--bg2); color: var(--ink); margin-left: var(--space-2); }
+  .evidence-badge--meta-analysis { background: color-mix(in srgb, var(--green) 16%, var(--card)); }
+  .evidence-badge--rct { background: color-mix(in srgb, var(--blue) 14%, var(--card)); }
+  .evidence-badge--background { background: var(--bg3); }
+  .gloss { border-bottom: 1px dotted var(--muted); cursor: help; position: relative; }
+  .gloss:hover::after, .gloss:focus::after { content: attr(data-def); position: absolute; left: 0; top: calc(100% + 6px); z-index: 20;
+    width: max-content; max-width: 260px; background: var(--ink); color: var(--bg); font-size: 13px; line-height: 1.4;
+    padding: 8px 10px; border-radius: 8px; white-space: normal; font-weight: 400; }
+  .safety-note { font-weight: 600; color: var(--ink); background: var(--bg2); border-radius: var(--r-sm); padding: var(--space-3) var(--space-4); }
+  .inspector-query { font-size: 12.5px; line-height: 1.6; margin: var(--space-2) 0; overflow-wrap: anywhere; }
+  .inspector-query code { background: var(--bg2); padding: 1px 6px; border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -408,7 +425,11 @@
       <span class="brand">DiabEvidence</span>
       <span class="desc">Diabetes research evidence assistant</span>
       <div class="group" role="toolbar" aria-label="View options">
-        <button id="compare-toggle" class="btn-icon" type="button" aria-pressed="false" aria-label="Toggle v1_300 vs v2_5k comparison mode" title="Compare v1_300 vs v2_5k">
+        <div class="audience-toggle" role="group" aria-label="Answer style">
+          <button type="button" data-audience="patient" aria-pressed="true">Patient</button>
+          <button type="button" data-audience="clinician" aria-pressed="false">Clinician</button>
+        </div>
+        <button id="compare-toggle" hidden class="btn-icon" type="button" aria-pressed="false" aria-label="Toggle v1_300 vs v2_5k comparison mode" title="Compare v1_300 vs v2_5k">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="4" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>
         </button>
         <button id="inspector-toggle" class="btn-icon" type="button" aria-pressed="false" aria-label="Toggle retrieval inspector (Cmd/Ctrl+K)" title="Retrieval inspector (⌘K)">
@@ -433,13 +454,13 @@
         <p class="scope">
           Diet &amp; nutrition, glycemic control, body composition &amp; weight, and diet–medication
           interactions — across type 1, type 2, gestational, and prediabetes. Every answer shows exactly
-          which studies it's built from, beside it, not behind a toggle.
+          which studies it's built from, beside it. Pick plain-English (Patient) or detailed (Clinician) answers at the top.
         </p>
 
         <div class="stats" aria-label="Corpus statistics">
           <div class="stat"><b>5,000</b><span>abstracts indexed</span></div>
-          <div class="stat"><b>13,733</b><span>study-tier chunks</span></div>
-          <div class="stat"><b>35</b><span>background-tier chunks</span></div>
+          <div class="stat"><b>14,630</b><span>study-tier chunks</span></div>
+          <div class="stat"><b>13</b><span>ADA / NIDDK / CDC background pages</span></div>
           <div class="stat"><b>10 yrs</b><span>literature window</span></div>
         </div>
 
@@ -453,9 +474,9 @@
             <span class="tag">Diet &amp; nutrition</span>
             <span class="q">Does a Mediterranean-style diet reduce the risk of developing type 2 diabetes?</span>
           </button>
-          <button class="starter-card" type="button" data-question="What HbA1c target is generally recommended for most nonpregnant adults with type 2 diabetes?">
+          <button class="starter-card" type="button" data-question="Does intermittent fasting improve HbA1c in type 2 diabetes?">
             <span class="tag">Glycemic control</span>
-            <span class="q">What HbA1c target is generally recommended for most nonpregnant adults with type 2 diabetes?</span>
+            <span class="q">Does intermittent fasting improve HbA1c in type 2 diabetes?</span>
           </button>
           <button class="starter-card" type="button" data-question="Does continuous glucose monitoring improve glycemic control compared with self-monitoring?">
             <span class="tag">Glycemic control</span>
@@ -472,10 +493,6 @@
           <button class="starter-card" type="button" data-question="Does long-term metformin use affect vitamin B12 status?">
             <span class="tag">Diet–medication interaction</span>
             <span class="q">Does long-term metformin use affect vitamin B12 status?</span>
-          </button>
-          <button class="starter-card" type="button" data-demo-refusal="true" data-question="What's the best marathon training plan for a healthy adult with no diabetes risk factors?">
-            <span class="tag">Out of scope — watch it decline</span>
-            <span class="q">What's the best marathon training plan for a healthy adult with no diabetes risk factors?</span>
           </button>
         </div>
       </div>
@@ -552,7 +569,54 @@
   }
   inspectorToggleBtn.addEventListener("click", function () { setInspectorOn(!inspectorOn); });
 
-  // ---------- Namespace comparison mode ----------
+  // ---------- Audience (Patient default / Clinician), persisted ----------
+  var AUDIENCE_KEY = "diabevidence-audience";
+  var audience = "patient";
+  try { if (localStorage.getItem(AUDIENCE_KEY) === "clinician") audience = "clinician"; } catch (e) {}
+  var audienceButtons = document.querySelectorAll(".audience-toggle button");
+  function setAudience(next) {
+    audience = next;
+    audienceButtons.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-audience") === next ? "true" : "false"); });
+    try { localStorage.setItem(AUDIENCE_KEY, next); } catch (e) {}
+  }
+  audienceButtons.forEach(function (b) { b.addEventListener("click", function () { setAudience(b.getAttribute("data-audience")); }); });
+  setAudience(audience);
+
+  // ---------- Glossary: hover definitions from config/glossary.json (served at /glossary) ----------
+  var glossary = {}, glossaryRegex = null;
+  function escapeRegex(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  fetch("/glossary").then(function (r) { return r.ok ? r.json() : {}; }).then(function (terms) {
+    glossary = {};
+    Object.keys(terms || {}).forEach(function (k) { glossary[k.toLowerCase()] = terms[k]; });
+    var keys = Object.keys(glossary).sort(function (a, b) { return b.length - a.length; });
+    if (keys.length) glossaryRegex = new RegExp("(^|[^A-Za-z0-9-])(" + keys.map(escapeRegex).join("|") + ")(?![A-Za-z0-9-])", "gi");
+  }).catch(function () {});
+  // Appends `text` to `el`, wrapping the first occurrence of each glossary term in a hover/focus tooltip.
+  function appendWithGlossary(el, text) {
+    if (!glossaryRegex) { el.appendChild(document.createTextNode(text)); return; }
+    var used = {}, last = 0, m;
+    glossaryRegex.lastIndex = 0;
+    while ((m = glossaryRegex.exec(text)) !== null) {
+      var term = m[2], start = m.index + m[1].length, key = term.toLowerCase();
+      if (used[key]) continue;
+      used[key] = true;
+      el.appendChild(document.createTextNode(text.slice(last, start)));
+      var g = document.createElement("span");
+      g.className = "gloss";
+      g.tabIndex = 0;
+      g.setAttribute("data-def", glossary[key]);
+      g.setAttribute("aria-label", term + ": " + glossary[key]);
+      g.textContent = term;
+      el.appendChild(g);
+      last = start + term.length;
+    }
+    el.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  // ---------- Namespace comparison mode (only offered when the two-stage pipeline is on) ----------
+  fetch("/health").then(function (r) { return r.json(); }).then(function (h) {
+    if (h && h.scope_judge_enabled) document.getElementById("compare-toggle").hidden = false;
+  }).catch(function () {});
   var compareMode = false;
   var compareToggleBtn = document.getElementById("compare-toggle");
   compareToggleBtn.addEventListener("click", function () {
@@ -569,7 +633,7 @@
   // ---------- SSE streaming ----------
   async function streamQuery(question, namespace, handlers) {
     var response;
-    var body = { question: question };
+    var body = { question: question, audience: audience };
     if (namespace) body.namespace = namespace;
     try {
       response = await fetch("/query", {
@@ -610,7 +674,8 @@
         var data;
         try { data = JSON.parse(dataStr); } catch (e) { continue; }
 
-        if (eventType === "sources" && handlers.onSources) handlers.onSources(data);
+        if (eventType === "query" && handlers.onQuery) handlers.onQuery(data);
+        else if (eventType === "sources" && handlers.onSources) handlers.onSources(data);
         else if (eventType === "contradictions" && handlers.onContradictions) handlers.onContradictions(data);
         else if (eventType === "sentence" && handlers.onSentence) handlers.onSentence(data);
         else if (eventType === "done" && handlers.onDone) handlers.onDone(data);
@@ -664,6 +729,10 @@
 
     var tierHtml = '<span class="tier-tag' + (isBackground ? " tier-tag--background" : " tier-tag--evidence") + '">' +
       (isBackground ? "Background" : "Study") + "</span>";
+    if (source.evidence_badge) {
+      var badgeKind = isBackground ? "background" : source.evidence_badge.toLowerCase().replace(/[^a-z]+/g, "-");
+      tierHtml += '<span class="evidence-badge evidence-badge--' + badgeKind + '">' + escapeHtml(source.evidence_badge) + "</span>";
+    }
 
     var metaLine = escapeHtml(source.journal || "") + (source.journal && source.year ? ", " : "") + escapeHtml(String(source.year || ""));
 
@@ -685,7 +754,7 @@
       (metaLine ? '<p class="meta">' + metaLine + "</p>" : "") +
       attributionHtml +
       '<div class="pop-legend"><span class="pop-swatch" style="background:' + colorVar + '"></span><span class="pop-text">' + escapeHtml(popLabel(source.population)) + "</span></div>" +
-      '<div class="score-row"><div class="score-track"><div class="score-fill" style="width:' + pct + '%"></div></div><span class="score-label">' + pct + "%</span></div>" +
+      (source.fusion_rank == null ? '<div class="score-row"><div class="score-track"><div class="score-fill" style="width:' + pct + '%"></div></div><span class="score-label">' + pct + "%</span></div>" : "") +
       '<p class="excerpt" id="' + excerptId + '">' + escapeHtml(source.excerpt || "") + "</p>" +
       '<button type="button" class="more" data-target="' + excerptId + '">more</button>';
 
@@ -697,47 +766,29 @@
     return el;
   }
 
-  var GENERIC_REFUSAL_SCOPE = "This system answers questions on four topics, across all diabetes types: diet and nutrition, glycemic control, body composition and weight, and how diet interacts with diabetes medication.";
+  var REFUSAL_HEADINGS = {
+    not_covered: "Not in our research library yet",
+    see_clinician: "Please ask your doctor or pharmacist",
+  };
 
+  // One clear message per status. Internal judge reasons stay in the retrieval inspector.
   function buildRefusalBlockHtml(data) {
-    var message = data.message;
-    var scopeText = data.scope_description;
-    var isNoEvidence = data.status === "in_scope_no_evidence";
-
-    var starterQuestions = [];
-    document.querySelectorAll("#empty-state .starter-card:not([data-demo-refusal])").forEach(function (btn) {
-      starterQuestions.push(btn.getAttribute("data-question"));
-    });
+    var status = REFUSAL_HEADINGS[data.status] ? data.status : "not_covered";
     var suggestionsHtml = "";
-    starterQuestions.slice(0, 4).forEach(function (q) {
-      suggestionsHtml += '<button type="button" class="starter-card refusal-starter" data-question="' + escapeHtml(q) + '"><span class="q">' + escapeHtml(q) + "</span></button>";
-    });
-
-    // Prefer the evidence audit's own reason (Stage B) — it explains
-    // *what's missing*, which is more useful than a bare similarity score.
-    // scope_reason (Stage A) is the fallback for a pure scope refusal where
-    // Stage B never ran. closest_scores/judge.reason is the last-resort
-    // fallback for the defensive nothing-retrieved-at-all case.
-    var evidenceLine = "";
-    if (data.evidence_reason) {
-      evidenceLine = '<div class="refusal-closest">evidence audit: ' + escapeHtml(data.evidence_reason) + "</div>";
-    } else if (data.scope_reason) {
-      evidenceLine = '<div class="refusal-closest">scope check: ' + escapeHtml(data.scope_reason) + "</div>";
-    } else if (data.closest_scores && data.closest_scores.length) {
-      evidenceLine = '<div class="refusal-closest">closest matches found: ' + data.closest_scores.map(function (s) { return Math.round(s * 100) + "%"; }).join(", ") + " similarity — below the floor this system requires to answer</div>";
+    if (status !== "see_clinician") {
+      var starterQuestions = [];
+      document.querySelectorAll("#empty-state .starter-card").forEach(function (btn) {
+        starterQuestions.push(btn.getAttribute("data-question"));
+      });
+      starterQuestions.slice(0, 4).forEach(function (q) {
+        suggestionsHtml += '<button type="button" class="starter-card refusal-starter" data-question="' + escapeHtml(q) + '"><span class="q">' + escapeHtml(q) + "</span></button>";
+      });
     }
-
-    var heading = isNoEvidence
-      ? "This is a question DiabEvidence is meant to answer"
-      : "No evidence found for this question";
-
     return (
-      '<div class="refusal-block' + (isNoEvidence ? " refusal-no-evidence" : "") + '">' +
-      "<h3>" + heading + "</h3>" +
-      "<p>" + escapeHtml(message) + "</p>" +
-      '<div class="refusal-scope">' + escapeHtml(scopeText || GENERIC_REFUSAL_SCOPE) + "</div>" +
-      evidenceLine +
-      '<div class="refusal-try"><div class="starters-label">Try asking</div><div class="starters">' + suggestionsHtml + "</div></div>" +
+      '<div class="refusal-block">' +
+      "<h3>" + escapeHtml(REFUSAL_HEADINGS[status]) + "</h3>" +
+      "<p>" + escapeHtml(data.message || "") + "</p>" +
+      (suggestionsHtml ? '<div class="refusal-try"><div class="starters-label">Try asking</div><div class="starters">' + suggestionsHtml + "</div></div>" : "") +
       "</div>"
     );
   }
@@ -796,7 +847,7 @@
     });
   }
 
-  var STATUS_STAGES = ["Embedding query…", "Searching 13,733 chunks…", "Checking for contradictions…", "Generating…"];
+  var STATUS_STAGES = ["Understanding the question…", "Searching studies and background pages…", "Checking the evidence…", "Writing the answer…"];
 
   function wireMobileSheet(evidenceColumnEl, answerColumnEl, count) {
     if (!count) return;
@@ -893,11 +944,18 @@
       para.appendChild(caretEl);
     }
 
+    var queryData = null;
     return {
+      onQuery: function (data) {
+        queryData = data;
+        els.status.textContent = STATUS_STAGES[1];
+      },
       onSources: function (data) {
+        if (queryData && !data.query_step) data.query_step = queryData.query_step;
         sourcesData = data.sources || [];
         timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
         timing.scope = data.timing_ms && data.timing_ms.scope;
+        timing.query = data.timing_ms && data.timing_ms.query;
         timing.evidence = data.timing_ms && data.timing_ms.evidence;
         els.status.textContent = STATUS_STAGES[2];
 
@@ -912,25 +970,11 @@
             '<span><span class="label">Partial evidence</span>The studies found only partly answer this question. The last sentence below says what they don\'t cover.</span>' +
             "</div>";
         }
-        if (data.status === "answered_adjacent") {
-          noticeHtml +=
-            '<div class="notice">' +
-            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-            '<span><span class="label">Outside core scope</span>This question falls outside DiabEvidence’s four core areas (diet and nutrition, glycemic control, body composition and weight, diet-medication interactions), though the evidence found does answer it.</span>' +
-            "</div>";
-        }
         if (data.cross_study_comparison) {
           noticeHtml +=
             '<div class="notice">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
             '<span><span class="label">Comparison across studies</span>No single study compared these options directly. The comparison below is drawn from separate studies, which may differ in design and population.</span>' +
-            "</div>";
-        }
-        if (data.personal_dosing) {
-          noticeHtml +=
-            '<div class="notice">' +
-            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-            '<span><span class="label">Talk to your clinician</span>This answer summarizes published research and is not personal medical advice. Confirm any dose, schedule, or medication change with your doctor or pharmacist before acting on it.</span>' +
             "</div>";
         }
         els.notice.innerHTML = noticeHtml;
@@ -998,11 +1042,20 @@
         removeCaret();
         var isFirstSentence = sentenceRecords.length === 0;
         sentenceRecords.push(data);
+        if (data.safety_note) {
+          var note = document.createElement("p");
+          note.className = "safety-note";
+          note.textContent = data.sentence;
+          els.answerText.appendChild(note);
+          para = null;
+          scrollToBottom();
+          return;
+        }
         var supported = !!(data.chunk_ids && data.chunk_ids.length);
         var span = document.createElement("span");
         span.className = "sentence " + (supported ? "supported" : "unsupported");
         span.tabIndex = 0;
-        span.textContent = data.sentence;
+        appendWithGlossary(span, data.sentence);
 
         if (supported) {
           data.chunk_ids.forEach(function (id) {
@@ -1052,7 +1105,7 @@
             if (timingList) els.inspectorBody.appendChild(timingList);
           }
         }
-        if (sentenceRecords.length === 1 && !sentenceRecords[0].supported) {
+        if (sentenceRecords.length === 1 && !sentenceRecords[0].supported && !sentenceRecords[0].safety_note) {
           els.notice.innerHTML = "";
           els.answerText.innerHTML = buildRefusalBlockHtml({ message: sentenceRecords[0].sentence });
           wireRefusalStarters(els.answerText);
@@ -1067,6 +1120,14 @@
         els.evidenceColumn.hidden = true;
         els.answerText.innerHTML = buildRefusalBlockHtml(data);
         wireRefusalStarters(els.answerText);
+        // The retrieval inspector still shows why (query step, retrieval, evidence audit).
+        if (queryData && !data.query_step) data.query_step = queryData.query_step;
+        var refusalDetails = document.createElement("details");
+        refusalDetails.className = "inspector";
+        refusalDetails.hidden = !inspectorOn;
+        refusalDetails.innerHTML = "<summary>Retrieval log</summary>";
+        refusalDetails.appendChild(buildInspectorBody(data, {}));
+        els.answerText.appendChild(refusalDetails);
         scrollToBottom();
       },
       onError: function (data) {
@@ -1109,34 +1170,42 @@
     var scoreDist = sourcesEventData.score_distribution;
     var wrap = document.createElement("div");
     wrap.className = "inspector-body";
-    var floor = scoreDist.floor;
-    var html = '<div class="inspector-row-meta">namespace: <b>' + escapeHtml(scoreDist.namespace) + "</b> · top-k retrieved: <b>" + (scoreDist.candidate_scores || []).length + "</b></div>";
-    html += '<div class="inspector-floor-line">floor ' + (floor * 100).toFixed(0) + "% — candidates below this line are dropped, not sent to the model</div>";
-    html += '<div class="inspector-bars">';
-    (scoreDist.candidate_scores || []).forEach(function (score, i) {
-      var cleared = score >= floor;
-      var pct = Math.max(0, Math.min(100, Math.round(score * 100)));
-      html += '<div class="inspector-row ' + (cleared ? "cleared" : "dropped") + '">' +
-        '<span class="idx">' + (i + 1) + "</span>" +
-        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div><div class="floor-marker" style="left:' + (floor * 100) + '%"></div></div>' +
-        '<span class="score-num">' + pct + "%</span></div>";
-    });
-    html += "</div>";
-
-    // Stage A (scope) + Stage B (evidence) reasons, shown independently —
-    // Stage A always ran; Stage B only ran if scope wasn't "unrelated"
-    // (always true here, since buildInspectorBody is only reached for
-    // answered/answered_partial/answered_adjacent).
-    html += '<div class="inspector-judge cleared">' +
-      '<span class="idx">A</span>' +
-      '<span class="judge-verdict">' + escapeHtml(sourcesEventData.scope || "") + "</span>" +
-      '<span class="judge-reason">' + escapeHtml(sourcesEventData.scope_reason || "") +
-        (sourcesEventData.outcome ? " (outcome: " + escapeHtml(sourcesEventData.outcome) + (sourcesEventData.area ? "; area: " + escapeHtml(sourcesEventData.area) : "") + ")" : "") +
-        "</span>" +
-      "</div>";
+    var html = "";
+    var q = sourcesEventData.query_step;
+    if (q) {
+      html += '<div class="inspector-query">audience: <b>' + escapeHtml(sourcesEventData.audience || "") + "</b><br>" +
+        "search query: <code>" + escapeHtml(q.search_query || "") + "</code><br>" +
+        "keywords: " + (q.keywords || []).map(function (k) { return "<code>" + escapeHtml(k) + "</code>"; }).join(" ") + "<br>" +
+        "personal dosing: <b>" + (q.personal_dosing ? "yes" : "no") + "</b>" + (q.fallback ? " (query step failed; raw question used)" : "") + "</div>";
+    }
+    var r = sourcesEventData.retrieval;
+    if (r) {
+      html += '<div class="inspector-row-meta">namespace: <b>' + escapeHtml(r.namespace || "") + "</b> · " + escapeHtml(r.strategy || "") +
+        " · dense hits: <b>" + (r.dense || []).length + "</b> · BM25 hits: <b>" + (r.bm25 || []).length + "</b></div>";
+      if ((r.fused || []).length) {
+        html += '<div class="inspector-query">fused top parents (RRF): ' + r.fused.map(function (f, i) {
+          return (i + 1) + ". <code>" + escapeHtml(f.parent_id) + "</code>";
+        }).join(" ") + "</div>";
+      }
+    }
+    if (scoreDist) {
+      var floor = scoreDist.floor;
+      html += '<div class="inspector-row-meta">namespace: <b>' + escapeHtml(scoreDist.namespace) + "</b> · top-k retrieved: <b>" + (scoreDist.candidate_scores || []).length + "</b></div>";
+      html += '<div class="inspector-bars">';
+      (scoreDist.candidate_scores || []).forEach(function (score, i) {
+        var pct = Math.max(0, Math.min(100, Math.round(score * 100)));
+        html += '<div class="inspector-row ' + (score >= floor ? "cleared" : "dropped") + '"><span class="idx">' + (i + 1) + "</span>" +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div><span class="score-num">' + pct + "%</span></div>";
+      });
+      html += "</div>";
+    }
+    if (sourcesEventData.scope) {
+      html += '<div class="inspector-judge cleared"><span class="idx">A</span><span class="judge-verdict">' + escapeHtml(sourcesEventData.scope) +
+        '</span><span class="judge-reason">' + escapeHtml(sourcesEventData.scope_reason || "") + "</span></div>";
+    }
     var evidenceCleared = sourcesEventData.evidence_verdict === "sufficient";
     html += '<div class="inspector-judge ' + (evidenceCleared ? "cleared" : "dropped") + '">' +
-      '<span class="idx">B</span>' +
+      '<span class="idx">E</span>' +
       '<span class="judge-verdict">' + escapeHtml(sourcesEventData.evidence_verdict || "") + "</span>" +
       '<span class="judge-reason">' + escapeHtml(sourcesEventData.evidence_reason || "") +
         (sourcesEventData.on_topic === false ? " (no retrieved passage is on topic)" : "") +
@@ -1185,7 +1254,7 @@
   }
 
   function renderTimingList(timing) {
-    var rows = [["Scope check", timing.scope], ["Embedding + retrieval", timing.retrieval], ["Evidence audit", timing.evidence], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
+    var rows = [["Query step", timing.query], ["Scope check", timing.scope], ["Embedding + retrieval", timing.retrieval], ["Evidence audit", timing.evidence], ["Contradiction check", timing.contradiction_check], ["Generation", timing.generation], ["Total", timing.total]];
     var html = "";
     rows.forEach(function (r) { if (r[1] != null) html += '<div class="timing-row"><span>' + r[0] + "</span><span>" + r[1] + " ms</span></div>"; });
     if (!html) return null;

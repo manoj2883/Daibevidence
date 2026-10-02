@@ -816,6 +816,151 @@ def compute_groundedness(sentences: List[Dict[str, Any]], chunks: List[Retrieved
     }
 
 
+def stream_generation(
+    client: anthropic.Anthropic,
+    system_prompt: str,
+    question: str,
+    chunks: List[RetrievedChunk],
+    t_after_retrieval: float,
+    out: Dict[str, Any],
+) -> Generator[Dict[str, Any], None, None]:
+    """
+    Streams the generation call: yields the "contradictions" event and one
+    "sentence" event per completed JSON sentence object. Fills `out` with
+    sentences/usage/truncated/model when done, or sets out["failed"] after
+    yielding an "error" event. Shared by the two-stage pipeline below and the
+    v3 pipeline (src.rag.pipeline).
+    """
+    preamble_buffer = ""
+    contradictions_resolved = False
+    sentence_buffer = ""
+    sentence_scan_pos = 0
+    full_sentences: List[Dict[str, Any]] = []
+
+    def _emit_new_sentences():
+        nonlocal sentence_scan_pos
+        objs, sentence_scan_pos = find_complete_json_objects(sentence_buffer, sentence_scan_pos)
+        events = []
+        for obj_text in objs:
+            try:
+                parsed = json.loads(obj_text)
+            except json.JSONDecodeError:
+                continue
+            validated = _validate_sentence(parsed)
+            if validated is None:
+                continue
+            full_sentences.append(validated)
+            events.append({"event": "sentence", "data": _sentence_payload(validated, chunks)})
+        return events
+
+    try:
+        with client.messages.stream(
+            model=get_model(),
+            max_tokens=8192,
+            system=system_prompt,
+            messages=[{"role": "user", "content": question}],
+        ) as stream:
+            for text in stream.text_stream:
+                if contradictions_resolved:
+                    sentence_buffer += text
+                    for ev in _emit_new_sentences():
+                        yield ev
+                    continue
+
+                preamble_buffer += text
+                result = extract_contradiction_block(preamble_buffer)
+                if result is not None:
+                    contradictions, remainder = result
+                    yield {
+                        "event": "contradictions",
+                        "data": {
+                            "contradictions": _resolve_contradiction_pmids(contradictions, chunks),
+                            "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
+                        },
+                    }
+                    contradictions_resolved = True
+                    preamble_buffer = ""
+                    if remainder:
+                        sentence_buffer += remainder
+                        for ev in _emit_new_sentences():
+                            yield ev
+                elif len(preamble_buffer) > MAX_PREAMBLE_BUFFER:
+                    # Model didn't emit the expected format — stop waiting
+                    # and treat everything buffered so far as the start of
+                    # its answer content.
+                    yield {
+                        "event": "contradictions",
+                        "data": {
+                            "contradictions": [],
+                            "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
+                        },
+                    }
+                    contradictions_resolved = True
+                    sentence_buffer += preamble_buffer
+                    preamble_buffer = ""
+                    for ev in _emit_new_sentences():
+                        yield ev
+
+        if not contradictions_resolved:
+            # Stream ended entirely within the buffering window (a very
+            # short response).
+            yield {
+                "event": "contradictions",
+                "data": {
+                    "contradictions": [],
+                    "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
+                },
+            }
+            sentence_buffer += preamble_buffer
+            for ev in _emit_new_sentences():
+                yield ev
+
+        if not full_sentences:
+            # Nothing parsed as a valid sentence object at all — the model
+            # didn't comply with the JSON format. Rare, but the API
+            # contract always returns at least one sentence object.
+            leftover = sentence_buffer.strip()
+            if leftover:
+                synthetic = {"sentence": leftover, "chunk_ids": [], "supported": False}
+                full_sentences.append(synthetic)
+                yield {"event": "sentence", "data": _sentence_payload(synthetic, chunks)}
+
+        # Real usage from the API (not the rough char/4 estimate used for
+        # the pre-call safety check) — the actual figure for cost/latency
+        # reporting. Also check stop_reason: a response cut off by
+        # max_tokens must never be silently reported as the model having
+        # concluded "no evidence for this claim" — those are very
+        # different situations (a token budget ran out vs. a genuine
+        # absence of supporting literature) and conflating them would
+        # misreport real generation failures as an honest evidence gap.
+        usage = None
+        truncated = False
+        model_used = None
+        try:
+            final_message = stream.get_final_message()
+            usage = {
+                "input_tokens": final_message.usage.input_tokens,
+                "output_tokens": final_message.usage.output_tokens,
+            }
+            truncated = final_message.stop_reason == "max_tokens"
+            # The exact model string the API actually served this request
+            # with, not get_model()'s config value — a report on "which
+            # model was actually called" should read this field, not the
+            # config default, since a model alias can resolve to a
+            # different pinned snapshot than the name requested.
+            model_used = final_message.model
+        except Exception:
+            pass  # usage is a nice-to-have; never fail the response over it
+    except anthropic.APIError as e:
+        # A partial answer may already have streamed — surface the failure
+        # explicitly rather than letting the connection die silently.
+        yield {"event": "error", "data": {"message": f"Generation failed: {e}"}}
+        out["failed"] = True
+        return
+
+    out.update(sentences=full_sentences, usage=usage, truncated=truncated, model=model_used)
+
+
 def stream_answer(
     question: str,
     namespace: Optional[str] = None,
@@ -1090,131 +1235,12 @@ def stream_answer(
 
     print_prompt_estimate(f"query: {question[:60]!r}", system_prompt, question)
 
-    preamble_buffer = ""
-    contradictions_resolved = False
-    sentence_buffer = ""
-    sentence_scan_pos = 0
-    full_sentences: List[Dict[str, Any]] = []
-
-    def _emit_new_sentences():
-        nonlocal sentence_scan_pos
-        objs, sentence_scan_pos = find_complete_json_objects(sentence_buffer, sentence_scan_pos)
-        events = []
-        for obj_text in objs:
-            try:
-                parsed = json.loads(obj_text)
-            except json.JSONDecodeError:
-                continue
-            validated = _validate_sentence(parsed)
-            if validated is None:
-                continue
-            full_sentences.append(validated)
-            events.append({"event": "sentence", "data": _sentence_payload(validated, chunks)})
-        return events
-
-    try:
-        with client.messages.stream(
-            model=get_model(),
-            max_tokens=8192,
-            system=system_prompt,
-            messages=[{"role": "user", "content": question}],
-        ) as stream:
-            for text in stream.text_stream:
-                if contradictions_resolved:
-                    sentence_buffer += text
-                    for ev in _emit_new_sentences():
-                        yield ev
-                    continue
-
-                preamble_buffer += text
-                result = extract_contradiction_block(preamble_buffer)
-                if result is not None:
-                    contradictions, remainder = result
-                    yield {
-                        "event": "contradictions",
-                        "data": {
-                            "contradictions": _resolve_contradiction_pmids(contradictions, chunks),
-                            "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
-                        },
-                    }
-                    contradictions_resolved = True
-                    preamble_buffer = ""
-                    if remainder:
-                        sentence_buffer += remainder
-                        for ev in _emit_new_sentences():
-                            yield ev
-                elif len(preamble_buffer) > MAX_PREAMBLE_BUFFER:
-                    # Model didn't emit the expected format — stop waiting
-                    # and treat everything buffered so far as the start of
-                    # its answer content.
-                    yield {
-                        "event": "contradictions",
-                        "data": {
-                            "contradictions": [],
-                            "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
-                        },
-                    }
-                    contradictions_resolved = True
-                    sentence_buffer += preamble_buffer
-                    preamble_buffer = ""
-                    for ev in _emit_new_sentences():
-                        yield ev
-
-        if not contradictions_resolved:
-            # Stream ended entirely within the buffering window (a very
-            # short response).
-            yield {
-                "event": "contradictions",
-                "data": {
-                    "contradictions": [],
-                    "timing_ms": {"contradiction_check": round((time.monotonic() - t_after_retrieval) * 1000, 1)},
-                },
-            }
-            sentence_buffer += preamble_buffer
-            for ev in _emit_new_sentences():
-                yield ev
-
-        if not full_sentences:
-            # Nothing parsed as a valid sentence object at all — the model
-            # didn't comply with the JSON format. Rare, but the API
-            # contract always returns at least one sentence object.
-            leftover = sentence_buffer.strip()
-            if leftover:
-                synthetic = {"sentence": leftover, "chunk_ids": [], "supported": False}
-                full_sentences.append(synthetic)
-                yield {"event": "sentence", "data": _sentence_payload(synthetic, chunks)}
-
-        # Real usage from the API (not the rough char/4 estimate used for
-        # the pre-call safety check) — the actual figure for cost/latency
-        # reporting. Also check stop_reason: a response cut off by
-        # max_tokens must never be silently reported as the model having
-        # concluded "no evidence for this claim" — those are very
-        # different situations (a token budget ran out vs. a genuine
-        # absence of supporting literature) and conflating them would
-        # misreport real generation failures as an honest evidence gap.
-        usage = None
-        truncated = False
-        model_used = None
-        try:
-            final_message = stream.get_final_message()
-            usage = {
-                "input_tokens": final_message.usage.input_tokens,
-                "output_tokens": final_message.usage.output_tokens,
-            }
-            truncated = final_message.stop_reason == "max_tokens"
-            # The exact model string the API actually served this request
-            # with, not get_model()'s config value — a report on "which
-            # model was actually called" should read this field, not the
-            # config default, since a model alias can resolve to a
-            # different pinned snapshot than the name requested.
-            model_used = final_message.model
-        except Exception:
-            pass  # usage is a nice-to-have; never fail the response over it
-    except anthropic.APIError as e:
-        # A partial answer may already have streamed — surface the failure
-        # explicitly rather than letting the connection die silently.
-        yield {"event": "error", "data": {"message": f"Generation failed: {e}"}}
+    generation: Dict[str, Any] = {}
+    yield from stream_generation(client, system_prompt, question, chunks, t_after_retrieval, generation)
+    if generation.get("failed"):
         return
+    full_sentences = generation["sentences"]
+    usage, truncated, model_used = generation["usage"], generation["truncated"], generation["model"]
 
     full_answer = " ".join(s["sentence"] for s in full_sentences)
     groundedness = compute_groundedness(full_sentences, chunks)

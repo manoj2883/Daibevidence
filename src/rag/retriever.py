@@ -7,6 +7,7 @@ from pinecone import Pinecone
 from src.ingest.config import (
     LOW_CONFIDENCE_MARGIN,
     NAMESPACE_V2_5K,
+    NAMESPACE_V3,
     RETRIEVAL_CANDIDATE_K,
     RETRIEVAL_TOP_K,
     SIMILARITY_FLOOR_DEFAULT,
@@ -78,8 +79,12 @@ def get_namespace() -> str:
     materialize_v1_300_namespace.py override this per-call via retrieve()'s
     own `namespace` argument (e.g. --namespace v1_300), which always wins
     over this default — see resolve_namespace().
+
+    v3: with SCOPE_JUDGE_ENABLED unset/false (the v3 pipeline), the default is
+    NAMESPACE_V3; the two-stage pipeline keeps NAMESPACE_V2_5K.
     """
-    return os.environ.get("PINECONE_NAMESPACE", NAMESPACE_V2_5K)
+    scope_judge = os.environ.get("SCOPE_JUDGE_ENABLED", "false").strip().lower() in ("1", "true", "yes")
+    return os.environ.get("PINECONE_NAMESPACE", NAMESPACE_V2_5K if scope_judge else NAMESPACE_V3)
 
 
 def resolve_namespace(namespace: Optional[str] = None) -> str:

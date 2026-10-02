@@ -643,6 +643,12 @@ def extract_contradiction_block(buffer: str) -> Optional[Tuple[List[Dict[str, An
     if start_idx == -1:
         return [], rest
 
+    # The model sometimes writes its sentence array first and the contradiction block last.
+    # Everything before the start marker is then answer content, not preamble: keep it, or the
+    # whole answer is silently dropped (found in the v3 eval: answered statuses with 0 sentences).
+    if buffer[:start_idx].strip():
+        rest = buffer[:start_idx] + rest
+
     json_str = buffer[start_idx + len(CONTRA_START):end_idx].strip()
     if not json_str:
         return [], rest

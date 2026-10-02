@@ -139,3 +139,21 @@ def test_scope_judge_flag_selects_two_stage_pipeline(monkeypatch):
     legacy.assert_called_once()
     monkeypatch.setenv("SCOPE_JUDGE_ENABLED", "false")
     assert not pipeline.scope_judge_enabled()
+
+
+def test_answer_written_before_contradiction_block_is_kept():
+    """Regression: the model put its sentence array first and the block last; the answer was dropped."""
+    from src.rag.chain import extract_contradiction_block, find_complete_json_objects
+
+    buffer = '[{"sentence": "Fiber helps.", "chunk_ids": [1], "supported": true}]\n<<<CONTRADICTIONS>>>\n[]\n<<<END_CONTRADICTIONS>>>'
+    contradictions, rest = extract_contradiction_block(buffer)
+    assert contradictions == []
+    objects, _ = find_complete_json_objects(rest)
+    assert objects == ['{"sentence": "Fiber helps.", "chunk_ids": [1], "supported": true}']
+
+
+def test_block_first_still_returns_only_what_follows():
+    from src.rag.chain import extract_contradiction_block
+
+    contradictions, rest = extract_contradiction_block('<<<CONTRADICTIONS>>>\n[]\n<<<END_CONTRADICTIONS>>>\n[{"sentence": "x"}]')
+    assert contradictions == [] and rest.strip() == '[{"sentence": "x"}]'

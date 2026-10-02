@@ -104,7 +104,7 @@ genuinely follows from those documents, respecting rule 2), and "new_paragraph" 
 starts a new paragraph). Keep paragraphs short; start a new paragraph at each shift in idea, and \
 always between background content and study content. If a specific claim cannot be attributed to any \
 document, leave it out entirely.
-4. Before the JSON array, compare the "study" documents for genuine contradictions — two documents \
+4. Your output MUST begin with the contradiction block, before the sentence array. Compare the "study" documents for genuine contradictions — two documents \
 reporting conflicting findings on the same specific claim (not different topics, and not a population \
 difference). Report this as a line containing exactly "{contra_start}", then a JSON array (or "[]" if \
 none), then a line containing exactly "{contra_end}". Each entry has exactly these keys: \

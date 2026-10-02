@@ -140,17 +140,19 @@ for terms like HbA1c come from `config/glossary.json`.
 ## 9. Result
 
 Dev set, patient mode, 2026-10-02. Files in `eval/results/v3_2026-10-02/`; `python -m scripts.report_v3`
-rebuilds the table from `data/`. **Run B's faithfulness grading was still running at this commit.**
+rebuilds the table from `data/`.
 
 | Config | In-scope answered /24 | Adjacent answered /17 | Unrelated /2 | Fully supported % |
 |---|---|---|---|---|
 | Baseline: two-stage judge, revised prompts | 14/24 | 1/17 | 0/2 | 47% (7/15) |
 | Run A: v2_5k + background, no scope judge | 14/24 | 7/17 | 0/2 | 48% (10/21) |
-| Run B: full v3 | 17/24 | 8/17 | 0/2 | pending |
+| Run B: full v3 | 17/24 | 8/17 | 0/2 | 56% (14/25) |
 
 - Dropping the scope judge (Run A) kept in-scope answers level and answered 6 more adjacent
   questions, with fewer UNSUPPORTED answers (1 of 21 vs 3 of 15).
-- The full v3 pipeline (Run B) answered 3 more in-scope questions than either.
+- The full v3 pipeline (Run B) answered 3 more in-scope questions than either and had the highest
+  share fully supported: 12 of 17 in-scope answers SUPPORTED; adjacent answers were mostly partial
+  (2 SUPPORTED, 5 PARTIALLY_SUPPORTED, 1 UNSUPPORTED of 8). UNSUPPORTED overall: ids 7, 12, 15, 35.
 - Patient mode named an unmentioned medicine twice in Run B: id 8 ("basal insulin") and id 12
   ("metformin", "SGLT-2 inhibitors"). The prompt rule alone does not hold.
 - Smoke test (unscored): type 1 vs type 2 → answered_partial (2 PubMed reviews + 3 ADA/CDC pages);

@@ -2,7 +2,7 @@
 |---|---|---|---|---|
 | Baseline: two-stage judge, revised prompts (v2_5k) | 14/24 | 1/17 | 0/2 | 47% (7/15) |
 | Run A: v2_5k + background, no scope judge | 14/24 | 7/17 | 0/2 | 48% (10/21) |
-| Run B: full v3 | 17/24 | 8/17 | 0/2 | (not graded) |
+| Run B: full v3 | 17/24 | 8/17 | 0/2 | 56% (14/25) |
 
 Patient-mode answers naming a drug/class/supplement the question didn't mention:
 - Run A: v2_5k + background, no scope judge: none

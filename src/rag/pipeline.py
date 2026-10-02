@@ -40,6 +40,7 @@ from src.rag.chain import (
     stream_answer as stream_answer_two_stage,
     stream_generation,
 )
+from src.rag.answer_checks import check_answer
 from src.rag.cost import print_prompt_estimate
 from src.rag.evidence_judge import judge_evidence
 from src.rag.hybrid_retriever import dense_chunks_retrieve, hybrid_retrieve
@@ -267,6 +268,24 @@ def _patient_generation(client, system_prompt: str, question: str, chunks: List[
     return events, generation, record
 
 
+ANSWER_CHECK_LOG_PATH = "data/answer_check_log.jsonl"
+
+
+def _log_answer_check(question: str, status: str, check: Dict[str, Any]) -> None:
+    """Every answer the post-generation checks changed. A citation mismatch is logged as a bug."""
+    if check["bad_citations"]:
+        logger.error("BUG: citation outside the retrieved passages for %r: %s", question[:80], check["bad_citations"])
+    else:
+        logger.warning("Answer check (%s) for %r: %s", check["outcome"], question[:80], check["reason"])
+    try:
+        os.makedirs(os.path.dirname(ANSWER_CHECK_LOG_PATH), exist_ok=True)
+        with open(ANSWER_CHECK_LOG_PATH, "a", encoding="utf-8") as f:
+            record = {"ts": time.time(), "question": question, "status_before": status,
+                      "bug": bool(check["bad_citations"]), **{k: v for k, v in check.items() if k != "keep"}}
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except OSError:
+        pass  # logging must never break an answer
+
 def _resolve_v3_namespace(namespace: Optional[str], strategy: str) -> str:
     if namespace is not None:
         return namespace
@@ -363,17 +382,9 @@ def stream_answer_v3(
                                             "timing_ms": timing}}
         return
 
-    retrieved = retrieved_population_set(gen_chunks)
-    yield {"event": "sources", "data": {
-        **base, **judge_fields, "status": status, "state": status,
-        "requested_population": sorted(requested_population),
-        "retrieved_populations": sorted(retrieved),
-        "mismatch": is_population_mismatch(requested_population, retrieved),
-        "sources": [source_payload_v3(c) for c in gen_chunks],
-        "timing_ms": timing,
-    }}
-
     # --- 5. generation ----------------------------------------------------------------------------
+    # The whole answer is held back until the post-generation checks pass: text already shown
+    # can't be taken back, and the checks can change the status or refuse outright.
     system_prompt = SYSTEM_PROMPT_V3.format(
         audience_rules=PATIENT_RULES if audience == "patient" else CLINICIAN_RULES,
         pmid_rule=PMID_RULE[audience],
@@ -390,15 +401,52 @@ def stream_answer_v3(
     t_gen = time.monotonic()
     drug_check = None
     if audience == "patient":
-        # Held back until the drug-name check passes: text already shown can't be taken back.
         events, generation, drug_check = _patient_generation(client, system_prompt, question, gen_chunks, t_gen)
-        yield from events
     else:
         generation = {}
-        yield from stream_generation(client, system_prompt, question, gen_chunks, t_gen, generation)
+        events = list(stream_generation(client, system_prompt, question, gen_chunks, t_gen, generation))
     if generation.get("failed"):
+        yield from (e for e in events if e["event"] == "error")
         return
-    sentences = generation["sentences"]
+
+    # --- 6. post-generation checks (no model calls; src.rag.answer_checks) -------------------------
+    all_sentences = generation["sentences"]
+    retrieved_pmids = [(c.metadata or {}).get("pmid") for c in gen_chunks]
+    check = check_answer(all_sentences, len(gen_chunks), retrieved_pmids)
+    if check["outcome"] != "ok":
+        _log_answer_check(question, status, check)
+    timing["generation"] = round((time.monotonic() - t_gen) * 1000, 1)
+
+    if check["outcome"] == "not_covered":
+        log_query_event(question, sorted(requested_population), [], NOT_COVERED_TEXT, state="not_covered")
+        yield {"event": "refusal", "data": {**base, **judge_fields, "status": "not_covered", "state": "not_covered",
+                                            "message": NOT_COVERED_TEXT, "answer_check": check,
+                                            "considered_sources": [source_payload_v3(c) for c in chunks],
+                                            "timing_ms": timing}}
+        return
+    if check["outcome"] == "partial":
+        status = "answered_partial"
+
+    keep = set(check["keep"])
+    sentences = [s for i, s in enumerate(all_sentences) if i in keep]
+    retrieved = retrieved_population_set(gen_chunks)
+    yield {"event": "sources", "data": {
+        **base, **judge_fields, "status": status, "state": status,
+        "requested_population": sorted(requested_population),
+        "retrieved_populations": sorted(retrieved),
+        "mismatch": is_population_mismatch(requested_population, retrieved),
+        "sources": [source_payload_v3(c) for c in gen_chunks],
+        "answer_check": check,
+        "timing_ms": timing,
+    }}
+    sentence_index = 0
+    for ev in events:
+        if ev["event"] == "sentence":
+            if sentence_index in keep:
+                yield ev
+            sentence_index += 1
+        else:
+            yield ev
 
     medication_note = audience == "patient" and touches_medication(question, [s["sentence"] for s in sentences])
     if medication_note:
@@ -407,8 +455,7 @@ def stream_answer_v3(
         yield {"event": "sentence", "data": note}
 
     groundedness = compute_groundedness(sentences, gen_chunks)
-    t_end = time.monotonic()
-    timing.update(generation=round((t_end - t_gen) * 1000, 1), total=round((t_end - t_start) * 1000, 1))
+    timing["total"] = round((time.monotonic() - t_start) * 1000, 1)
     full_answer = " ".join(s["sentence"] for s in sentences) + (f" {MEDICATION_NOTE}" if medication_note else "")
     log_query_event(question, sorted(requested_population), gen_chunks, full_answer, state=status,
                     sentences=sentences, groundedness=groundedness["groundedness"])
@@ -418,9 +465,8 @@ def stream_answer_v3(
         "evidence_verdict": verdict, "population_mismatch": evidence["population_mismatch"],
         "medication_note": medication_note, "disclaimer": DISCLAIMER, "groundedness": groundedness,
         "timing_ms": timing, "usage": generation["usage"], "truncated": generation["truncated"],
-        "model": generation["model"], "drug_check": drug_check,
+        "model": generation["model"], "drug_check": drug_check, "answer_check": check,
     }}
-
 
 def run_pipeline(question: str, namespace: Optional[str] = None, audience: str = "patient"):
     """The API entry point: v3 by default, the two-stage pipeline when SCOPE_JUDGE_ENABLED=true."""

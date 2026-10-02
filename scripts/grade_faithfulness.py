@@ -189,6 +189,8 @@ def main():
     parser.add_argument("results_path", help="Path to a pipeline results JSON (must have a top-level 'results' list).")
     parser.add_argument("--out", default=None, help="Output path for verdicts JSON. Defaults to <results_path stem>_faithfulness.json.")
     parser.add_argument("--csv-out", default="eval/hand_grading.csv", help="Output path for the hand-grading CSV.")
+    parser.add_argument("--ids", default=None, help="Comma-separated ids to grade; every other graded record is copied from --merge-from.")
+    parser.add_argument("--merge-from", default=None, help="Earlier gradings JSON to reuse for ids not in --ids (only records whose answer text is unchanged).")
     args = parser.parse_args()
 
     out_path = args.out or args.results_path.replace(".json", "_faithfulness.json")
@@ -197,9 +199,21 @@ def main():
     targets = [r for r in results if r.get("status") in ANSWERED_STATUSES]
     print(f"Grading {len(targets)} of {len(results)} records (status in {sorted(ANSWERED_STATUSES)}).")
 
+    reused = {}
+    if args.merge_from:
+        with open(args.merge_from, encoding="utf-8") as f:
+            reused = {g["id"]: g for g in json.load(f)["results"]}
+    only = {int(i) for i in args.ids.split(",")} if args.ids else None
+
     client = get_client()
     graded = []
     for record in targets:
+        prior = reused.get(record["id"])
+        if only is not None and record["id"] not in only:
+            if prior is None or prior.get("generated_answer") != record.get("generated_answer"):
+                raise SystemExit(f"id={record['id']} is not in --ids but has no reusable grade for the same answer text.")
+            graded.append(prior)
+            continue
         print(f"  id={record['id']} status={record['status']} {record['question'][:60]!r}")
         verdict = grade_answer(client, record["question"], record.get("sources") or [], record.get("sentence_records") or [])
         row = {

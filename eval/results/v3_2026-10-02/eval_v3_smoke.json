@@ -1,0 +1,1478 @@
+{
+  "pipeline": "Smoke test (unscored), full v3, patient mode",
+  "namespace": "v3_5k_recursive",
+  "strategy": "hybrid",
+  "audience": "patient",
+  "results": [
+    {
+      "id": "smoke1",
+      "topic": null,
+      "in_scope": null,
+      "question": "What is the difference between type 1 and type 2 diabetes?",
+      "reference_answer": null,
+      "status": "answered_partial",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "33756226",
+          "title": "Combination of vitamin D and dipeptidyl peptidase-4 inhibitors (VIDPP-4i) as an immunomodulation therapy for autoimmune diabetes.",
+          "journal": "International immunopharmacology",
+          "year": "2021",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type1",
+          "excerpt": "Type 1 diabetes (T1D) and latent autoimmune diabetes in adults (LADA) represent the most common types of autoimmune diabetes and are characterized by different age of onset, degrees of immune-mediated destruction of pancreatic beta cells and rates of disease progression towards insulin dependence. Several immunotherapies aimed to counteract autoimmune responses against beta cells and preserve beta-cell function are currently being investigated, particularly in T1D. Preliminary findings suggest a potential role of combination therapy with vitamin D and dipeptidyl peptidase-4 (DPP-4) inhibitors (VIDPP-4i) in preserving beta-cell function in autoimmune diabetes. This manuscript aims to provide a comprehensive overview of the immunomodulatory properties of vitamin D and DPP-4 inhibitors, as well as the rationale for investigation of their combined use as an immunomodulation therapy for autoimmune diabetes.",
+          "matched_chunk": "Combination of vitamin D and dipeptidyl peptidase-4 inhibitors (VIDPP-4i) as an immunomodulation therapy for autoimmune diabetes. | 2021 | Type 1 diabetes | Review\nType 1 diabetes (T1D) and latent autoimmune diabetes in adults (LADA) represent the most common types of autoimmune diabetes and are characterized by different age of onset, degrees of immune-mediated destruction of pancreatic beta cells and rates of disease progression towards insulin dependence. Several immunotherapies aimed to counteract autoimmune responses against beta cells and preserve beta-cell function are currently being investigated, particularly in T1D. Preliminary findings suggest a potential role of combination therapy with vitamin D and dipeptidyl peptidase-4 (DPP-4) inhibitors (VIDPP-4i) in preserving beta-cell function in autoimmune diabetes.",
+          "fusion_rank": 1,
+          "dense_rank": null,
+          "bm25_rank": 1,
+          "score": 0.01639344262295082
+        },
+        {
+          "source_type": "background",
+          "pmid": "",
+          "title": "Type 1 Diabetes",
+          "journal": "",
+          "year": "",
+          "publication_type": "Background",
+          "evidence_badge": "Background (ADA)",
+          "publisher": "ADA",
+          "source_url": "https://diabetes.org/about-diabetes/type-1",
+          "population": "type1",
+          "excerpt": "Type 1 diabetes is an autoimmune disease where the immune system mistakenly destroys beta cells in the pancreas that produce insulin. When sufficient beta cells are destroyed, the pancreas cannot make insulin or produces insufficient amounts, requiring insulin therapy for survival. Insulin functions as a hormone enabling blood glucose to enter body cells for energy use. Without adequate insulin, blood glucose accumulates in the bloodstream, causing hyperglycemia. Prolonged high blood glucose damages the body and can lead to diabetes-related complications if untreated.\n\nSymptoms: Individuals should contact healthcare providers if experiencing urinating often, extreme thirst, persistent hunger despite eating, severe fatigue, blurry vision, slow-healing cuts or bruises, or weight loss despite increased food intake. Notably, people may lack symptoms entirely when type 1 diabetes first develops.\n\nDiagnosis and Special Considerations: Type 1 diabetes typically appears in young people but can develop at any age. Scientists remain uncertain about prevention methods or triggering mechanisms. Adults are sometimes misdiagnosed with type 2 diabetes, particularly those with additional risk factors like overweight status, physical inactivity, or high blood pressure. For those with family history, healthcare providers may recommend blood testing for islet autoantibodies. Positive results indicate risk but not current diabetes; counseling about symptoms and diabetic ketoacidosis prevention is recommended.\n\nHoneymoon Phase: Some newly diagnosed patients experience a temporary period where the body produces sufficient insulin to lower blood glucose, potentially requiring less insulin therapy. This honeymoon phase lasts from one week to one year. Symptom absence does not indicate diabetes resolution; the pancreas eventually loses insulin production capacity.",
+          "matched_chunk": "",
+          "fusion_rank": 4,
+          "dense_rank": 2,
+          "bm25_rank": null,
+          "score": 0.016129032258064516
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "28295962",
+          "title": "Improving glycaemic control in type 2 diabetes: Stimulate insulin secretion or provide beta-cell rest?",
+          "journal": "Diabetes, obesity & metabolism",
+          "year": "2017",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Type 2 diabetes (T2D) is characterized by a gradual decline in pancreatic beta cell function that determines the progressive course of the disease. While beta-cell failure is an important contributor to hyperglycaemia, chronic hyperglycaemia itself is also detrimental for beta-cell function, probably by inducing prolonged secretory stress on the beta cell as well as through direct glucotoxic mechanisms that have not been fully defined. For years, research has been carried out in search of therapies targeting hyperglycaemia that preserve long-term beta-cell function in T2D, a quest that is still ongoing. Current strategies aim to improve glycaemic control, either by promoting endogenous insulin secretion, such as sulfonylureas, or by mechanisms that may impact the beta cell indirectly, for example, providing beta-cell rest through insulin treatment. Although overall long-term success is limited with currently available interventions, in this review we argue that strategies that induce beta-cell rest have considerable potential to preserve long-term beta-cell function. This is based on laboratory-based studies involving human islets as well as clinical studies employing intensive insulin therapy, thiazolidinediones, bariatric surgery, short-acting glucagon-like peptide (GLP)-1 receptor agonists and a promising new class of diabetes drugs, sodium-glucose-linked transporter (SGLT)-2 inhibitors. Nevertheless, a lack of long-term clinical studies that focus on beta-cell function for the newer glucose-lowering agents, as well as commonly used combination therapies, preclude a straightforward conclusion; this gap in our knowledge should be a focus of future studies.",
+          "matched_chunk": "Improving glycaemic control in type 2 diabetes: Stimulate insulin secretion or provide beta-cell rest? | 2017 | Type 2 diabetes | Review\nType 2 diabetes (T2D) is characterized by a gradual decline in pancreatic beta cell function that determines the progressive course of the disease. While beta-cell failure is an important contributor to hyperglycaemia, chronic hyperglycaemia itself is also detrimental for beta-cell function, probably by inducing prolonged secretory stress on the beta cell as well as through direct glucotoxic mechanisms that have not been fully defined. For years, research has been carried out in search of therapies targeting hyperglycaemia that preserve long-term beta-cell function in T2D, a quest that is still ongoing. Current strategies aim to improve glycaemic control, either by promoting endogenous insulin secretion, such as sulfonylureas, or by mechanisms that may impact the beta cell indirectly, for example, providing beta-cell rest through insulin treatment.",
+          "fusion_rank": 5,
+          "dense_rank": null,
+          "bm25_rank": 3,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "background",
+          "pmid": "",
+          "title": "About Type 1 Diabetes",
+          "journal": "",
+          "year": "",
+          "publication_type": "Background",
+          "evidence_badge": "Background (CDC)",
+          "publisher": "CDC",
+          "source_url": "https://www.cdc.gov/diabetes/about/about-type-1-diabetes.html",
+          "population": "type1",
+          "excerpt": "With type 1 diabetes, the pancreas either fails to produce insulin or produces very little. Insulin is essential for enabling blood sugar to enter cells for energy use. When insulin is absent, blood sugar accumulates in the bloodstream, causing damage and triggering diabetes symptoms and complications.\n\nPreviously termed insulin-dependent or juvenile diabetes, type 1 typically emerges in children, adolescents, and young adults, though it can develop at any age. It accounts for approximately 5-10% of diabetes cases and is less prevalent than type 2 diabetes.\n\nCurrently, type 1 diabetes can't be prevented, but it can be treated effectively through doctor-recommended healthy lifestyles, blood sugar management, regular health checkups, and diabetes self-management education.\n\nEarly-stage type 1 often presents no symptoms. As the condition progresses, symptoms can appear suddenly, in just a few weeks or months, and can be severe. Untreated diabetes risks serious or fatal health complications.\n\nType 1 stems from an autoimmune reaction where the body mistakenly attacks beta cells in the pancreas that produce insulin. This destructive process may continue for months or years before symptoms appear. Genetic factors and environmental triggers like viruses may contribute, but diet and lifestyle do not cause the condition.\n\nDiagnosis involves a blood test. Doctors may screen for diabetes-related autoantibodies to detect early-stage type 1 before symptoms develop. Urine testing for ketones may also indicate type 1 rather than type 2.\n\nManagement requires daily insulin injections or pump therapy, as stomach acid destroys oral insulin. Regular blood sugar monitoring, stress management, and healthy lifestyle habits — including proper nutrition, physical activity, blood pressure and cholesterol management — support treatment success.",
+          "matched_chunk": "",
+          "fusion_rank": 6,
+          "dense_rank": 3,
+          "bm25_rank": null,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "background",
+          "pmid": "",
+          "title": "Type 2 Diabetes",
+          "journal": "",
+          "year": "",
+          "publication_type": "Background",
+          "evidence_badge": "Background (ADA)",
+          "publisher": "ADA",
+          "source_url": "https://diabetes.org/about-diabetes/type-2",
+          "population": "type2",
+          "excerpt": "In type 2 diabetes, the body does not use insulin properly — a condition referred to as insulin resistance. Initially, beta cells produce extra insulin to compensate for this resistance. However, over time the pancreas cannot generate sufficient insulin to maintain normal blood glucose levels. Type 2 diabetes typically develops in middle-aged and older adults, though it is increasingly appearing in younger populations.\n\nCommon Symptoms: Typical symptoms include urinating frequently, experiencing excessive thirst, feeling hungry despite eating, extreme fatigue, blurry vision, cuts or bruises that heal slowly, and tingling, pain, or numbness in the hands or feet. Some individuals with type 2 diabetes experience symptoms so mild they may go unnoticed.\n\nTreatment Approach: Treatment for people with type 2 diabetes can include an eating plan, physical activity, and oral or injectable medications (including insulin) to help achieve target blood glucose levels.\n\nClinical Significance: Early detection and treatment can decrease the risk of developing diabetes complications. Type 1 and type 2 diabetes have different causes and typically require different treatment approaches, though newly diagnosed adults with type 1 may sometimes exhibit symptoms resembling type 2, creating potential diagnostic confusion.",
+          "matched_chunk": "",
+          "fusion_rank": 2,
+          "dense_rank": 1,
+          "bm25_rank": null,
+          "score": 0.01639344262295082
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "Type 1 diabetes happens when the immune system mistakenly destroys the cells in the pancreas that make insulin, so the body makes little or no insulin.",
+          "chunk_ids": [
+            2,
+            4
+          ],
+          "pmids": [
+            "",
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Type 2 diabetes happens when the body does not use insulin well (called insulin resistance), and over time the pancreas cannot make enough insulin to keep blood sugar levels normal.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Insulin is a hormone that lets blood sugar move into cells for energy, and without enough of it blood sugar builds up in the blood, which can cause damage over time.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Type 1 diabetes usually starts in children, teens, or young adults, while type 2 diabetes usually develops in middle-aged or older adults, though it is showing up more often in younger people too.",
+          "chunk_ids": [
+            4,
+            5
+          ],
+          "pmids": [
+            "",
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This information covers both type 1 and type 2 diabetes.",
+          "chunk_ids": [
+            2,
+            4,
+            5
+          ],
+          "pmids": [
+            "",
+            "",
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "People with type 1 diabetes need daily insulin treatment, given by injection or through a pump, because their bodies cannot survive without it.",
+          "chunk_ids": [
+            2,
+            4
+          ],
+          "pmids": [
+            "",
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "People with type 2 diabetes may be treated with an eating plan, physical activity, and medicines taken by mouth or injection, which can include insulin.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "One background source notes that type 1 and type 2 diabetes have different causes and usually need different treatment approaches.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            ""
+          ],
+          "supported": true,
+          "source_type": "background",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Research into type 1 diabetes has looked at combining vitamin D with certain diabetes medicines to try to calm the immune attack and protect any remaining insulin-making cells, though this work is still early.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "33756226"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Research into type 2 diabetes has looked at whether giving the insulin-making cells a period of 'rest' — through insulin treatment, weight-loss surgery, or certain diabetes medicines — can help protect their function over time, though long-term results so far have been limited.",
+          "chunk_ids": [
+            3
+          ],
+          "pmids": [
+            "28295962"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This comparison is pieced together from separate studies that looked at type 1 and type 2 diabetes on their own, rather than from a single study that directly compared treatments for both, so the research gathered here doesn't show head-to-head how insulin needs and treatment choices differ between the two types.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Talk to your doctor or pharmacist before changing anything.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true,
+          "safety_note": true
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "query_step": {
+        "search_query": "What are the pathophysiological and clinical differences between type 1 diabetes mellitus and type 2 diabetes mellitus?",
+        "keywords": [
+          "type 1 diabetes",
+          "type 2 diabetes",
+          "autoimmune diabetes",
+          "insulin resistance",
+          "beta cell function"
+        ],
+        "personal_dosing": false,
+        "fallback": false,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "bg_ada_type-2-diabetes_0.0",
+            "score": 0.6859
+          },
+          {
+            "chunk_id": "bg_ada_type-1-diabetes_0.0",
+            "score": 0.6734
+          },
+          {
+            "chunk_id": "bg_cdc_about-type-1-diabetes_1.0",
+            "score": 0.6556
+          },
+          {
+            "chunk_id": "bg_niddk_what-is-diabetes_0.0",
+            "score": 0.6357
+          },
+          {
+            "chunk_id": "bg_ada_type-1-diabetes_1.0",
+            "score": 0.6239
+          },
+          {
+            "chunk_id": "bg_cdc_about-type-1-diabetes_0.0",
+            "score": 0.6222
+          },
+          {
+            "chunk_id": "40549398_0.0",
+            "score": 0.6209
+          },
+          {
+            "chunk_id": "bg_cdc_about-type-2-diabetes_1.0",
+            "score": 0.6163
+          },
+          {
+            "chunk_id": "bg_cdc_about-type-2-diabetes_0.0",
+            "score": 0.6147
+          },
+          {
+            "chunk_id": "42488005_3.0",
+            "score": 0.6072
+          },
+          {
+            "chunk_id": "41697686_0.0",
+            "score": 0.6047
+          },
+          {
+            "chunk_id": "40734585_2.0",
+            "score": 0.6029
+          },
+          {
+            "chunk_id": "33251697_0.0",
+            "score": 0.599
+          },
+          {
+            "chunk_id": "41161990_0.0",
+            "score": 0.5933
+          },
+          {
+            "chunk_id": "30827909_0.0",
+            "score": 0.5926
+          },
+          {
+            "chunk_id": "42620370_1.0",
+            "score": 0.5902
+          },
+          {
+            "chunk_id": "36034445_0.0",
+            "score": 0.5899
+          },
+          {
+            "chunk_id": "bg_cdc_prediabetes_0.0",
+            "score": 0.589
+          },
+          {
+            "chunk_id": "bg_niddk_what-is-diabetes_1.0",
+            "score": 0.5855
+          },
+          {
+            "chunk_id": "41697686_2.0",
+            "score": 0.5826
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "33756226_0",
+            "score": 42.474
+          },
+          {
+            "chunk_id": "41366535_0",
+            "score": 41.42
+          },
+          {
+            "chunk_id": "28295962_0",
+            "score": 38.101
+          },
+          {
+            "chunk_id": "41697686_0",
+            "score": 37.937
+          },
+          {
+            "chunk_id": "41373704_1",
+            "score": 37.369
+          },
+          {
+            "chunk_id": "39354480_0",
+            "score": 37.354
+          },
+          {
+            "chunk_id": "41578487_0",
+            "score": 36.837
+          },
+          {
+            "chunk_id": "42467087_5",
+            "score": 36.74
+          },
+          {
+            "chunk_id": "39354480_1",
+            "score": 36.604
+          },
+          {
+            "chunk_id": "42467087_0",
+            "score": 36.428
+          },
+          {
+            "chunk_id": "41366535_3",
+            "score": 36.364
+          },
+          {
+            "chunk_id": "39354480_4",
+            "score": 36.348
+          },
+          {
+            "chunk_id": "42467087_4",
+            "score": 35.974
+          },
+          {
+            "chunk_id": "41026724_0",
+            "score": 35.728
+          },
+          {
+            "chunk_id": "40734585_0",
+            "score": 35.632
+          },
+          {
+            "chunk_id": "41969201_2",
+            "score": 35.418
+          },
+          {
+            "chunk_id": "41366535_1",
+            "score": 35.328
+          },
+          {
+            "chunk_id": "39193706_3",
+            "score": 35.243
+          },
+          {
+            "chunk_id": "40471240_0",
+            "score": 35.055
+          },
+          {
+            "chunk_id": "40471240_3",
+            "score": 35.047
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "33756226",
+            "chunk_id": "33756226_0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "bg_ada_type-2-diabetes",
+            "chunk_id": "bg_ada_type-2-diabetes_0.0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "41366535",
+            "chunk_id": "41366535_0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "bg_ada_type-1-diabetes",
+            "chunk_id": "bg_ada_type-1-diabetes_0.0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "28295962",
+            "chunk_id": "28295962_0",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "bg_cdc_about-type-1-diabetes",
+            "chunk_id": "bg_cdc_about-type-1-diabetes_1.0",
+            "score": 0.01587
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "partial",
+      "evidence_reason": "The core proposition requires direct comparison of treatment approaches between type 1 and type 2, which is only partially supported (C6 acknowledges different treatment approaches exist but doesn't detail type 1 requirements); comparison is assembled across separate studies rather than stated in a single passage.",
+      "propositions": [
+        {
+          "claim": "Type 1 diabetes is caused by autoimmune destruction of pancreatic beta cells",
+          "core": false,
+          "direct": [
+            1,
+            3,
+            5
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Type 2 diabetes is characterized by insulin resistance and declining beta cell function",
+          "core": false,
+          "direct": [
+            4,
+            6
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Type 1 diabetes requires insulin therapy; Type 2 diabetes does not initially",
+          "core": true,
+          "direct": [
+            3,
+            5
+          ],
+          "partial": [
+            6
+          ],
+          "absent": false
+        },
+        {
+          "claim": "Type 1 and Type 2 diabetes have different causes",
+          "core": false,
+          "direct": [
+            6
+          ],
+          "partial": [
+            3,
+            5
+          ],
+          "absent": false
+        },
+        {
+          "claim": "Type 1 typically appears in younger people; Type 2 in older adults",
+          "core": false,
+          "direct": [
+            5,
+            6
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 1155.8,
+        "retrieval": 2995.2,
+        "evidence": 3835.8,
+        "generation": 29692.5,
+        "total": 37717.1
+      },
+      "usage": {
+        "input_tokens": 4897,
+        "output_tokens": 3301
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": true,
+      "generated_answer": "Type 1 diabetes happens when the immune system mistakenly destroys the cells in the pancreas that make insulin, so the body makes little or no insulin. Type 2 diabetes happens when the body does not use insulin well (called insulin resistance), and over time the pancreas cannot make enough insulin to keep blood sugar levels normal. Insulin is a hormone that lets blood sugar move into cells for energy, and without enough of it blood sugar builds up in the blood, which can cause damage over time. Type 1 diabetes usually starts in children, teens, or young adults, while type 2 diabetes usually develops in middle-aged or older adults, though it is showing up more often in younger people too. This information covers both type 1 and type 2 diabetes. People with type 1 diabetes need daily insulin treatment, given by injection or through a pump, because their bodies cannot survive without it. People with type 2 diabetes may be treated with an eating plan, physical activity, and medicines taken by mouth or injection, which can include insulin. One background source notes that type 1 and type 2 diabetes have different causes and usually need different treatment approaches. Research into type 1 diabetes has looked at combining vitamin D with certain diabetes medicines to try to calm the immune attack and protect any remaining insulin-making cells, though this work is still early. Research into type 2 diabetes has looked at whether giving the insulin-making cells a period of 'rest' — through insulin treatment, weight-loss surgery, or certain diabetes medicines — can help protect their function over time, though long-term results so far have been limited. This comparison is pieced together from separate studies that looked at type 1 and type 2 diabetes on their own, rather than from a single study that directly compared treatments for both, so the research gathered here doesn't show head-to-head how insulin needs and treatment choices differ between the two types. Talk to your doctor or pharmacist before changing anything.",
+      "wall_ms": 37721.0
+    },
+    {
+      "id": "smoke2",
+      "topic": null,
+      "in_scope": null,
+      "question": "What is HbA1c?",
+      "reference_answer": null,
+      "status": "answered",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "41282290",
+          "title": "Glycemic variability of glycated hemoglobin in patients with type 2 diabetes mellitus and the risk of cardiovascular diseases: a latest systematic review and meta-analysis.",
+          "journal": "Frontiers in endocrinology",
+          "year": "2025",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "OBJECTIVE: Glycated hemoglobin (HbA1c) variability is a crucial indicator for evaluating the stability of long-term glycemic control in patients with diabetes mellitus. This study aimed to clarify the association between HbA1c variability and the risk of incident cardiovascular disease (CVD) and mortality in patients with type 2 diabetes mellitus (T2DM) through a systematic review, thereby providing evidence-based support for the early prevention of adverse cardiovascular events in T2DM patients. METHODS: We systematically searched the PubMed, Web of Science, The Cochrane Library, and Embase databases for studies on the association between HbA1c variability and cardiovascular outcomes in patients with T2DM, published from the establishment of each database up to August 5, 2025. Cardiovascular outcomes included the incidence of CVD and CVD-related mortality. Two researchers independently conducted literature screening, data extraction, and risk of bias assessment. Meta-analysis was performed using Review Manager 5.3 software, with hazard ratio (HR) or odds ratio (OR) as the effect size. RESULTS: A total of 31 cohort studies were included, covering 545,956 participants from 13 countries and regions. The results of the meta-analysis showed that a higher coefficient of variation (CV) of HbA1c was significantly associated with an increased risk of cardiovascular events (HR = 1.32, 95% CI: 1.18-1.49, P < 0.00001; OR = 1.39, 95% CI: 1.22-1.57, P < 0.00001), and also significantly elevated the risk of mortality (HR = 1.35, 95% CI: 1.16-1.57, P < 0.00001). The standard deviation (SD) of HbA1c was also significantly correlated with a higher risk of cardiovascular events (HR = 1.27, 95% CI: 1.17-1.38, P < 0.00001; OR = 1.30, 95% CI: 1.07-1.57, P = 0.008) and a significant increase in mortality risk (HR = 1.27, 95% CI: 1.17-1.37, P<0.00001). The hemoglobin glycation index (HGI) was significantly associated with the risk of cardiovascular events in terms of HR (HR = 1.36, 95% CI: 1.14-1.62, P = 0.0006), but no statistical significance was observed in terms of OR (OR = 1.47, 95% CI: 0.98-2.20, P = 0.06). In contrast, the HbA1c variability score (HVS) showed no significant association with either the risk of cardiovascular events (HR = 1.31, 95% CI: 0.97-1.78, P = 0.08) or mortality risk (HR = 1.00, 95% CI: 0.76-1.31, P = 1.00). CONCLUSIONS: HbA1c variability is positively associated with the risk of adverse cardiovascular events in patients with T2DM. Among the indicators of HbA1c variability, the coefficient of variation (CV), standard deviation (SD), and hemoglobin glycation index (HGI) can serve as significant predictors for the risk of cardiovascular disease (CVD) occurrence and mortality. However, the HbA1c variability score (HVS) did not show significant predictive value in this study. SYSTEMATIC REVIEW REGISTRATION: https://www.crd.york.ac.uk/prospero/, identifier CRD420251132972.",
+          "matched_chunk": "",
+          "fusion_rank": 1,
+          "dense_rank": 1,
+          "bm25_rank": null,
+          "score": 0.01639344262295082
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41188042",
+          "title": "The impact of continuous glucose monitoring on glycated hemoglobin in pregnant women with type 1 diabetes: an integrative review.",
+          "journal": "The journal of maternal-fetal & neonatal medicine : the official journal of the European Association of Perinatal Medicine, the Federation of Asia and Oceania Perinatal Societies, the International Society of Perinatal Obstetricians",
+          "year": "2025",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type1",
+          "excerpt": "BACKGROUND: Pregnancy in women with type 1 diabetes (T1D) is associated with increased risk of adverse outcomes, including preeclampsia and macrosomia. Normalizing glycated hemoglobin (A1C) helps minimize these risks. Previous evidence suggests that continuous glucose monitoring (CGM) improves treatment decisions and glycemic control. However, no synthesized evidence currently assesses whether CGM use is associated with improved A1C levels in this population. OBJECTIVE: The aim of this integrative review is to compare A1C levels during pregnancy between women with T1D who use CGM and those who do not use CGM (e.g. intermittent blood glucose monitoring only). METHODS: An integrative review was conducted in accordance with Whittemore and Knafl's guidelines. Three databases (CINAHL, PubMed, and Web of Science) were searched on 5 June 2024. Studies were included if they involved pregnant women with T1D and reported pregnancy A1C levels for both CGM users and non-users, enabling pooled analysis using sample size as a weighting factor. Study quality was assessed using the Mixed Methods Appraisal Tool (version 2018). RESULTS: Of 300 screened articles, nine met the inclusion criteria. CGM users consistently demonstrated lower pooled mean A1C levels than non-users across all trimesters: first trimester (6.55% vs. 6.82%; SD = 0.72 vs. 0.93), second trimester (5.89% vs. 6.11%; SD = 0.55 vs. 0.63), and third trimester (6.07% vs. 6.24%; SD = 0.53 vs. 0.61). Overall, CGM users had a lower average pooled mean A1C throughout pregnancy (6.19% vs. 6.40%; SD = 0.61 vs. 0.74). CONCLUSIONS: CGM use in pregnant women with T1D may support better glycemic target achievement by providing real-time glucose data that informs insulin dosing and dietary adjustment. These findings support further investigation in larger controlled studies.",
+          "matched_chunk": "The impact of continuous glucose monitoring on glycated hemoglobin in pregnant women with type 1 diabetes: an integrative review. | 2025 | Type 1 diabetes | Review\nBACKGROUND: Pregnancy in women with type 1 diabetes (T1D) is associated with increased risk of adverse outcomes, including preeclampsia and macrosomia. Normalizing glycated hemoglobin (A1C) helps minimize these risks. Previous evidence suggests that continuous glucose monitoring (CGM) improves treatment decisions and glycemic control. However, no synthesized evidence currently assesses whether CGM use is associated with improved A1C levels in this population. OBJECTIVE: The aim of this integrative review is to compare A1C levels during pregnancy between women with T1D who use CGM and those who do not use CGM (e.g. intermittent blood glucose monitoring only).",
+          "fusion_rank": 3,
+          "dense_rank": null,
+          "bm25_rank": 2,
+          "score": 0.016129032258064516
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "38467807",
+          "title": "Research progress on the association between glycemic variability index derived from CGM and cardiovascular disease complications.",
+          "journal": "Acta diabetologica",
+          "year": "2024",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Currently, glycated hemoglobin A1c (HbA1c) has been widely used to assess the glycemic control of patients with diabetes. However, HbA1c has certain limitations in describing both short-term and long-term glycemic control. To more accurately evaluate the glycemic control of diabetes patients, the continuous glucose monitoring (CGM) technology has emerged. CGM technology can provide robust data on short-term glycemic control and introduce new monitoring parameters such as time in range, time above range, and time below range as indicators of glycemic fluctuation. These indicators are used to describe the changes in glycemic control after interventions in clinical research or treatment modifications in diabetes patient care. Recent studies both domestically and internationally have shown that these indicators are not only associated with microvascular complications of diabetes mellitus but also closely related to cardiovascular disease complications and prognosis. Therefore, this article aims to comprehensively review the association between CGM-based glycemic parameters and cardiovascular disease complications by analyzing a large number of domestic and international literature. The purpose is to provide scientific evidence and guidance for the standardized application of these indicators in clinical practice, in order to better evaluate the glycemic control of diabetes patients and prevent the occurrence of cardiovascular disease complications. This research will contribute to improving the quality of life for diabetes patients and provide important references for clinical decision-making.",
+          "matched_chunk": "",
+          "fusion_rank": 4,
+          "dense_rank": 3,
+          "bm25_rank": null,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "42438052",
+          "title": "Continuous glucose monitoring characteristics of common MODY subtypes and their clinical applications: a review.",
+          "journal": "Journal of pediatric endocrinology & metabolism : JPEM",
+          "year": "2026",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "BACKGROUND: Maturity-onset diabetes of the young (MODY) is a heterogeneous monogenic diabetes category caused by defects in genes involved in pancreatic β-cell development, glucose sensing, or insulin secretion. In children, adolescents, and young adults, its clinical presentation may overlap with type 1 diabetes (T1D) or early-onset type 2 diabetes (T2D), which can complicate etiological classification. CONTENT: This review examines continuous glucose monitoring (CGM) patterns in HNF1A-, GCK-, HNF4A-, HNF1B-, and KATP channel-related MODY. PubMed/MEDLINE, Embase, Web of Science Core Collection, and Scopus were searched through March 1, 2026, with supplementary citation tracking. Priority was given to genetically confirmed or clearly defined studies reporting CGM/flash glucose monitoring (FGM) metrics, glycemic variability, hypoglycemic exposure, or treatment-transition data. SUMMARY AND OUTLOOK: CGM can complement glycated hemoglobin (HbA1c) by showing stable mild hyperglycemia, postprandial excursions, nocturnal or asymptomatic hypoglycemia, and treatment-related fluctuations. It should not be used as a substitute for genetic diagnosis. Multicenter, genetically confirmed studies using standardized CGM metrics are needed to clarify its role in precision management.",
+          "matched_chunk": "Continuous glucose monitoring characteristics of common MODY subtypes and their clinical applications: a review. | 2026 | Type 2 diabetes | Review\nPriority was given to genetically confirmed or clearly defined studies reporting CGM/flash glucose monitoring (FGM) metrics, glycemic variability, hypoglycemic exposure, or treatment-transition data. SUMMARY AND OUTLOOK: CGM can complement glycated hemoglobin (HbA1c) by showing stable mild hyperglycemia, postprandial excursions, nocturnal or asymptomatic hypoglycemia, and treatment-related fluctuations. It should not be used as a substitute for genetic diagnosis. Multicenter, genetically confirmed studies using standardized CGM metrics are needed to clarify its role in precision management.",
+          "fusion_rank": 5,
+          "dense_rank": null,
+          "bm25_rank": 3,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "42543995",
+          "title": "Continuous Glucose Monitoring-Purposes, Benefits, and Problems: A Review of the Indian Scenario.",
+          "journal": "The Journal of the Association of Physicians of India",
+          "year": "2026",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "One of the global epicenters of the diabetes mellitus pandemic is India. Over the past 40 years, there has been a sharp rise in the prevalence of diabetes mellitus in India due to rapid socioeconomic development, demographic shifts, and increasing susceptibility in the Indian population. Diabetes affects 74.2 million individuals in India, which places a significant strain on the country's economy and healthcare system. A patient's diet, lifestyle, medication, and glucose monitoring must all be customized for optimal diabetes control. The rates of glucose monitoring in India are abysmal. Most of the monitoring methods currently in use are based on single-point-in-time readings, which may not be totally indicative of the state of diabetes control. This presents problems. With advancements in technology, the new monitoring tool-continuous glucose monitoring (CGM)-provides visibility into the glycemic profile 24 × 7 with user-friendly reports that provide information much beyond glycated hemoglobin (HbA1c) and self-monitoring of blood glucose. This device also detects the time spent in range by the individual with diabetes. This review article discusses CGM in terms of its purposes, technologies, accuracy, clinical indications, benefits, and problems associated with it.",
+          "matched_chunk": "Continuous Glucose Monitoring-Purposes, Benefits, and Problems: A Review of the Indian Scenario. | 2026 | Mixed or general diabetes | Review\nWith advancements in technology, the new monitoring tool-continuous glucose monitoring (CGM)-provides visibility into the glycemic profile 24 × 7 with user-friendly reports that provide information much beyond glycated hemoglobin (HbA1c) and self-monitoring of blood glucose. This device also detects the time spent in range by the individual with diabetes. This review article discusses CGM in terms of its purposes, technologies, accuracy, clinical indications, benefits, and problems associated with it.",
+          "fusion_rank": 6,
+          "dense_rank": null,
+          "bm25_rank": 4,
+          "score": 0.015625
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "42488005",
+          "title": "Comparative accuracy of 1-hour post-load plasma glucose, glycated albumin, and conventional glycemic measures for the diagnosis of type 2 diabetes mellitus: a systematic review and network meta-analysis.",
+          "journal": "Frontiers in endocrinology",
+          "year": "2026",
+          "publication_type": "Journal Article; Systematic Review; Network Meta-Analysis; Comparative Study",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "OBJECTIVE: The International Diabetes Federation has proposed 1-hour plasma glucose (1-h PG) as a potential indicator for the diagnosis of type 2 diabetes mellitus (T2DM). This study aimed to systematically compare the diagnostic performance of 1-h PG, glycated albumin (GA), fasting plasma glucose (FPG), glycated hemoglobin (HbA1c), and the combined HbA1c-or-FPG strategy for identifying T2DM using a network meta-analysis of diagnostic test accuracy. METHODS: We systematically searched PubMed, Embase, Web of Science, the Cochrane Library, Scopus, and gray literature for studies evaluating the diagnostic accuracy of 1-h PG, GA, FPG ≥126 mg/dL, HbA1c ≥6.5%, and the combined HbA1c-or-FPG strategy for identifying T2DM, with 2-hour plasma glucose (2-h PG) ≥200 mg/dL during the oral glucose tolerance test (OGTT) as the reference standard. Data extraction and quality assessment were performed independently by two reviewers according to predefined criteria. Statistical analyses were conducted using the Stan package in R and Stata 14.0. RESULTS: A total of 78 studies involving 183,902 participants were included. The network meta-analysis showed that the pooled sensitivity of 1-h PG, GA, FPG, HbA1c, and the combined HbA1c-or-FPG strategy was 0.87 [95% credible interval (CrI), 0.82-0.91], 0.53 (95% CrI, 0.36-0.71), 0.51 (95% CrI, 0.47-0.55), 0.53 (95% CrI, 0.47-0.58), and 0.64 (95% CrI, 0.54-0.73), respectively. The corresponding pooled specificity values were 0.88 (95% CrI, 0.82-0.92), 0.86 (95% CrI, 0.71-0.95), 0.96 (95% CrI, 0.95-0.97), 0.92 (95% CrI, 0.89-0.94), and 0.89 (95% CrI, 0.81-0.95). The pooled positive likelihood ratios (LR+) were 7.68 (95% CrI, 4.97-11.28) for 1-h PG, 4.39 (95% CrI, 1.86-9.30) for GA, 12.63 (95% CrI, 9.33-16.01) for FPG, 6.75 (95% CrI, 4.81-9.05) for HbA1c, and 6.28 (95% CrI, 3.25-11.26) for the combined strategy. The pooled negative likelihood ratios (LR-) were 0.15 (95% CrI, 0.11-0.20), 0.55 (95% CrI, 0.36-0.74), 0.51 (95% CrI, 0.47-0.55), 0.52 (95% CrI, 0.46-0.57), and 0.41 (95% CrI, 0.31-0.53), respectively. The pooled diagnostic odds ratios (DORs) were 52.44 (95% CrI, 30.17-84.00), 8.53 (95% CrI, 2.70-20.94), 24.94 (95% CrI, 17.90-32.30), 13.15 (95% CrI, 8.94-18.51), and 15.83 (95% CrI, 6.62-31.47), respectively. The areas under the summary receiver operating characteristic curves (SROC-AUCs) were 0.757, 0.714, 0.717, 0.706, and 0.726, respectively. Sensitivity analyses restricted to low-risk-of-bias studies and studies using a 1-h PG threshold ≥11.6 mmol/L, as well as subgroup analyses stratified by general and high-risk populations, yielded results and rankings broadly consistent with the primary analysis. Pairwise meta-analysis findings were also generally consistent with those from the network meta-analysis. CONCLUSIONS: Among the evaluated diagnostic measures, 1-h PG appeared to provide the best overall diagnostic performance for T2DM, with the highest sensitivity, lowest LR-, and highest DOR. It performed better overall than GA, FPG, HbA1c, and the combined HbA1c-or-FPG strategy. By contrast, FPG showed the highest specificity and LR +. The consistency of the findings across sensitivity analyses, subgroup analyses, and pairwise meta-analysis supports the robustness of the main results. However, given the residual heterogeneity across included studies in terms of study design, population characteristics, and diagnostic thresholds, these findings should be interpreted with caution and confirmed by further large-scale, high-quality studies.Systematic review registration: https://www.crd.york.ac.uk/PROSPERO/, identifier CRD420261354518.",
+          "matched_chunk": "Comparative accuracy of 1-hour post-load plasma glucose, glycated albumin, and conventional glycemic measures for the diagnosis of type 2 diabetes mellitus: a systematic review and network meta-analysis. | 2026 | Type 2 diabetes | Meta-analysis\nOBJECTIVE: The International Diabetes Federation has proposed 1-hour plasma glucose (1-h PG) as a potential indicator for the diagnosis of type 2 diabetes mellitus (T2DM). This study aimed to systematically compare the diagnostic performance of 1-h PG, glycated albumin (GA), fasting plasma glucose (FPG), glycated hemoglobin (HbA1c), and the combined HbA1c-or-FPG strategy for identifying T2DM using a network meta-analysis of diagnostic test accuracy.",
+          "fusion_rank": 2,
+          "dense_rank": null,
+          "bm25_rank": 1,
+          "score": 0.01639344262295082
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "HbA1c, or glycated hemoglobin, is a blood test that shows your average blood sugar level over about the past three months.",
+          "chunk_ids": [
+            1,
+            3
+          ],
+          "pmids": [
+            "41282290",
+            "38467807"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Doctors use it both to check how well blood sugar is being managed over time and, along with other blood tests, to help diagnose type 2 diabetes.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "42488005"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This information comes from studies covering people with type 1 diabetes, type 2 diabetes, and mixed groups of people with diabetes.",
+          "chunk_ids": [
+            1,
+            2,
+            6
+          ],
+          "pmids": [
+            "41282290",
+            "41188042",
+            "42488005"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "query_step": {
+        "search_query": "What is glycated hemoglobin and how is it measured as a marker of long-term glycemic control?",
+        "keywords": [
+          "HbA1c",
+          "glycated hemoglobin",
+          "glycemic control",
+          "diabetes diagnosis",
+          "blood glucose monitoring"
+        ],
+        "personal_dosing": false,
+        "fallback": false,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "41282290_3.0",
+            "score": 0.6871
+          },
+          {
+            "chunk_id": "41282290_4.0",
+            "score": 0.6867
+          },
+          {
+            "chunk_id": "38467807_0.0",
+            "score": 0.6815
+          },
+          {
+            "chunk_id": "41282290_6.0",
+            "score": 0.6615
+          },
+          {
+            "chunk_id": "34819298_0.0",
+            "score": 0.6547
+          },
+          {
+            "chunk_id": "41282290_0.0",
+            "score": 0.6254
+          },
+          {
+            "chunk_id": "42559751_5.0",
+            "score": 0.6204
+          },
+          {
+            "chunk_id": "33909352_0.0",
+            "score": 0.6161
+          },
+          {
+            "chunk_id": "41092985_2.0",
+            "score": 0.6128
+          },
+          {
+            "chunk_id": "42215031_1.0",
+            "score": 0.6122
+          },
+          {
+            "chunk_id": "42438052_1.0",
+            "score": 0.6085
+          },
+          {
+            "chunk_id": "42215031_4.0",
+            "score": 0.6032
+          },
+          {
+            "chunk_id": "41282290_2.0",
+            "score": 0.6021
+          },
+          {
+            "chunk_id": "29791677_1.0",
+            "score": 0.6006
+          },
+          {
+            "chunk_id": "42035781_0.0",
+            "score": 0.5967
+          },
+          {
+            "chunk_id": "40762794_1.0",
+            "score": 0.5961
+          },
+          {
+            "chunk_id": "37663634_1.0",
+            "score": 0.5953
+          },
+          {
+            "chunk_id": "34337072_1.0",
+            "score": 0.5938
+          },
+          {
+            "chunk_id": "42543995_1.0",
+            "score": 0.5934
+          },
+          {
+            "chunk_id": "35430674_1.0",
+            "score": 0.5925
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "42488005_0",
+            "score": 23.107
+          },
+          {
+            "chunk_id": "41188042_0",
+            "score": 22.079
+          },
+          {
+            "chunk_id": "42438052_1",
+            "score": 21.992
+          },
+          {
+            "chunk_id": "42543995_1",
+            "score": 21.793
+          },
+          {
+            "chunk_id": "42543995_0",
+            "score": 21.341
+          },
+          {
+            "chunk_id": "39527030_0",
+            "score": 21.033
+          },
+          {
+            "chunk_id": "38467807_0",
+            "score": 20.114
+          },
+          {
+            "chunk_id": "29791677_0",
+            "score": 19.379
+          },
+          {
+            "chunk_id": "41693681_0",
+            "score": 19.254
+          },
+          {
+            "chunk_id": "41038677_2",
+            "score": 19.238
+          },
+          {
+            "chunk_id": "42207272_1",
+            "score": 18.894
+          },
+          {
+            "chunk_id": "41255539_2",
+            "score": 18.89
+          },
+          {
+            "chunk_id": "41282290_0",
+            "score": 18.759
+          },
+          {
+            "chunk_id": "41973910_0",
+            "score": 18.484
+          },
+          {
+            "chunk_id": "39850477_0",
+            "score": 18.141
+          },
+          {
+            "chunk_id": "41856328_0",
+            "score": 18.134
+          },
+          {
+            "chunk_id": "41038677_1",
+            "score": 18.056
+          },
+          {
+            "chunk_id": "42019581_0",
+            "score": 17.851
+          },
+          {
+            "chunk_id": "37495019_1",
+            "score": 17.684
+          },
+          {
+            "chunk_id": "41090267_1",
+            "score": 17.659
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "41282290",
+            "chunk_id": "41282290_3.0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "42488005",
+            "chunk_id": "42488005_0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "41188042",
+            "chunk_id": "41188042_0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "38467807",
+            "chunk_id": "38467807_0.0",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "42438052",
+            "chunk_id": "42438052_1",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "42543995",
+            "chunk_id": "42543995_1",
+            "score": 0.01562
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "sufficient",
+      "evidence_reason": "Multiple passages directly define or explain HbA1c as glycated hemoglobin used to measure glycemic control across diverse diabetes populations.",
+      "propositions": [
+        {
+          "claim": "HbA1c is a measure of glycated hemoglobin used to assess glycemic control in diabetes patients",
+          "core": true,
+          "direct": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 1074.8,
+        "retrieval": 195.7,
+        "evidence": 5944.1,
+        "generation": 14863.1,
+        "total": 22086.3
+      },
+      "usage": {
+        "input_tokens": 7282,
+        "output_tokens": 1550
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": false,
+      "generated_answer": "HbA1c, or glycated hemoglobin, is a blood test that shows your average blood sugar level over about the past three months. Doctors use it both to check how well blood sugar is being managed over time and, along with other blood tests, to help diagnose type 2 diabetes. This information comes from studies covering people with type 1 diabetes, type 2 diabetes, and mixed groups of people with diabetes.",
+      "wall_ms": 22087.3
+    },
+    {
+      "id": "smoke3",
+      "topic": null,
+      "in_scope": null,
+      "question": "What is insulin resistance?",
+      "reference_answer": null,
+      "status": "answered",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "29023424",
+          "title": "Dietary Anthocyanins and Insulin Resistance: When Food Becomes a Medicine.",
+          "journal": "Nutrients",
+          "year": "2017",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "Insulin resistance is an abnormal physiological state that occurs when insulin from pancreatic β-cells is unable to trigger a signal transduction pathway in target organs such as the liver, muscles and adipose tissues. The loss of insulin sensitivity is generally associated with persistent hyperglycemia (diabetes), hyperinsulinemia, fatty acids and/or lipid dysregulation which are often prevalent under obesity conditions. Hence, insulin sensitizers are one class of drugs currently employed to treat diabetes and associated metabolic disorders. A number of natural products that act through multiple mechanisms have also been identified to enhance insulin sensitivity in target organs. One group of such compounds that gained interest in recent years are the dietary anthocyanins. Data from their in vitro, in vivo and clinical studies are scrutinized in this communication to show their potential health benefit through ameliorating insulin resistance. Specific mechanism of action ranging from targeting specific signal transduction receptors/enzymes to the general antioxidant and anti-inflammatory mechanisms of insulin resistance are presented.",
+          "matched_chunk": "Dietary Anthocyanins and Insulin Resistance: When Food Becomes a Medicine. | 2017 | Mixed or general diabetes | Review\nInsulin resistance is an abnormal physiological state that occurs when insulin from pancreatic β-cells is unable to trigger a signal transduction pathway in target organs such as the liver, muscles and adipose tissues. The loss of insulin sensitivity is generally associated with persistent hyperglycemia (diabetes), hyperinsulinemia, fatty acids and/or lipid dysregulation which are often prevalent under obesity conditions. Hence, insulin sensitizers are one class of drugs currently employed to treat diabetes and associated metabolic disorders. A number of natural products that act through multiple mechanisms have also been identified to enhance insulin sensitivity in target organs. One group of such compounds that gained interest in recent years are the dietary anthocyanins. Data from their in vitro, in vivo and clinical studies are scrutinized in this communication to show their potential health benefit through ameliorating insulin resistance. Specific mechanism of action ranging from targeting specific signal transduction receptors/enzymes to the general antioxidant and anti-inflammatory mechanisms of insulin resistance are presented.",
+          "fusion_rank": 1,
+          "dense_rank": null,
+          "bm25_rank": 1,
+          "score": 0.01639344262295082
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "29601521",
+          "title": "Rebelling against the (Insulin) Resistance: A Review of the Proposed Insulin-Sensitizing Actions of Soybeans, Chickpeas, and Their Bioactive Compounds.",
+          "journal": "Nutrients",
+          "year": "2018",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Insulin resistance is a major risk factor for diseases such as type 2 diabetes and metabolic syndrome. Current methods for management of insulin resistance include pharmacological therapies and lifestyle modifications. Several clinical studies have shown that leguminous plants such as soybeans and pulses (dried beans, dried peas, chickpeas, lentils) are able to reduce insulin resistance and related type 2 diabetes parameters. However, to date, no one has summarized the evidence supporting a mechanism of action for soybeans and pulses that explains their ability to lower insulin resistance. While it is commonly assumed that the biological activities of soybeans and pulses are due to their antioxidant activities, these bioactive compounds may operate independent of their antioxidant properties and, thus, their ability to potentially improve insulin sensitivity via alternative mechanisms needs to be acknowledged. Based on published studies using in vivo and in vitro models representing insulin resistant states, the proposed mechanisms of action for insulin-sensitizing actions of soybeans, chickpeas, and their bioactive compounds include increasing glucose transporter-4 levels, inhibiting adipogenesis by down-regulating peroxisome proliferator-activated receptor-γ, reducing adiposity, positively affecting adipokines, and increasing short-chain fatty acid-producing bacteria in the gut. Therefore, this review will discuss the current evidence surrounding the proposed mechanisms of action for soybeans and certain pulses, and their bioactive compounds, to effectively reduce insulin resistance.",
+          "matched_chunk": "Rebelling against the (Insulin) Resistance: A Review of the Proposed Insulin-Sensitizing Actions of Soybeans, Chickpeas, and Their Bioactive Compounds. | 2018 | Type 2 diabetes | Review\nInsulin resistance is a major risk factor for diseases such as type 2 diabetes and metabolic syndrome. Current methods for management of insulin resistance include pharmacological therapies and lifestyle modifications. Several clinical studies have shown that leguminous plants such as soybeans and pulses (dried beans, dried peas, chickpeas, lentils) are able to reduce insulin resistance and related type 2 diabetes parameters. However, to date, no one has summarized the evidence supporting a mechanism of action for soybeans and pulses that explains their ability to lower insulin resistance. While it is commonly assumed that the biological activities of soybeans and pulses are due to their antioxidant activities, these bioactive compounds may operate independent of their antioxidant properties and, thus, their ability to potentially improve insulin sensitivity via alternative mechanisms needs to be acknowledged.",
+          "fusion_rank": 3,
+          "dense_rank": null,
+          "bm25_rank": 2,
+          "score": 0.016129032258064516
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "42444360",
+          "title": "Revisiting Insulin Resistance in the Pathophysiology of Type 2 Diabetes Mellitus: A Multi-Organ Perspective.",
+          "journal": "Diabetes & metabolism journal",
+          "year": "2026",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Type 2 diabetes mellitus (T2DM) is increasingly recognized as a heterogeneous, multisystem disease that extends beyond chronic hyperglycemia to encompass cardiovascular disease, chronic kidney disease, and metabolic dysfunction-associated steatotic liver disease. Central to this expanded disease spectrum is insulin resistance arising from coordinated metabolic, inflammatory, neuroendocrine, and immune disturbances across multiple organs. Rather than a uniform defect in insulin signaling, insulin resistance represents a dynamic, tissue-specific, and stage-dependent process involving multiorgans, with substantial interorgan crosstalk. This review synthesizes contemporary mechanistic insights into the pathogenesis of insulin resistance in T2DM, integrating molecular pathways, organ-specific dysfunction, and systemic metabolic networks. Ectopic lipid accumulation, mitochondrial dysfunction, chronic low-grade inflammation, immune dysregulation, and gut dysbiosis are highlighted as convergent processes that impair insulin action and drive clinical heterogeneity. Insulin resistance is further contextualized within the cardiovascular-kidney-metabolic syndrome framework, which unifies metabolic, renal, and cardiovascular disease through shared upstream mechanisms. In addition, how contemporary glucose-lowering therapies exert benefits beyond glycemic control by targeting insulin resistance, metabolic reprogramming, and interorgan crosstalk is discussed. Collectively, insulin resistance is positioned as a central pathophysiological driver of T2DM and its complications, supporting a shift toward mechanism-based, organ-protective, and precision-oriented therapeutic strategies.",
+          "matched_chunk": "",
+          "fusion_rank": 4,
+          "dense_rank": 2,
+          "bm25_rank": null,
+          "score": 0.016129032258064516
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "38868299",
+          "title": "Relationship between gut microbiota and the pathogenesis of gestational diabetes mellitus: a systematic review.",
+          "journal": "Frontiers in cellular and infection microbiology",
+          "year": "2024",
+          "publication_type": "Journal Article; Systematic Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "gestational",
+          "excerpt": "INTRODUCTION: Gestational diabetes mellitus (GDM) is a form of gestational diabetes mellitus characterized by insulin resistance and abnormal function of pancreatic beta cells. In recent years, genomic association studies have revealed risk and susceptibility genes associated with genetic susceptibility to GDM. However, genetic predisposition cannot explain the rising global incidence of GDM, which may be related to the increased influence of environmental factors, especially the gut microbiome. Studies have shown that gut microbiota is closely related to the occurrence and development of GDM. This paper reviews the relationship between gut microbiota and the pathological mechanism of GDM, in order to better understand the role of gut microbiota in GDM, and to provide a theoretical basis for clinical application of gut microbiota in the treatment of related diseases. METHODS: The current research results on the interaction between GDM and gut microbiota were collected and analyzed through literature review. Keywords such as \"GDM\", \"gut microbiota\" and \"insulin resistance\" were used for literature search, and the methodology, findings and potential impact on the pathophysiology of GDM were systematically evaluated. RESULTS: It was found that the composition and diversity of gut microbiota were significantly associated with the occurrence and development of GDM. Specifically, the abundance of certain gut bacteria is associated with an increased risk of GDM, while other changes in the microbiome may be associated with improved insulin sensitivity. In addition, alterations in the gut microbiota may affect blood glucose control through a variety of mechanisms, including the production of short-chain fatty acids, activation of inflammatory pathways, and metabolism of the B vitamin group. DISCUSSION: The results of this paper highlight the importance of gut microbiota in the pathogenesis of GDM. The regulation of the gut microbiota may provide new directions for the treatment of GDM, including improving insulin sensitivity and blood sugar control through the use of probiotics and prebiotics. However, more research is needed to confirm the generality and exact mechanisms of these findings and to explore potential clinical applications of the gut microbiota in the management of gestational diabetes. In addition, future studies should consider the interaction between environmental and genetic factors and how together they affect the risk of GDM.",
+          "matched_chunk": "Relationship between gut microbiota and the pathogenesis of gestational diabetes mellitus: a systematic review. | 2024 | Gestational diabetes | Review\nThis paper reviews the relationship between gut microbiota and the pathological mechanism of GDM, in order to better understand the role of gut microbiota in GDM, and to provide a theoretical basis for clinical application of gut microbiota in the treatment of related diseases. METHODS: The current research results on the interaction between GDM and gut microbiota were collected and analyzed through literature review. Keywords such as \"GDM\", \"gut microbiota\" and \"insulin resistance\" were used for literature search, and the methodology, findings and potential impact on the pathophysiology of GDM were systematically evaluated.",
+          "fusion_rank": 5,
+          "dense_rank": null,
+          "bm25_rank": 3,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41978168",
+          "title": "Targeting Insulin Resistance Through Nutrition: Pathophysiological Insights and Dietary Interventions.",
+          "journal": "Nutrients",
+          "year": "2026",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "BACKGROUND: Insulin resistance (IR) is a hallmark of metabolic disorders including type 2 diabetes mellitus (T2DM), metabolic syndrome, metabolic dysfunction-associated steatotic liver disease (MASLD), obesity, polycystic ovary syndrome (PCOS), and cardiovascular diseases. It arises from impaired insulin signaling in muscle, liver, and adipose tissue, driven by ectopic lipid accumulation, chronic inflammation, oxidative stress, and gut microbiota dysbiosis. METHODS: This narrative review synthesizes IR mechanisms and the evidence on specific dietary patterns. A structured search of PubMed/MEDLINE and Embase (up to January 2026) prioritized RCTs, systematic reviews, meta-analyses, and clinical guidelines. RESULTS: IR assessment relies on the hyperinsulinemic-euglycemic clamp as gold standard, with HOMA-IR and QUICKI as validated clinical surrogates. The Mediterranean diet is the most evidence-supported strategy, with consistent HOMA-IR reductions, a 31% decrease in T2DM incidence (PREDIMED-Plus), and demonstrated efficacy across T2DM, MASLD, and PCOS. Low-GI and DASH diets improve postprandial insulin dynamics and are particularly effective in PCOS. Low-carbohydrate and ketogenic diets produce the largest short-term reductions in fasting glucose and insulin secretion, though long-term sustainability requires further study. Plant-based diets and intermittent fasting improve IR primarily via weight loss and gut microbiota modulation. Most studies rely on surrogate IR indices and are short-term (≤26 weeks). CONCLUSIONS: Dietary pattern selection should be individualized according to metabolic phenotype, comorbidities, and adherence potential. Larger, longer, head-to-head trials measuring hard clinical outcomes are needed.",
+          "matched_chunk": "",
+          "fusion_rank": 6,
+          "dense_rank": 4,
+          "bm25_rank": null,
+          "score": 0.015625
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "40565151",
+          "title": "Severe Insulin Resistance Syndromes: Clinical Spectrum and Management.",
+          "journal": "International journal of molecular sciences",
+          "year": "2025",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Insulin resistance is a condition wherein cells fail to adequately respond to insulin. It is a prevalent medical condition associated with several diseases, such as type 2 diabetes mellitus, metabolic syndrome, hypertension, obesity, and polycystic ovary syndrome. Insulin resistance may be involved in metabolic disturbances, such as hyperglycemia, hyperinsulinemia, dyslipidemia, hyperuricemia, endothelial dysfunction, elevated inflammatory markers, and a prothrombotic state. Severe insulin resistance syndromes are a heterogeneous group of rare disorders. These disorders are characterized by profound insulin resistance, substantial metabolic abnormalities, and different clinical manifestations and complications. They may be hereditary or acquired, caused by defects in insulin action and cellular responsiveness to insulin. Severe insulin resistance syndromes may also be due to aberrations in adipose tissue function and development. The majority of these disorders are associated with an increased risk of severe complications and mortality. This review aims to summarize the current knowledge on the epidemiology, pathophysiology, complications and prognosis of severe insulin resistance syndromes, as well as to categorize these syndromes by disease process, including defects in insulin receptor, intracellular insulin signaling defects, lipodystrophies, etc.",
+          "matched_chunk": "",
+          "fusion_rank": 2,
+          "dense_rank": 1,
+          "bm25_rank": null,
+          "score": 0.01639344262295082
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "Insulin resistance is a condition where the body's cells don't respond normally to insulin, a hormone that normally helps move sugar out of the blood and into cells for energy.",
+          "chunk_ids": [
+            1,
+            6
+          ],
+          "pmids": [
+            "29023424",
+            "40565151"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "It happens when insulin made by special cells in the pancreas fails to trigger the right signals in organs like the liver, muscles, and fat tissue.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "29023424"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This is often linked to high blood sugar, high levels of insulin in the blood, and problems with how the body handles fats.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "29023424"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Research describes insulin resistance as a major risk factor for type 2 diabetes and for a group of related health problems sometimes called metabolic syndrome.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "29601521"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Newer research suggests insulin resistance isn't one single problem, but a changing process that involves several organs, including fat tissue, muscle, the liver, the immune system, and gut bacteria.",
+          "chunk_ids": [
+            3
+          ],
+          "pmids": [
+            "42444360"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Studies point to several contributing factors, including fat building up in places it normally shouldn't, trouble with the energy-producing parts of cells, ongoing low-level inflammation, and an imbalance in gut bacteria.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            "41978168"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "There are also rare, more severe forms of insulin resistance, which can cause serious metabolic problems and come from different underlying disease processes.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "40565151"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "In pregnancy, insulin resistance combined with changes in gut bacteria has also been studied as part of how gestational diabetes, a form of diabetes that can develop during pregnancy, may develop.",
+          "chunk_ids": [
+            4
+          ],
+          "pmids": [
+            "38868299"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "This information comes mostly from research on type 2 diabetes, along with some studies on general or mixed groups and one on gestational diabetes.",
+          "chunk_ids": [
+            2,
+            3,
+            5,
+            6,
+            1,
+            4
+          ],
+          "pmids": [
+            "29601521",
+            "42444360",
+            "41978168",
+            "40565151",
+            "29023424",
+            "38868299"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Talk to your doctor or pharmacist before changing anything.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true,
+          "safety_note": true
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "query_step": {
+        "search_query": "What is the definition and pathophysiology of insulin resistance?",
+        "keywords": [
+          "insulin resistance",
+          "pathophysiology",
+          "insulin sensitivity",
+          "mechanism"
+        ],
+        "personal_dosing": false,
+        "fallback": false,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "40565151_0.0",
+            "score": 0.7064
+          },
+          {
+            "chunk_id": "42444360_1.0",
+            "score": 0.6529
+          },
+          {
+            "chunk_id": "40565151_1.0",
+            "score": 0.6524
+          },
+          {
+            "chunk_id": "41978168_0.0",
+            "score": 0.6049
+          },
+          {
+            "chunk_id": "40409800_1.0",
+            "score": 0.6003
+          },
+          {
+            "chunk_id": "39185744_1.0",
+            "score": 0.5955
+          },
+          {
+            "chunk_id": "41978168_2.0",
+            "score": 0.5944
+          },
+          {
+            "chunk_id": "41672465_0.0",
+            "score": 0.5934
+          },
+          {
+            "chunk_id": "41416384_0.0",
+            "score": 0.5883
+          },
+          {
+            "chunk_id": "41969201_0.0",
+            "score": 0.5832
+          },
+          {
+            "chunk_id": "38474713_1.0",
+            "score": 0.5829
+          },
+          {
+            "chunk_id": "41636917_0.0",
+            "score": 0.5824
+          },
+          {
+            "chunk_id": "40302954_0.0",
+            "score": 0.581
+          },
+          {
+            "chunk_id": "35364449_0.0",
+            "score": 0.5779
+          },
+          {
+            "chunk_id": "39185744_0.0",
+            "score": 0.5733
+          },
+          {
+            "chunk_id": "41285865_0.0",
+            "score": 0.5718
+          },
+          {
+            "chunk_id": "42444360_0.0",
+            "score": 0.5694
+          },
+          {
+            "chunk_id": "42413493_0.0",
+            "score": 0.5693
+          },
+          {
+            "chunk_id": "38474713_0.0",
+            "score": 0.5666
+          },
+          {
+            "chunk_id": "29023424_0.0",
+            "score": 0.5665
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "29023424_0",
+            "score": 15.704
+          },
+          {
+            "chunk_id": "29601521_0",
+            "score": 15.034
+          },
+          {
+            "chunk_id": "38868299_1",
+            "score": 14.361
+          },
+          {
+            "chunk_id": "40565151_1",
+            "score": 13.651
+          },
+          {
+            "chunk_id": "41657119_0",
+            "score": 13.643
+          },
+          {
+            "chunk_id": "41970985_0",
+            "score": 13.625
+          },
+          {
+            "chunk_id": "40995677_1",
+            "score": 12.996
+          },
+          {
+            "chunk_id": "38868299_2",
+            "score": 12.989
+          },
+          {
+            "chunk_id": "37755075_0",
+            "score": 12.979
+          },
+          {
+            "chunk_id": "42444360_1",
+            "score": 12.845
+          },
+          {
+            "chunk_id": "41778920_2",
+            "score": 12.741
+          },
+          {
+            "chunk_id": "34884651_0",
+            "score": 12.651
+          },
+          {
+            "chunk_id": "39766279_0",
+            "score": 12.618
+          },
+          {
+            "chunk_id": "41778920_1",
+            "score": 12.56
+          },
+          {
+            "chunk_id": "40951419_0",
+            "score": 12.554
+          },
+          {
+            "chunk_id": "40302954_0",
+            "score": 12.509
+          },
+          {
+            "chunk_id": "41778920_0",
+            "score": 12.494
+          },
+          {
+            "chunk_id": "40362828_1",
+            "score": 12.458
+          },
+          {
+            "chunk_id": "39263838_0",
+            "score": 12.447
+          },
+          {
+            "chunk_id": "39470387_3",
+            "score": 12.335
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "29023424",
+            "chunk_id": "29023424_0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "40565151",
+            "chunk_id": "40565151_0.0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "29601521",
+            "chunk_id": "29601521_0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "42444360",
+            "chunk_id": "42444360_1.0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "38868299",
+            "chunk_id": "38868299_1",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "41978168",
+            "chunk_id": "41978168_0.0",
+            "score": 0.01562
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "sufficient",
+      "evidence_reason": "The core proposition—defining what insulin resistance is—is directly stated in multiple passages (C1, C2, C3, C5, C6) across different populations, with comprehensive descriptions of the mechanism and clinical significance.",
+      "propositions": [
+        {
+          "claim": "Definition: Insulin resistance is a physiological condition where cells fail to respond adequately to insulin",
+          "core": true,
+          "direct": [
+            1,
+            2,
+            3,
+            5,
+            6
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 953.3,
+        "retrieval": 214.4,
+        "evidence": 2088.9,
+        "generation": 20644.3,
+        "total": 23903.7
+      },
+      "usage": {
+        "input_tokens": 5649,
+        "output_tokens": 2228
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": true,
+      "generated_answer": "Insulin resistance is a condition where the body's cells don't respond normally to insulin, a hormone that normally helps move sugar out of the blood and into cells for energy. It happens when insulin made by special cells in the pancreas fails to trigger the right signals in organs like the liver, muscles, and fat tissue. This is often linked to high blood sugar, high levels of insulin in the blood, and problems with how the body handles fats. Research describes insulin resistance as a major risk factor for type 2 diabetes and for a group of related health problems sometimes called metabolic syndrome. Newer research suggests insulin resistance isn't one single problem, but a changing process that involves several organs, including fat tissue, muscle, the liver, the immune system, and gut bacteria. Studies point to several contributing factors, including fat building up in places it normally shouldn't, trouble with the energy-producing parts of cells, ongoing low-level inflammation, and an imbalance in gut bacteria. There are also rare, more severe forms of insulin resistance, which can cause serious metabolic problems and come from different underlying disease processes. In pregnancy, insulin resistance combined with changes in gut bacteria has also been studied as part of how gestational diabetes, a form of diabetes that can develop during pregnancy, may develop. This information comes mostly from research on type 2 diabetes, along with some studies on general or mixed groups and one on gestational diabetes. Talk to your doctor or pharmacist before changing anything.",
+      "wall_ms": 23906.3
+    }
+  ]
+}

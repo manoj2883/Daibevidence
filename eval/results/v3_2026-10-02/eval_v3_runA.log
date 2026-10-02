@@ -1,0 +1,174 @@
+Query-step cache: 0 entries
+  id=1 'Does adherence to a Mediterranean-style diet reduce the risk of develo'
+[cost] evidence: 'Does adherence to a Mediterranean-style diet reduce the risk': ~6143 chars, ~1535 tokens (rough estimate)
+[cost] v3 query: 'Does adherence to a Mediterranean-style diet reduce the risk': ~10387 chars, ~2597 tokens (rough estimate)
+    -> answered_partial
+  id=2 'How does dietary fiber intake affect the risk of developing type 2 dia'
+[cost] evidence: 'How does dietary fiber intake affect the risk of developing ': ~7934 chars, ~1983 tokens (rough estimate)
+[cost] v3 query: 'How does dietary fiber intake affect the risk of developing ': ~11266 chars, ~2816 tokens (rough estimate)
+    -> answered
+  id=3 'What is the evidence for low-carbohydrate diets versus low-fat diets i'
+[cost] evidence: 'What is the evidence for low-carbohydrate diets versus low-f': ~7461 chars, ~1865 tokens (rough estimate)
+[cost] v3 query: 'What is the evidence for low-carbohydrate diets versus low-f': ~10724 chars, ~2681 tokens (rough estimate)
+    -> answered
+  id=4 'Is there evidence that plant-based diets improve glycemic control in p'
+[cost] evidence: 'Is there evidence that plant-based diets improve glycemic co': ~10875 chars, ~2718 tokens (rough estimate)
+[cost] v3 query: 'Is there evidence that plant-based diets improve glycemic co': ~14076 chars, ~3519 tokens (rough estimate)
+    -> answered
+  id=5 'Does time-restricted eating (intermittent fasting) improve markers of '
+[cost] evidence: 'Does time-restricted eating (intermittent fasting) improve m': ~7636 chars, ~1909 tokens (rough estimate)
+[cost] v3 query: 'Does time-restricted eating (intermittent fasting) improve m': ~11149 chars, ~2787 tokens (rough estimate)
+    -> answered
+  id=6 'What role does the DASH diet play in glycemic and blood pressure outco'
+[cost] evidence: 'What role does the DASH diet play in glycemic and blood pres': ~7322 chars, ~1830 tokens (rough estimate)
+[cost] v3 query: 'What role does the DASH diet play in glycemic and blood pres': ~9212 chars, ~2303 tokens (rough estimate)
+    -> answered_partial
+  id=7 'What HbA1c target is generally recommended for most nonpregnant adults'
+[cost] evidence: 'What HbA1c target is generally recommended for most nonpregn': ~7944 chars, ~1986 tokens (rough estimate)
+[cost] v3 query: 'What HbA1c target is generally recommended for most nonpregn': ~7931 chars, ~1983 tokens (rough estimate)
+    -> answered_partial
+  id=8 'Does continuous glucose monitoring (CGM) improve glycemic control comp'
+[cost] evidence: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~5131 chars, ~1282 tokens (rough estimate)
+[cost] v3 query: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~7143 chars, ~1786 tokens (rough estimate)
+    -> answered_partial
+  id=9 "What is the 'dawn phenomenon' and how does it affect glycemic control?"
+[cost] evidence: "What is the 'dawn phenomenon' and how does it affect glycemi": ~5936 chars, ~1484 tokens (rough estimate)
+    -> not_covered
+  id=10 'How does postprandial exercise timing affect blood glucose control in '
+[cost] evidence: 'How does postprandial exercise timing affect blood glucose c': ~6519 chars, ~1629 tokens (rough estimate)
+[cost] v3 query: 'How does postprandial exercise timing affect blood glucose c': ~8943 chars, ~2236 tokens (rough estimate)
+    -> answered_partial
+  id=11 'What is glycemic variability and why is it clinically relevant?'
+[cost] evidence: 'What is glycemic variability and why is it clinically releva': ~6475 chars, ~1618 tokens (rough estimate)
+Evidence judge response failed schema validation (attempt 1): '```json\n{\n  "propositions": [\n    {\n      "claim": "What is glycemic variability (definition)",\n      "core": true,\n      "direct": ["C2", "C3"],\n      "partial": ["C1"],\n      "absent": false\n    },\n    {\n      "claim": "Why is glycemic variability clinically relevant (clinical importance/outcomes)",\n      "core": true,\n      "direct": ["C2", "C3"],\n      "partial": [],\n      "absent": false\n    },\n    {\n      "claim": "Glycemic variability is associated with increased risk of diabetic complications",\n      "core": false,\n      "direct": ["C2", "C3"],\n      "partial": [],\n      "absent": false\n    },\n    {\n      "claim": "Glycemic variability is associated with increased risk of hypoglycemia and mortality",\n      "core": false,\n      "direct": ["C2"],\n      "partial": [],\n      "absent": '
+[cost] evidence: 'What is glycemic variability and why is it clinically releva': ~6475 chars, ~1618 tokens (rough estimate)
+Evidence judge response failed schema validation (attempt 2): '```json\n{\n  "propositions": [\n    {\n      "claim": "What is glycemic variability (definition)",\n      "core": true,\n      "direct": ["C2", "C3"],\n      "partial": ["C1"],\n      "absent": false\n    },\n    {\n      "claim": "Why is glycemic variability clinically relevant (adverse outcomes/complications)",\n      "core": true,\n      "direct": ["C2", "C3"],\n      "partial": [],\n      "absent": false\n    },\n    {\n      "claim": "Glycemic variability is associated with increased risk of macrovascular and microvascular complications",\n      "core": false,\n      "direct": ["C2", "C3"],\n      "partial": [],\n      "absent": false\n    },\n    {\n      "claim": "Glycemic variability is associated with increased risk of hypoglycemia and mortality",\n      "core": false,\n      "direct": ["C2"],\n      "parti'
+    -> not_covered
+  id=12 'Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as m'
+[cost] evidence: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~6189 chars, ~1547 tokens (rough estimate)
+    -> not_covered
+  id=13 'Does bariatric surgery lead to remission of type 2 diabetes?'
+[cost] evidence: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~5339 chars, ~1334 tokens (rough estimate)
+[cost] v3 query: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~7776 chars, ~1944 tokens (rough estimate)
+    -> answered_partial
+  id=14 'Can intensive low-calorie diet interventions induce remission of type '
+[cost] evidence: 'Can intensive low-calorie diet interventions induce remissio': ~6926 chars, ~1731 tokens (rough estimate)
+[cost] v3 query: 'Can intensive low-calorie diet interventions induce remissio': ~10355 chars, ~2589 tokens (rough estimate)
+    -> answered
+  id=15 'How does visceral adiposity relate to insulin resistance compared with'
+[cost] evidence: 'How does visceral adiposity relate to insulin resistance com': ~10866 chars, ~2716 tokens (rough estimate)
+    -> not_covered
+  id=16 'Do GLP-1 receptor agonists cause disproportionate loss of lean body ma'
+[cost] evidence: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~7151 chars, ~1787 tokens (rough estimate)
+[cost] v3 query: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~9613 chars, ~2403 tokens (rough estimate)
+    -> answered_partial
+  id=17 'What is sarcopenic obesity and why is it a concern in older adults wit'
+[cost] evidence: 'What is sarcopenic obesity and why is it a concern in older ': ~9272 chars, ~2318 tokens (rough estimate)
+[cost] v3 query: 'What is sarcopenic obesity and why is it a concern in older ': ~12473 chars, ~3118 tokens (rough estimate)
+    -> answered
+  id=18 'Is waist circumference a better predictor of metabolic risk than BMI i'
+[cost] evidence: 'Is waist circumference a better predictor of metabolic risk ': ~7752 chars, ~1938 tokens (rough estimate)
+    -> not_covered
+  id=19 'Does long-term metformin use affect vitamin B12 status?'
+[cost] evidence: 'Does long-term metformin use affect vitamin B12 status?': ~6701 chars, ~1675 tokens (rough estimate)
+[cost] v3 query: 'Does long-term metformin use affect vitamin B12 status?': ~8375 chars, ~2094 tokens (rough estimate)
+    -> answered_partial
+  id=20 'What is the interaction risk between alcohol intake and sulfonylurea m'
+[cost] evidence: 'What is the interaction risk between alcohol intake and sulf': ~7744 chars, ~1936 tokens (rough estimate)
+    -> not_covered
+  id=21 'How does a high-fiber meal affect the absorption of oral hypoglycemic '
+[cost] evidence: 'How does a high-fiber meal affect the absorption of oral hyp': ~7377 chars, ~1844 tokens (rough estimate)
+    -> not_covered
+  id=22 'Is there a known interaction between ketogenic/very-low-carbohydrate d'
+[cost] evidence: 'Is there a known interaction between ketogenic/very-low-carb': ~5782 chars, ~1445 tokens (rough estimate)
+    -> not_covered
+  id=23 'Does dietary protein intake need to be specifically adjusted when init'
+[cost] evidence: 'Does dietary protein intake need to be specifically adjusted': ~5715 chars, ~1428 tokens (rough estimate)
+    -> not_covered
+  id=24 'Can grapefruit or grapefruit juice affect the metabolism of certain or'
+[cost] evidence: 'Can grapefruit or grapefruit juice affect the metabolism of ': ~9884 chars, ~2471 tokens (rough estimate)
+    -> not_covered
+  id=25 'What eye complications require laser treatment in diabetic retinopathy'
+[cost] evidence: 'What eye complications require laser treatment in diabetic r': ~9360 chars, ~2340 tokens (rough estimate)
+[cost] v3 query: 'What eye complications require laser treatment in diabetic r': ~10258 chars, ~2564 tokens (rough estimate)
+    -> answered_partial
+  id=26 'How often should diabetic retinopathy screening (dilated eye exam) be '
+[cost] evidence: 'How often should diabetic retinopathy screening (dilated eye': ~7385 chars, ~1846 tokens (rough estimate)
+    -> not_covered
+  id=27 "How does an insulin pump's tubing mechanism deliver basal insulin?"
+[cost] evidence: "How does an insulin pump's tubing mechanism deliver basal in": ~6423 chars, ~1605 tokens (rough estimate)
+    -> not_covered
+  id=28 'How does a continuous glucose monitor (CGM) sensor calibrate against f'
+[cost] evidence: 'How does a continuous glucose monitor (CGM) sensor calibrate': ~4941 chars, ~1235 tokens (rough estimate)
+    -> not_covered
+  id=29 'How long can a continuous glucose monitor sensor be worn before it nee'
+[cost] evidence: 'How long can a continuous glucose monitor sensor be worn bef': ~5538 chars, ~1384 tokens (rough estimate)
+[cost] v3 query: 'How long can a continuous glucose monitor sensor be worn bef': ~6574 chars, ~1643 tokens (rough estimate)
+    -> answered_partial
+  id=30 'What is the difference in cartridge or reservoir mechanics between maj'
+[cost] evidence: 'What is the difference in cartridge or reservoir mechanics b': ~5333 chars, ~1333 tokens (rough estimate)
+Evidence judge response failed schema validation (attempt 1): '```json\n{\n  "propositions": [\n    {\n      "claim": "Major insulin pump brands differ in cartridge mechanics",\n      "core": true,\n      "direct": [],\n      "partial": [],\n      "absent": true\n    },\n    {\n      "claim": "Major insulin pump brands differ in reservoir mechanics",\n      "core": true,\n      "direct": [],\n      "partial": [],\n      "absent": true\n    },\n    {\n      "claim": "Specific comparison of cartridge/reservoir mechanics between named pump brands",\n      "core": true,\n      "direct": [],\n      "partial": [],\n      "absent": true\n    }\n  ],\n  "on_topic": false,\n  "question_population": "not specified (assumes general diabetes technology)",\n  "evidence_populations": [\n    "type 1 diabetes (C1, C2, C3)",\n    "mixed population (C4, C6)",\n    "type 2 diabetes (C5)"\n  ],\n  "pop'
+[cost] evidence: 'What is the difference in cartridge or reservoir mechanics b': ~5333 chars, ~1333 tokens (rough estimate)
+    -> not_covered
+  id=31 'What are the standard treatments for painful diabetic peripheral neuro'
+[cost] evidence: 'What are the standard treatments for painful diabetic periph': ~7096 chars, ~1774 tokens (rough estimate)
+[cost] v3 query: 'What are the standard treatments for painful diabetic periph': ~10930 chars, ~2732 tokens (rough estimate)
+    -> answered_partial
+  id=32 'What diagnostic tests are used to confirm diabetic peripheral neuropat'
+[cost] evidence: 'What diagnostic tests are used to confirm diabetic periphera': ~7609 chars, ~1902 tokens (rough estimate)
+[cost] v3 query: 'What diagnostic tests are used to confirm diabetic periphera': ~8708 chars, ~2177 tokens (rough estimate)
+    -> answered_partial
+  id=33 'What wound care protocol is typically used for treating a diabetic foo'
+[cost] evidence: 'What wound care protocol is typically used for treating a di': ~8935 chars, ~2233 tokens (rough estimate)
+[cost] v3 query: 'What wound care protocol is typically used for treating a di': ~11358 chars, ~2839 tokens (rough estimate)
+    -> answered_partial
+  id=34 'What type of footwear is recommended to prevent diabetic foot complica'
+[cost] evidence: 'What type of footwear is recommended to prevent diabetic foo': ~7408 chars, ~1852 tokens (rough estimate)
+    -> not_covered
+  id=35 'How is peripheral arterial disease assessed during a diabetic foot exa'
+[cost] evidence: 'How is peripheral arterial disease assessed during a diabeti': ~7321 chars, ~1830 tokens (rough estimate)
+    -> not_covered
+  id=36 'What are the diagnostic criteria for diabetic ketoacidosis?'
+[cost] evidence: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~8863 chars, ~2215 tokens (rough estimate)
+[cost] v3 query: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~11861 chars, ~2965 tokens (rough estimate)
+    -> answered
+  id=37 'How is diabetic ketoacidosis typically managed in the emergency depart'
+[cost] evidence: 'How is diabetic ketoacidosis typically managed in the emerge': ~10614 chars, ~2653 tokens (rough estimate)
+[cost] v3 query: 'How is diabetic ketoacidosis typically managed in the emerge': ~11086 chars, ~2771 tokens (rough estimate)
+    -> answered_partial
+  id=38 'What blood or urine ketone level indicates diabetic ketoacidosis?'
+[cost] evidence: 'What blood or urine ketone level indicates diabetic ketoacid': ~8951 chars, ~2237 tokens (rough estimate)
+    -> not_covered
+  id=39 "What are the typical driver's-license medical-review rules for people "
+[cost] evidence: "What are the typical driver's-license medical-review rules f": ~8022 chars, ~2005 tokens (rough estimate)
+    -> not_covered
+  id=40 'Does health insurance typically cover the cost of an insulin pump?'
+[cost] evidence: 'Does health insurance typically cover the cost of an insulin': ~6988 chars, ~1747 tokens (rough estimate)
+    -> not_covered
+  id=41 'What disability benefits are available to people with type 1 diabetes?'
+[cost] evidence: 'What disability benefits are available to people with type 1': ~5933 chars, ~1483 tokens (rough estimate)
+    -> not_covered
+  id=42 'What is the capital of Australia?'
+[cost] evidence: 'What is the capital of Australia?': ~3555 chars, ~888 tokens (rough estimate)
+    -> not_covered
+  id=43 'How do I refinance a car loan?'
+[cost] evidence: 'How do I refinance a car loan?': ~5302 chars, ~1325 tokens (rough estimate)
+    -> not_covered
+Saved 43 results to data/eval_v3_runA_v2_5k_noscope.json
+Query-step cache: 43 entries (data/query_step_cache.json)
+  id=14 'Can intensive low-calorie diet interventions induce remission of type '
+[cost] evidence: 'Can intensive low-calorie diet interventions induce remissio': ~6926 chars, ~1731 tokens (rough estimate)
+Query-step cache: 43 entries (data/query_step_cache.json)
+  id=14 'Can intensive low-calorie diet interventions induce remission of type '
+[cost] evidence: 'Can intensive low-calorie diet interventions induce remissio': ~6926 chars, ~1731 tokens (rough estimate)
+[cost] v3 query: 'Can intensive low-calorie diet interventions induce remissio': ~10412 chars, ~2603 tokens (rough estimate)
+    -> answered
+  id=29 'How long can a continuous glucose monitor sensor be worn before it nee'
+[cost] evidence: 'How long can a continuous glucose monitor sensor be worn bef': ~5538 chars, ~1384 tokens (rough estimate)
+[cost] v3 query: 'How long can a continuous glucose monitor sensor be worn bef': ~6676 chars, ~1669 tokens (rough estimate)
+    -> answered_partial
+  id=32 'What diagnostic tests are used to confirm diabetic peripheral neuropat'
+[cost] evidence: 'What diagnostic tests are used to confirm diabetic periphera': ~7609 chars, ~1902 tokens (rough estimate)
+[cost] v3 query: 'What diagnostic tests are used to confirm diabetic periphera': ~10720 chars, ~2680 tokens (rough estimate)
+    -> answered
+Saved 43 results to data/eval_v3_runA_v2_5k_noscope.json

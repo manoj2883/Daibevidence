@@ -1,0 +1,1012 @@
+{
+  "grader_model": "claude-sonnet-5",
+  "source_results_path": "data/eval_v3_runA_v2_5k_noscope.json",
+  "results": [
+    {
+      "id": 1,
+      "question": "Does adherence to a Mediterranean-style diet reduce the risk of developing type 2 diabetes in high-risk adults?",
+      "status": "answered_partial",
+      "generated_answer": "Research shows that closely following a Mediterranean-style diet — an eating pattern that includes foods like olive oil, nuts, vegetables, and fish — is linked with a lower chance of developing type 2 diabetes, a condition where the body has trouble keeping blood sugar at a healthy level. This finding comes mainly from research involving people who already have, or are at risk for, type 2 diabetes. One large randomized trial followed adults who were at high risk for heart disease and measured how closely they stuck to the Mediterranean diet each year. In that trial, people who followed the diet most closely over time were less likely to develop new type 2 diabetes, and the benefit grew stronger the more closely people followed the diet. Separate large reviews that combined data from many studies also found that people who ate more in line with the Mediterranean pattern tended to have fewer new cases of type 2 diabetes. The evidence gathered here mainly covers general adults with, or at risk of, type 2 diabetes, plus one large trial of adults who were already at high risk for heart disease, rather than other groups sometimes called \"high-risk,\" such as people with prediabetes alone. The studies gathered here don't show whether this diet pattern reduces type 2 diabetes risk specifically in high-risk groups defined by factors other than heart disease risk, such as family history or prediabetes alone.",
+      "cited_chunk_texts": "[1] Self-reported adherence to the Mediterranean diet has been modestly inversely associated with incidence of type 2 diabetes (T2D) in cohort studies. There is uncertainty about the validity and magnitude of this association due to subjective reporting of diet. The association has not been evaluated using an objectively measured biomarker of the Mediterranean diet.\n\n[2] Previous meta-analyses assessed the association of adherence to the Mediterranean dietary pattern (MedDiet) with the risk of type 2 diabetes (T2D). Since then, new large-scale cohort studies have been published. In addition, dose-response relation was not previously investigated and the certainty of evidence was not assessed. We aimed to explore the dose-response relationship between adherence to the MedDiet and the risk of T2D.\n\n[3] Several large observational prospective studies have reported a protection by the traditional Mediterranean diet against type 2 diabetes, but none of them used yearly repeated measures of dietary intake. Repeated measurements of dietary intake are able to improve subject classification and to increase the quality of the assessed relationships in nutritional epidemiology. Beyond observational studies, randomized trials provide stronger causal evidence. In the context of a randomized trial of primary cardiovascular prevention, we assessed type 2 diabetes incidence according to yearly repeated measures of compliance with a nutritional intervention based on the traditional Mediterranean diet.\n\n[4] PREDIMED (''PREvención con DIeta MEDiterránea'') was a Spanish trial including 7447 men and women at high cardiovascular risk. We assessed 3541 participants initially free of diabetes and originally randomized to 1 of 3 diets: low-fat diet (n = 1147, control group), Mediterranean diet supplemented with extra virgin olive (n = 1154) or Mediterranean diet supplemented with mixed nuts (n = 1240). As exposure we used actual adherence to Mediterranean diet (cumulative average), yearly assessed with the Mediterranean Diet Adherence Screener (scoring 0 to 14 points), and repeated up to 8 times (baseline and 7 consecutive follow-up years). This score was categorized into four groups: < 8, 8-< 10, 10- < 12, and 12-14 points. The outcome was new-onset type 2 diabetes.\n\n[5] Given the global rise in type 2 diabetes mellitus (T2D), the Mediterranean diet (MedDiet) has gained attention as a promising preventive dietary pattern.\n\n[6] Dietary intervention trials should quantify actual dietary adherence throughout the trial period to enhance the benefits and to assist results interpretation. A rapid dietary assessment tool, yearly repeated as a screener, was able to capture a strong inverse linear relationship between Mediterranean diet and type 2 diabetes. Trial registration ISRCTN35739639.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "The cited passages support an inverse link between Mediterranean diet and T2D, but do not describe the diet as including vegetables and fish."
+          },
+          {
+            "index": 2,
+            "label": "UNSUPPORTED",
+            "why": "Passages 1, 2, and 5 are general population cohort/meta-analyses of incident T2D, not specifically studies of people who already have or are at risk for diabetes."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passages 3 and 4 describe the PREDIMED trial of high cardiovascular-risk adults with yearly diet adherence measurement."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 6 reports a strong inverse linear relationship between adherence and new-onset T2D."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passages 1, 2, and 5 are meta-analyses showing an inverse association between Mediterranean diet adherence and T2D incidence."
+          },
+          {
+            "index": 6,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "The passages support the trial population description but mischaracterize the meta-analyses as being about people already at risk for T2D."
+          },
+          {
+            "index": 7,
+            "label": "UNSUPPORTED",
+            "why": "This claim about evidence gaps points to no passages and is an unsupported assertion."
+          }
+        ],
+        "answers_the_question": 4,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 2,
+      "question": "How does dietary fiber intake affect the risk of developing type 2 diabetes?",
+      "status": "answered",
+      "generated_answer": "Across several studies, eating more dietary fiber (the part of plant foods your body can't fully digest) is linked to a lower chance of developing type 2 diabetes. This evidence applies mainly to people with type 2 diabetes or those at risk of it, including some research that combined different types of diabetes. One study found that fiber intake was tied to lower diabetes risk, but this protective effect was stronger or weaker depending on a specific gene variant some men carried, particularly those who already had slightly high fasting blood sugar. A review of carbohydrate intake in younger people found that eating plenty of fiber was helpful for managing type 2 diabetes, while eating a lot of starchy or sugary foods that raise blood sugar quickly could increase diabetes risk, especially in people already prone to it genetically. A systematic review of population studies also found that dietary fiber appears to protect against developing type 2 diabetes in people who are overweight or have obesity. However, when researchers tested fiber directly in controlled trials, results were inconsistent and seemed to depend on whether the fiber came as a single isolated type, a mixture, or whole foods. A clinical trial in people at risk of type 2 diabetes found that a specific kind of fiber improved the body's sensitivity to insulin, the hormone that helps control blood sugar, and lowered blood fat levels called triglycerides. That trial also showed this fiber changed gut bacteria in ways that increased production of helpful substances linked to better metabolic health. A separate review looking at diets for people already managing diabetes found that diets higher in both fiber and carbohydrates worked better than low-carbohydrate, low-fiber diets. Expert guidance from India has also highlighted that most people do not eat enough fiber or the right kind of fiber, and recommends increasing fiber intake as part of managing type 2 diabetes. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Dietary fibre helps prevent type 2 diabetes (T2D), but the effect could be affected by a risk allele T of the transcription factor 7 like 2 (TCF7L2) gene. We investigated the effects of a group-based, 3-year T2D-GENE diet and exercise intervention on dietary fibre intake and if fibre intake was associated with T2D risk and plasma glucose parameters. We also investigated if the TCF7L2 rs7903146 genotype modified the effects of fibre.\n\n[2] Type 2 diabetes mellitus has a high prevalence worldwide, with a rapidly increasing incidence even in youth. Nutrition, dietary macronutrient composition, and in particular dietary carbohydrates play a major role in the development of type 2 diabetes. The aim of this narrative review is to discuss the current evidence on the role of dietary carbohydrates in the prevention and management of type 2 diabetes. The digestibility or availability of carbohydrates and their glycemic index (and glycemic load) markedly influence the glycemic response. High consumption of dietary fiber is beneficial for management of type 2 diabetes, whereas high consumption of both glycemic starch and sugars may have a harmful effect on glucose metabolism, thereby increasing the risk of developing type 2 diabetes in the presence of genetic predisposition or making its glycemic control more difficult to achieve in people with established T2D. Therefore, the same dietary macronutrient may have harmful or beneficial effects on type 2 diabetes mainly depending on the subtypes consumed. Some other factors are involved in glucose metabolism, such as meal composition, gut microbiota and genetics. For this reason, the glycemic response after carbohydrate consumption is not easy to predict in the single individual. Nutrition suggested to subjects with known type 2 diabetes should be always person-centered, considering the individual features of each subject.\n\n[3] Increasing evidence from epidemiological studies indicates that dietary fibers are protective against the development of type 2 diabetes mellitus. Supplementation of dietary fiber may therefore be a strategy to improve metabolic health in individuals with overweight and obesity at high risk to develop type 2 diabetes mellitus (T2DM). However, results from intervention studies are inconsistent, which may be related to the form of supplementation. In this systematic review and meta-analysis, we evaluated randomized controlled trials (RCTs) investigating the effects of dietary fiber administered as single isolated fibers, mixtures of isolated fibers, or fiber-rich whole foods on markers of insulin resistance and glucose homeostasis in individuals with overweight or obesity without T2DM.\n\n[4] India is facing a triple burden of pre-diabetes, diabetes, and obesity. Unhealthy eating habits and physical inactivity have been linked to the onset and progression of type 2 diabetes mellitus (T2DM). Despite dietary recommendations, individuals consume inadequate amounts or unsuitable type of dietary fiber (DF) which needs correction. An Expert group attempted to review and report on the role and importance of high DF in the management of T2DM and offer practical guidance on high fiber use in daily diet.\n\n[5] Type 2 diabetes and obesity have become major public health concerns. Growing evidence suggests that increased dietary fiber intake, through its interaction with the gut microbiota, may help prevent these diseases. Here, we demonstrate in a 12-week randomized, placebo-controlled trial in individuals at risk for type 2 diabetes that intake of an intrinsic fiber product, consisting of entire plant cells, tended to improve peripheral insulin sensitivity (p = 0.085), increased whole-body insulin sensitivity (p = 0.032), reduced circulating triglycerides (p = 0.049), and tended to reduce intrahepatic lipid content (p = 0.063), along with an increased proportion of small adipocytes (p = 0.008). Phylogenetic and metagenomic analysis revealed that these outcomes coincided with increased levels of fiber-degrading Bifidobacterium spp. and butyrate-producing Anaerostipes spp. and a functional shift toward a distal butyrogenic trophic chain while the best responding individuals had increased levels of pectin degraders that may produce propionate. Our findings demonstrate the pivotal role of slowly fermented, intrinsic plant cell fibers in improving cardiometabolic health. This study was registered at ClinicalTrials.gov (NCT04714944).\n\n[6] Findings indicate the greater importance of promoting dietary fiber intakes, and the relative unimportance of carbohydrate amount in recommendations for people with diabetes.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "All four passages support that higher dietary fiber intake is linked to lower T2D risk or improved metabolic health."
+          },
+          {
+            "index": 2,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "The passages involve people with or at risk of T2D, but none mention research combining different types of diabetes."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Matches passage 1's description of TCF7L2 genotype modifying fiber's effect on T2D risk in men with impaired fasting glucose."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Matches passage 2's statements about fiber being beneficial and glycemic starch/sugar being harmful, especially with genetic predisposition."
+          },
+          {
+            "index": 5,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "The epidemiological protective link is mentioned as background in passage 3, but the sentence misattributes it as the systematic review's own finding (the review itself examined RCTs, not population studies)."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Matches passage 3's statement about inconsistent RCT results depending on fiber form."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Matches passage 5's trial findings on insulin sensitivity and triglycerides."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Matches passage 5's findings on gut microbiota changes and butyrate-producing bacteria."
+          },
+          {
+            "index": 9,
+            "label": "SUPPORTED",
+            "why": "Matches passage 6's conclusion about higher fiber/higher carb diets being better for diabetes management."
+          },
+          {
+            "index": 10,
+            "label": "SUPPORTED",
+            "why": "Matches passage 4's description of inadequate fiber intake in India and recommendations to increase it."
+          },
+          {
+            "index": 11,
+            "label": "NOT_APPLICABLE",
+            "why": "General advice, not a factual claim from the sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the evidence for low-carbohydrate diets versus low-fat diets in managing type 2 diabetes?",
+      "status": "answered",
+      "generated_answer": "Low-carbohydrate diets can lower average blood sugar (measured by HbA1c, a blood test showing your average blood sugar over about three months) more than low-fat diets, at least in the first few months. This evidence comes from studies of adults with type 2 diabetes. Low-carb diets also led to more weight loss, lower BMI (a measure of body weight compared to height), lower fasting insulin, and lower triglycerides (a type of blood fat) in the short-to-medium term. People on low-carb diets also needed fewer diabetes medicines over the longer term. However, total cholesterol and HDL-C (often called \"good\" cholesterol) went up on low-carb diets, and there was no real difference between the two diets in other heart-related markers or in side effects. A low-carbohydrate Mediterranean-style eating pattern helped more people with newly diagnosed type 2 diabetes reach remission (blood sugar returning to a non-diabetic range) compared to a low-fat diet, when paired with a modest weight loss of up to about 6 kilograms. This same low-carb Mediterranean pattern was also more effective for remission than a standard Mediterranean diet or a typical diabetes-association diet in people with any length of diabetes, but it needed a larger weight loss of about 8 kilograms to work. Other eating patterns, including low-calorie diets and diets rich in plant protein, also helped some people reach remission, and plant-based diets needed less weight loss to work than low-calorie or low-carb diets did. Some expert summaries say that cutting carbohydrates improves blood sugar control and several heart-disease risk factors, though it can raise LDL cholesterol (a type of cholesterol linked to heart disease) in some people. A broader review of many studies found that the overall evidence on low-carb diets for blood sugar and weight control in type 2 diabetes is mixed and inconsistent, making it hard to turn into firm practical advice. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] The clinical benefit of low carbohydrate (LC) diets compared with low fat (LF) diets for people with type 2 diabetes (T2D) remains uncertain. We conducted a meta-analysis of randomized controlled trials (RCTs) to compare their efficacy and safety in people with T2D. RCTs comparing both diets in participants with T2D were identified from MEDLINE, Embase, Cochrane Library, and manual search of bibliographies. Mean differences and relative risks with 95% CIs were pooled for measures of glycaemia, cardiometabolic parameters, and adverse events using the following time points: short-term (3 months), intermediate term (6 and 12 months) and long-term (24 months). Twenty-two RCTs comprising 1391 mostly obese participants with T2D were included. At 3 months, a LC vs. LF diet significantly reduced HbA1c levels, mean difference (95% CI) of -0.41% (-0.62, -0.20). LC diet significantly reduced body weight, BMI, fasting insulin and triglycerides and increased total cholesterol and HDL-C levels at the short-to-intermediate term, with a decrease in the requirement for antiglycaemic medications at intermediate-to-long term. There were no significant differences in other parameters and adverse events. Except for reducing HbA1c levels and adiposity parameters at short-to-intermediate terms, a LC diet appears to be equally effective as a LF diet in terms of control of cardiometabolic markers and the risk of adverse events in obese patients with T2D.\n\n[2] We included 52 original studies-40 % were rated as low-risk of bias. Overall, studies showed the low-carbohydrate Mediterranean diet (LCMD), compared to a low-fat diet, was more effective for achieving T2D remission in newly diagnosed patients who also had a weight loss of up to 6 kg. Compared to both the traditional Mediterranean diet and the American Diabetic Association diet, the LCMD was also more effective at diabetes remission for persons with T2D with any duration of diabetes; however, more substantial weight loss of 8 kg was required. Other diets that appeared effective for T2D remission included low-calorie diets and diets high in plant protein sources. Less weight loss was needed to achieve remission on plant-based diets than a low-calorie diet and low-carbohydrate diet.\n\n[3] Type 2 diabetes mellitus (T2DM), metabolic syndrome, and related co-morbidities are major risk factors for cardiovascular disease (CVD). Ideally, then, a diet intended to support cardiovascular health should be one that improves or reverses these underlying risk factors. Carbohydrate restriction is effective for this purpose as well as for favorably impacting atherogenic dyslipidemia. Recent consensus reports from select national organizations have endorsed low-carbohydrate diets for improving glycemia and cardiovascular risk. Reluctance among public health organizations and some clinicians to more widely promote this therapeutic nutritional approach is driven primarily by the increase in serum low-density lipoprotein cholesterol (LDL-C) observed in a proportion of individuals who adopt a low-carbohydrate diet. Here we explore the rationale for using carbohydrate restriction to improve cardiovascular health by way of favorably impacting T2DM and insulin resistance, and why this salutary effect outweighs the potential adverse effects of an increase in serum LDL-C.\n\n[6] Dietary interventions providing different amounts of carbohydrates have been proposed as a means of achieving glycemic control and weight loss in type 2 diabetes mellitus (T2DM); however, the supporting evidence is heterogeneous, making this recommendation difficult to apply in nutritional clinical practice.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Matches meta-analysis finding of greater short-term HbA1c reduction with low-carb diets."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "All four cited passages concern adults with type 2 diabetes."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Matches reported short-to-intermediate term reductions in weight, BMI, fasting insulin, triglycerides."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Matches statement on reduced medication requirement at intermediate-to-long term."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Matches reported rise in total cholesterol/HDL-C and no difference in other markers or adverse events."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Matches passage on LCMD vs low-fat diet remission with up to 6kg weight loss."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Matches passage comparing LCMD to Mediterranean/ADA diets requiring 8kg weight loss."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Matches passage on low-calorie and plant-based diets' effectiveness and weight loss needs."
+          },
+          {
+            "index": 9,
+            "label": "SUPPORTED",
+            "why": "Matches passage's discussion of glycemic and cardiovascular benefits versus LDL increase."
+          },
+          {
+            "index": 10,
+            "label": "SUPPORTED",
+            "why": "Matches passage's statement that evidence is heterogeneous and hard to apply clinically."
+          },
+          {
+            "index": 11,
+            "label": "NOT_APPLICABLE",
+            "why": "General advice, not a factual claim from sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 4,
+      "question": "Is there evidence that plant-based diets improve glycemic control in people with type 2 diabetes?",
+      "status": "answered",
+      "generated_answer": "Yes, several studies suggest that plant-based diets can help improve blood sugar control in people with type 2 diabetes. One large review found that people who followed healthy plant-based diets had lower average blood sugar levels, with HbA1c (a blood test that shows your average blood sugar over about three months) dropping by about 0.3 to 0.5 percentage points. Another review found that switching to a diet with less animal-based food improved blood sugar control and other heart-health markers in clinical trials. A narrative review reported that plant-based diets improved HbA1c, insulin resistance (how well your body responds to insulin), and overall blood sugar management in people with type 2 diabetes. A randomized controlled trial found that a whole-food, plant-based lifestyle program improved blood sugar control more than standard medical care, and some participants' diabetes went into remission. A recent review of observational studies also suggested plant-based diets may benefit type 2 diabetes, though it called for more standardized research. However, results are not all consistent. A systematic review of randomized trials found that plant-based diets improved markers of insulin resistance in people with overweight or obesity, but one study focused on people with type 2 diabetes found no difference in insulin-related glucose clearance compared with a standard diabetes diet. Most of this evidence comes from studies of people with type 2 diabetes, with some also including people who are overweight or have prediabetes. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Background: Type 2 diabetes mellitus (T2D) is one of the fastest-growing chronic diseases worldwide, affecting an estimated 589 million adults in 2024, with projections rising to 853 million by 2050. Dietary modification is a cornerstone of both T2D prevention and management. Among the various dietary approaches, plant-based dietary patterns have gained increasing attention; however, uncertainty remains regarding the optimal dietary composition and the contribution of specific food groups. Methods: This narrative review summarizes the current evidence on plant-based dietary patterns and their association with T2D prevention and metabolic control, with a particular focus on legumes, dietary fiber, and red and processed meat. Evidence from prospective cohort studies, randomized controlled trials, and meta-analyses was evaluated. Results: Higher adherence to healthy plant-based dietary patterns was consistently associated with up to a 30% lower risk of developing T2D, improved insulin sensitivity, and approximately a 0.30-0.47 percentage-point reduction in glycated hemoglobin (HbA1c). Greater consumption of legumes and dietary fiber was linked to improved glycemic control, enhanced but heterogeneous modulation of gut microbiota composition, reduced low-grade inflammation, and beneficial effects on body weight and lipid metabolism. In contrast, higher intake of processed meat and unprocessed red meat was consistently associated with an increased risk of T2D. Importantly, unhealthy plant-based diets characterized by refined grains, sugar-sweetened beverages, and highly processed foods provided little metabolic benefit and may even increase diabetes risk by up to 13%. The interpretation of the available evidence is limited by the predominance of observational studies, heterogeneous definitions of plant-based dietary patterns, self-reported dietary assessments, and the limited availability of long-term randomized controlled trials. Conclusions: Current evidence supports healthy plant-based dietary patterns as an effective strategy for the prevention and management of T2D. Dietary patterns emphasizing whole plant foods, including legumes, whole grains, fruits, vegetables, nuts, and seeds, while limiting processed and excessive\n\n[2] to adhere to longer term than more intensive total diet replacement and low-carbohydrate strategies. Plant-based diets that advocate for the elimination of animal-based and/or animal-derived foods have increased in popularity. There is evidence from epidemiological studies that people who follow these diets have a lower risk of developing type 2 diabetes, and evidence from trials and systematic reviews of trials that changing to a dietary pattern lower in animal-based and animal-derived foods has benefits on glycaemic control and other markers of cardiovascular disease. While these approaches all provide food or nutrient prescriptions, approaches that incorporate periods of fasting do not provide rules on the types of foods that can or cannot be consumed, but rather provide time windows of when to eat. Evidence suggests that these approaches can be as effective in achieving energy restriction and weight loss as approaches that advocate continuous energy restriction, and there is evidence for benefits on glycaemic control independent of weight loss. Finally, popular dietary strategies that may be useful to use or combine to help prevent postprandial hyperglycaemia include reducing the glycaemic index or glycaemic load of the diet, high-fibre diets, eating foods in a meal in the order vegetables > protein > carbohydrates, preloading or combining acids such as vinegar or lemon juice with meals and engaging in low-intensity aerobic exercise immediately after meals.\n\n[3] Type 2 diabetes (T2D) is a significant public health challenge for which effective lifestyle interventions are needed. A growing body of evidence supports the use of both plant-based eating patterns and early time-restricted eating (eTRE) for the prevention and treatment of T2D, but research has not yet explored the potential of these dietary strategies in combination. In this narrative review, we assessed the evidence by which plant-based diets, in conjunction with eTRE, could support T2D care. The electronic databases MEDLINE and the Web of Science were searched for relevant articles published throughout the last decade. Observational research has shown that healthy plant-based eating patterns and eTRE are associated with reductions in T2D risk. Interventional trials demonstrated that plant-based diets promote improvements in glycated hemoglobin, insulin resistance, glycemic management, and cardiometabolic risk factors. These changes may be mediated, in part, by reductions in oxidative stress, dietary acid load, and hepatocellular and intramyocellular lipids. The eTRE strategies were also shown to improve insulin resistance and glycemic management, and mechanisms of action included enhanced regulation of circadian rhythm and increased metabolic flexibility. Integrating these dietary strategies may produce additive benefits, mediated by reduced visceral adiposity and beneficial shifts in gut microbiota composition. However, potential barriers to concurrent implementation of these interventions may exist, including social challenges, scheduling constraints, and tolerance. Prospective trials are needed to examine their acceptability and clinical effects.\n\n[4] The aim of this systematic review and meta-analysis was to examine the effects of plant-based diets on markers of insulin sensitivity in people with overweight/obesity, prediabetes, or type 2 diabetes (T2D). A systematic literature search in MEDLINE, Embase, CINAHL, and CENTRAL was conducted, and randomised controlled trials (RCTs) investigating the effect of plant-based diets (vegan, ovo-vegetarian, lacto-vegetarian, and lacto-ovo-vegetarian) for ≥14 d on markers of insulin sensitivity in adults (≥18 years) with BMI ≥ 25 kg/m2, prediabetes, or T2D were eligible. We identified eight RCTs, including 716 participants. In comparison with control diets, plant-based diets improved Homeostatic Model Assessment for Insulin Resistance (HOMA-IR) (-0.97, 95% confidence interval (CI) (-1.67, -0.27), p = 0.007) and fasting insulin (-4.13 µU/mL, 95% CI (-7.22, -1.04), p = 0.009) in people with overweight/obesity. In people with prediabetes, one study compared vegan and vegetarian diets and found no difference in HOMA-IR, or fasting insulin. One study of people with T2D reported no difference in immunoreactive insulin and metabolic glucose clearance compared with a conventional diabetes diet. In conclusion, adhering to plant-based diets for ≥14 d improved HOMA-IR and fasting insulin in people with overweight/obesity. Long-term RCTs are needed to determine whether plant-based diets can result in prolonged improvements in insulin sensitivity in people at risk of or with T2D.\n\n[5] A whole-food, plant-based lifestyle intervention was more effective for improving glycaemic control than SMC. It also reduced the need for diabetes and cardiovascular medications and induced diabetes remission in some participants. Therefore, it is an effective, evidence-based lifestyle option for individuals with type 2 diabetes.\n\n[6] Recent observational evidence suggests that plant-based diets are associated with lower odds of hypertension and may also benefit type 2 diabetes and dyslipidemia. The findings support plant-forward dietary guidance, although better standardized prospective studies are still needed.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passages 1, 3, 5 collectively show plant-based diets improving glycemic control in T2D."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 1 reports HbA1c reduction of about 0.30-0.47 points, close to stated range."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 2 confirms benefits on glycaemic control and cardiovascular markers from trials."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 3 states plant-based diets improved HbA1c, insulin resistance, and glycemic management in T2D context."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 5 directly supports this RCT finding including remission."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Passage 6 states plant-based diets may benefit T2D and calls for more standardized research."
+          },
+          {
+            "index": 7,
+            "label": "NOT_APPLICABLE",
+            "why": "Transitional remark, not a factual claim tied to a source."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Passage 4 matches both the overweight/obesity insulin resistance finding and the T2D null result."
+          },
+          {
+            "index": 9,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "The claim that 'most' evidence is from T2D populations overstates since passage 4 is mainly about overweight/obesity and prediabetes."
+          },
+          {
+            "index": 10,
+            "label": "NOT_APPLICABLE",
+            "why": "General advice, not a factual claim about the evidence."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 5,
+      "question": "Does time-restricted eating (intermittent fasting) improve markers of glycemic control?",
+      "status": "answered",
+      "generated_answer": "Studies show that time-restricted eating can improve several markers of blood sugar control, including fasting blood sugar, HbA1c (a blood test that shows your average blood sugar over about three months), and the amount of time blood sugar stays in a healthy range. Time-restricted eating means eating all your meals within a shorter window each day, often 4 to 10 hours, and fasting for the rest of the day. This evidence comes from research in people with type 2 diabetes, people with prediabetes (blood sugar levels higher than normal but not yet high enough to be diabetes), and people at higher risk of developing type 2 diabetes. In one review that combined eight trials, time-restricted eating lowered fasting blood sugar and HbA1c by small amounts and increased the time blood sugar stayed in a healthy range by about 10 percentage points. Another review looked specifically at how time-restricted eating affects blood sugar regulation markers in people with prediabetes or type 2 diabetes. In a trial that combined calorie and carbohydrate restriction with intermittent fasting, blood sugar control improved and some participants' diabetes went into remission, with results similar to calorie-carbohydrate restriction alone without fasting. In another trial, a fasting approach combined with eating earlier in the day improved blood sugar response after meals more than simple calorie-cutting at six months, though this advantage faded by eighteen months. A separate study is also looking at how time-restricted eating affects blood sugar control and its day-to-day ups and downs in adults with prediabetes who are overweight or have obesity. Researchers note that larger, longer studies are still needed to confirm how lasting these benefits are.",
+      "cited_chunk_texts": "[1] Time-restricted eating (TRE), a dietary strategy that aligns food intake with circadian rhythms, has emerged as a promising non-pharmacological approach for improving glycemic control in patients with type 2 diabetes. This systematic review and meta-analysis evaluated the effects of TRE on glycemic outcomes by analyzing eight randomized controlled trials involving 312 participants with type 2 diabetes or impaired fasting glucose. Meta-analyses of six eligible studies demonstrated that TRE significantly reduced fasting glucose (mean difference [MD]: -0.74 mmol/L; 95% CI: -1.13 to -0.36) and glycated hemoglobin (ΔHbA1c) (MD: -0.11%; 95% CI: -0.15 to -0.07) and increased time in range (TIR) for blood glucose (MD: +10.51%; 95% CI: 6.81 to 14.21). Improvements in fasting glucose and HbA1c were modest but consistent, while the increase in TIR showed no between-study heterogeneity, suggesting a robust and reproducible benefit of TRE on glycemic stability. These findings support the clinical feasibility and effectiveness of TRE as a dietary intervention in diabetes management. However, further high-quality trials with standardized protocols and longer follow-up are needed to confirm long-term efficacy and inform guidelines.\n\n[2] Time-restricted eating (TRE) entails consuming energy intake within a 4- to 10-h window, with the remaining time spent fasting. Although studies have reported health benefits from TRE, little is known about the impact of TRE on common chronic diseases such as type 2 diabetes, cancer and cardiovascular disease. This review summarizes and critically evaluates the most recent TRE research findings relevant to managing and treating these chronic diseases.\n\n[3] The aim of this exploratory analysis was to investigate effects of time-restricted eating (TRE) on glycemic control and variability in adults with prediabetes.\n\n[4] Both calorie-carbohydrate restriction alone and in combination with intermittent fasting significantly improved glycemic control and induced diabetes remission compared with the control group. No significant difference was found between the two interventions. Larger long-term studies are needed to confirm these findings.\n\n[5] Intermittent fasting appears an equivalent alternative to calorie restriction (CR) to improve health in humans. However, few trials have considered applying meal timing during the 'fasting' day, which may be a limitation. We developed a novel intermittent fasting plus early time-restricted eating (iTRE) approach. Adults (N = 209, 58 ± 10 years, 34.8 ± 4.7 kg m-2) at increased risk of developing type 2 diabetes were randomized to one of three groups (2:2:1): iTRE (30% energy requirements between 0800 and 1200 hours and followed by a 20-h fasting period on three nonconsecutive days per week, and ad libitum eating on other days); CR (70% of energy requirements daily, without time prescription); or standard care (weight loss booklet). This open-label, parallel group, three-arm randomized controlled trial provided nutritional support to participants in the iTRE and CR arms for 6 months, with an additional 12-month follow-up. The primary outcome was change in glucose area under the curve in response to a mixed-meal tolerance test at month 6 in iTRE versus CR. Glucose tolerance was improved to a greater extent in iTRE compared with CR (-10.10 (95% confidence interval -14.08, -6.11) versus -3.57 (95% confidence interval -7.72, 0.57) mg dl-1 min-1; P = 0.03) at month 6, but these differences were lost at month 18. Adverse events were transient and generally mild. Reports of fatigue were higher in iTRE versus CR and standard care, whereas reports of constipation and headache were higher in iTRE and CR versus standard care. In conclusion, incorporating advice for meal timing with prolonged fasting led to greater improvements in postprandial glucose metabolism in adults at increased risk of developing type 2 diabetes. ClinicalTrials.gov identifier NCT03689608 .\n\n[6] This systematic review and meta-analysis aimed to investigate the effects of time-restricted eating (TRE) on glucose metabolism and regulation in individuals with prediabetes (fasting blood glucose of 5.6-6.9 mmol/l or HbA1c of 39-47 mmol/mol [5.7-6.4%]) or type 2 diabetes (fasting blood glucose ≥7 mmol/l or HbA1c ≥48 mmol/mol [6.5%]).",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Matches passage 1's findings on fasting glucose, HbA1c, and time in range improvements."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Matches passage 2's definition of TRE as eating within a 4-10h window."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "The cited passages collectively cover T2D, prediabetes, and at-risk populations as stated."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Matches the specific numbers given in passage 1 for fasting glucose, HbA1c, and TIR changes."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Matches passage 6's stated aim of investigating glucose regulation markers in prediabetes/T2D."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Matches passage 4's description of combined intervention improving glycemic control and remission with no difference from calorie-carb restriction alone."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Matches passage 5's results on glucose tolerance improvement at 6 months fading by 18 months."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Matches passage 3's description of studying glycemic control and variability in overweight/obese prediabetic adults."
+          },
+          {
+            "index": 9,
+            "label": "SUPPORTED",
+            "why": "Matches both passages' calls for larger, longer studies to confirm findings."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 6,
+      "question": "What role does the DASH diet play in glycemic and blood pressure outcomes for people with diabetes?",
+      "status": "answered_partial",
+      "generated_answer": "In a trial of adults with type 2 diabetes, a DASH-style diet made for diabetes (a diet high in fruits, vegetables, and whole grains, originally designed to lower blood pressure) lowered average blood sugar levels compared to a typical American diet. It also increased the amount of time people's blood sugar stayed in a healthy range, and cut down the time spent with high blood sugar. It did not change how much blood sugar swung up and down, called glucose variability, and it did not raise the risk of low blood sugar episodes. Separately, in a large analysis that combined many studies of mixed groups of adults, people who closely followed the DASH diet had a lower chance of developing diabetes in the first place compared to those who followed it the least. The researchers who did this analysis said more studies, including controlled trials, are still needed to confirm this protective link. The studies found here don't show whether the DASH diet improves blood pressure outcomes in people who already have diabetes.",
+      "cited_chunk_texts": "[1] The findings of this study demonstrate a protective association between adherence to the DASH diet and risk of diabetes mellitus. However, further prospective cohort studies and randomized controlled trials are needed to validate these findings.\n\n[2] Fifteen studies involving 557,475 participants and 57,064 diabetes mellitus cases were eligible for our analyses. Pooled analyses from included studies showed that high adherence to the DASH diet was significantly associated with a reduced risk of diabetes mellitus (RR: 0.82; 95% CI: 0.76-0.90, P < 0.001). Moreover, the dose-response meta-analysis revealed a linear trend between adherence to the DASH diet and diabetes mellitus (RR:0.99; 95%CI: 0.97-1.02, Pdose-response = 0.546, Pnonlinearity = 0.701). Subgroup analyses further revealed a significant inverse association between adherence to the DASH diet and diabetes mellitus risk in case-control studies (RR: 0.65; 95%CI: 0.29-1.43, P < 0.001), with a marginal inverse association in cohort studies (RR:0.83; 95%CI: 0.76-0.91, P < 0.001). Additionally, we conducted analyses separately by comparison and found a significant inverse association between DASH diet and diabetes mellitus risk in T3 vs T1 comparison studies (RR = 0.74; 95%CI: 0.64-0.86, P = 0.012).\n\n[3] The Dietary Approaches to Stop Hypertension (DASH) diet is rich in foods (fruits, vegetables, whole grains) that may reduce hyperglycemia and glycemic variability. In this randomized crossover feeding trial, 89 participants with type 2 diabetes were fed four isocaloric diets in a random order: the DASH4D diet (a DASH-style diet tailored for diabetes) or a comparison (typical American) diet, each with higher (3,700 mg day-1 at 2,000 kcal) or lower (1,500 mg day-1 at 2,000 kcal) sodium. Each feeding period lasted 5 weeks. The primary outcomes were mean glucose; percentage of time spent with glucose between 70 and 180 mg dl-1 (time in range); and coefficient of variation assessed using 14 days of continuous glucose monitoring during each feeding period. The DASH4D (versus comparison) diet significantly reduced mean glucose (mean difference = -11.1 mg dl-1; P < 0.001), increased time in range (mean difference = +5.2 percentage points; P < 0.001) and had no effect on the coefficient of variation (P = 0.52). In analyses of secondary outcomes, glucose standard deviation and time spent with hyperglycemia (glucose >180 mg dl-1 and >250 mg dl-1) were lower in the DASH4D diet, but time spent with hypoglycemia (glucose <70 mg dl-1 and <54 mg dl-1) was similar across diets. There were no serious adverse events related to continuous glucose monitoring or the study diets. These results suggest that the DASH4D diet is a promising nutritional approach to substantially improve glycemic control in adults with type 2 diabetes. ClinicalTrials.gov registration: NCT04286555 .",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 3 reports DASH4D diet significantly lowered mean glucose versus comparison diet in T2D adults."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 3 reports increased time in range and reduced time in hyperglycemia for DASH4D diet."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 3 states no effect on coefficient of variation and similar hypoglycemia time across diets."
+          },
+          {
+            "index": 4,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 2 supports the reduced diabetes risk finding, but does not specify 'mixed groups of adults' as a characterization of participants."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 1 explicitly states further studies, including RCTs, are needed to validate the findings."
+          },
+          {
+            "index": 6,
+            "label": "UNSUPPORTED",
+            "why": "No passages are cited, yet the sentence asserts a factual gap about blood pressure outcomes."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 7,
+      "question": "What HbA1c target is generally recommended for most nonpregnant adults with type 2 diabetes?",
+      "status": "answered_partial",
+      "generated_answer": "One study looked at a target HbA1c (a blood test that shows your average blood sugar over about three months) of below 7.0% as the goal for people with type 2 diabetes who were on a longer-acting insulin treatment. The evidence used here comes from studies on people with type 2 diabetes in general and on older adults with type 2 diabetes who were mostly already using insulin, rather than from a document covering the broader group of most nonpregnant adults with type 2 diabetes. The studies gathered here don't address whether a below-7.0% HbA1c goal is the standard recommendation for most nonpregnant adults with type 2 diabetes in general, as opposed to specific subgroups. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] To explore outcome parameters related to achieving HbA1c goal (<7.0%) in subphenotypes of type 2 diabetes (T2D), either on basal insulin (BI) glargine 300 U/mL or 100 U/mL or switched to these BIs (≥42 U/day) alone or with pre-prandial insulin.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 1 states the HbA1c goal of <7.0% for the insulin glargine-treated subphenotypes."
+          },
+          {
+            "index": 2,
+            "label": "UNSUPPORTED",
+            "why": "No passages are cited to support this characterization of the evidence base."
+          },
+          {
+            "index": 3,
+            "label": "UNSUPPORTED",
+            "why": "No passages are cited to support this claim about the limitations of the studies."
+          },
+          {
+            "index": 4,
+            "label": "NOT_APPLICABLE",
+            "why": "This is generic advice, not a factual claim from the sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "UNSUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 8,
+      "question": "Does continuous glucose monitoring (CGM) improve glycemic control compared with self-monitoring of blood glucose?",
+      "status": "answered_partial",
+      "generated_answer": "Continuous glucose monitoring (CGM), a small sensor that tracks blood sugar levels throughout the day and night, has been shown to improve glycemic control, which means how well blood sugar stays in a healthy range. Studies show CGM use is linked to lower HbA1c (a blood test that shows your average blood sugar over about three months), more time spent with blood sugar in a healthy range, and fewer episodes of low blood sugar. This evidence comes from a mix of people with type 1 and type 2 diabetes. The comparison between CGM and finger-stick blood sugar testing (self-monitoring of blood glucose) is pieced together from separate studies rather than from one single study that tested both methods side by side and reported results. One study specifically looked at adults with type 2 diabetes using insulin and set out to compare CGM with regular finger-stick testing to see which led to faster improvements in blood sugar control. However, that study description does not report what the actual results were. The studies found here don't show a direct, head-to-head result comparing CGM with self-monitoring of blood glucose specifically in people with type 2 diabetes. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Continuous glucose monitoring (CGM) demonstrates significant benefits in glycemic control for both type 1 and type 2 diabetes, including reductions in HbA1c, increased time-in-range, and decreased hypoglycemia.\n\n[2] This analysis investigated whether use of real-time continuous glucose monitoring (CGM) compared with blood glucose monitoring (BGM) results in rapidly improved glycemic management in adults with type 2 diabetes (T2D) treated with basal insulin.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 1 states CGM shows significant benefits in glycemic control; device description is general framing, not contradicted."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 1 explicitly lists lower HbA1c, increased time-in-range, and decreased hypoglycemia."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 1 states benefits apply to both type 1 and type 2 diabetes."
+          },
+          {
+            "index": 4,
+            "label": "UNSUPPORTED",
+            "why": "No passage is cited, yet a specific claim about how evidence was synthesized is asserted."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 2 describes exactly this study comparing CGM vs BGM in insulin-treated T2D adults for rapid glycemic improvement."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Passage 2 only describes the study's aim, not its results, matching the sentence's claim."
+          },
+          {
+            "index": 7,
+            "label": "UNSUPPORTED",
+            "why": "No passage is cited for this broad conclusion about lack of head-to-head comparison data."
+          },
+          {
+            "index": 8,
+            "label": "NOT_APPLICABLE",
+            "why": "This is general advice, not a factual claim requiring source support."
+          }
+        ],
+        "answers_the_question": 5,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 10,
+      "question": "How does postprandial exercise timing affect blood glucose control in type 2 diabetes?",
+      "status": "answered_partial",
+      "generated_answer": "Research on type 2 diabetes suggests that exercising after a meal can help lower the rise in blood sugar that normally happens after eating. This after-meal blood sugar rise is called a 'postprandial' response, meaning the change in blood sugar that happens in the hours after you eat. The evidence here comes from studies done in people with type 2 diabetes. One study looked at whether exercise done soon after a meal gives extra blood sugar benefit on top of diabetes medicines someone is already taking, compared to sitting still after eating. That study used short bouts of brisk walking, broken into three 10-minute sessions, right after a standard breakfast, and tracked blood sugar with a continuous glucose sensor. Another review specifically set out to compare exercising before a meal versus after a meal, to see which timing has more effect on the blood sugar spike that follows eating. A separate review also aimed to look closely at how the timing of exercise around meals changes blood sugar or the body's sensitivity to insulin (a hormone that helps move sugar out of the blood), with a focus on type 2 diabetes. The studies gathered here describe what the researchers set out to test and how they did it, but they do not give the specific numbers showing exactly how much better or worse blood sugar control was with one exercise timing versus another. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Exercise and diet are among the most studied behaviors that can affect blood glucose concentrations. Despite multiple studies examining these interventions in different populations and contexts, inconsistencies across studies have led to variable expectations. The purpose of this review is to more specifically examine how the timing of when exercise is performed in relation to meals can modify changes in glucose concentrations or insulin sensitivity. When possible, studies in type 2 diabetes are emphasized, but recent research in type 1 diabetes, obesity, and athletes is also considered.\n\n[2] We aimed to identify the impact of pre- and post-meal exercise on postprandial glucose excursions in humans with and without type 2 diabetes mellitus.\n\n[3] Postprandial glucose excursions in eight participants with type 2 diabetes (Age: 60±10.7, HbA1C: 7.9±2.3) being treated with add-on hypoglycemic agents were assessed during both drug-treated sedentary and drug-treated postmeal exercise conditions. Continuous glucose monitoring was used to assess peak and area under the glucose curve (AUC) during exercise, as well as peak within a 2-h time window, 2-h total and 2-h incremental AUC after a standardized breakfast meal. Postmeal exercise consisted of 3×10-min intervals of treadmill walking at 50% maximal oxygen uptake.\n\n[4] Type 2 diabetes treatment primarily focuses on reducing hyperglycemia, including postprandial glucose excursions. Hypoglycemic agents are used clinically to lower fasting and postprandial glucose. Metformin is the first-line therapy; however, if metformin is inadequate then 'add-on' hypoglycemic agents are implemented. Postmeal exercise has been shown to lower postprandial glucose. The aim of this study was to assess if postmeal exercise provides additional glucose-lowering benefit, beyond medication alone, in those on add-on hypoglycemic agents.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 4 states postmeal exercise has been shown to lower postprandial glucose in type 2 diabetes."
+          },
+          {
+            "index": 2,
+            "label": "NOT_APPLICABLE",
+            "why": "This is a general definitional clarification, not a specific claim requiring source support."
+          },
+          {
+            "index": 3,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 2 studies include healthy subjects and impaired glucose tolerance patients too, not only people with type 2 diabetes."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passages 3 and 4 describe exactly this comparison of postmeal exercise plus medication versus sedentary with medication."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 3 details the 3x10-minute walking intervals after a standardized breakfast with CGM tracking."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Passage 2 explicitly aims to compare pre- and post-meal exercise effects on postprandial glucose."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Passage 1 explicitly states this aim, emphasizing type 2 diabetes."
+          },
+          {
+            "index": 8,
+            "label": "NOT_APPLICABLE",
+            "why": "This is a meta-commentary about the limitations of the cited evidence rather than a factual claim."
+          },
+          {
+            "index": 9,
+            "label": "NOT_APPLICABLE",
+            "why": "This is general advice, not a factual claim from the sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 13,
+      "question": "Does bariatric surgery lead to remission of type 2 diabetes?",
+      "status": "answered_partial",
+      "generated_answer": "Yes, bariatric surgery (weight-loss surgery) can lead to remission of type 2 diabetes for some people, meaning their blood sugar can return to normal levels without needing diabetes medicine. This evidence comes from studies in people with type 2 diabetes who also had obesity. Losing weight after surgery can make the body respond better to insulin and help the pancreas's insulin-making cells work better, which can help bring on remission. Research also shows that bariatric surgery generally improves blood sugar control and other metabolic health measures, like cholesterol and blood pressure, in people with obesity and type 2 diabetes. Some studies have compared two common types of bariatric surgery to see which one leads to more diabetes remission, but which one works better is still debated. Even longer-term studies note that it's still unclear which surgery type keeps diabetes in remission better over many years. The studies gathered here mostly look at overall improvements in blood sugar and metabolic health or compare different surgery techniques, rather than giving a full picture of exactly how often remission happens or how long it lasts. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Bariatric surgery significantly improves glycaemic and metabolic outcomes in obese patients with T2DM. These findings support its integration into diabetes management pathways, offering a promising approach for long-term disease control and complication reduction. Further research is needed to evaluate long-term outcomes and mechanisms.\n\n[2] Obesity and type 2 diabetes mellitus (T2DM) are global health crises, with bariatric surgery emerging as a key intervention. However, the comparative efficacy of Roux-en-Y gastric bypass (RYGB) versus sleeve gastrectomy (SG) in achieving diabetes remission remains debated.\n\n[3] For individuals with obesity and type 2 diabetes, weight loss improves insulin sensitivity and β-cell function and can induce remission of diabetes. However, the long-term comparative effectiveness of standard gastric bypass and sleeve gastrectomy on remission of type 2 diabetes remains unclear. We aimed to compare the effects of gastric bypass and sleeve gastrectomy on type 2 diabetes remission, weight loss, and cardiovascular risk factors 5 years after surgery.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 3 states weight loss can induce remission of diabetes, matching the claim."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "All three passages describe studies in people with obesity and type 2 diabetes."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 3 explicitly states weight loss improves insulin sensitivity and β-cell function leading to remission."
+          },
+          {
+            "index": 4,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 1 mentions improved glycaemic and metabolic outcomes but does not specify cholesterol or blood pressure."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 2 states comparative efficacy of RYGB vs SG for remission remains debated."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Passage 3 notes long-term comparative effectiveness of the two surgeries on remission remains unclear."
+          },
+          {
+            "index": 7,
+            "label": "UNSUPPORTED",
+            "why": "This asserts a limitation about the studies without citing any passage to verify it."
+          },
+          {
+            "index": 8,
+            "label": "NOT_APPLICABLE",
+            "why": "This is a generic advice disclaimer, not a factual claim from sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 14,
+      "question": "Can intensive low-calorie diet interventions induce remission of type 2 diabetes?",
+      "status": "answered",
+      "generated_answer": null,
+      "cited_chunk_texts": "",
+      "verdict": {
+        "sentence_grades": [],
+        "answers_the_question": null,
+        "overall": "UNSUPPORTED",
+        "grading_error": "no sentences to grade"
+      }
+    },
+    {
+      "id": 16,
+      "question": "Do GLP-1 receptor agonists cause disproportionate loss of lean body mass during weight loss?",
+      "status": "answered_partial",
+      "generated_answer": "When people lose weight using some diabetes medicines (GLP-1 receptor agonists), they do lose some lean body mass (muscle and other non-fat tissue) along with fat. But the research doesn't clearly show that this muscle loss is out of proportion to the fat loss, meaning it isn't clearly worse than the fat loss itself. This evidence comes from studies in people with type 2 diabetes who were overweight or living with obesity. One large review of several studies found that lean mass loss happened in most trials, but the share of lean mass compared to total body weight did not differ between people taking these medicines and those who did not. Another paper noted that in some studies, the proportion of lean mass relative to total body weight actually went up, which would suggest fat was lost faster than muscle. That same paper also pointed out that other, larger clinical trials found the opposite result, with significant drops in lean mass, showing that findings on this topic are still mixed and unsettled. Because of this mixed picture, researchers say more study is needed to fully understand how these medicines affect muscle versus fat loss. Separately, some early research is looking at other medicines that might help protect or rebuild muscle while people lose fat with these treatments, though these approaches are still being tested and are not yet confirmed to be safe or effective long-term. The studies gathered here don't directly show whether muscle loss is actually greater than fat loss during treatment with these medicines, only that some muscle loss happens alongside fat loss with mixed findings on how the two compare. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Treatment with GLP-1 receptor agonists (GLP-1 RAs) is effective in reducing body weight in individuals with overweight and type 2 diabetes (T2D). However, measurements indicate that a considerable portion of the weight loss derives from fat-free mass (FFM), including skeletal muscle, which may compromise metabolic health and physical function. We aimed to evaluate the evidence for the ability of pharmacological interventions to preserve or increase lean body mass (LBM) during weight loss with GLP-1 RAs, assess their clinical potential and limitations, and identify knowledge gaps requiring further research. A literature review was conducted using PubMed, JAMA, Wiley, ResearchGate, The Royal Danish Library, and ClinicalTrials.gov. Included were preclinical and clinical studies on compounds with documented anabolic effects and established safety profiles. The primary outcomes assessed were changes in LBM, fat mass (FM), physical function, and adverse events. Activin II receptor inhibition with bimagrumab demonstrated significant preservation and increases in LBM, along with FM reduction, in both preclinical and phase 2 studies in individuals with overweight and T2D. Similar effects were observed for myostatin and activin A inhibitors (trevogrumab, garetosmab), latent myostatin inhibitors (apitegromab, SRK-439), and Selective Androgen Receptor Modulators (enobosarm). Notably, enobosarm also improved physical function. Adverse events were generally mild and reversible; however, long-term data remain limited. Pharmacological adjunct therapies show potential for improving body composition and physical function during GLP-1 RA-induced weight loss. Preliminary findings are promising, but larger, controlled trials are necessary to confirm efficacy and safety before clinical implementation can be considered.\n\n[2] This opinion paper aims to discuss the influence of semaglutide, a glucagon-like peptide-1 receptor agonist (GLP-1RA), on lean mass beyond its impact on weight loss. Although significant weight loss is achieved with semaglutide, the impact of this drug on lean mass remains controversial. Several investigations have demonstrated that semaglutide-induced weight loss is linked to decreases in lean mass as well as fat mass; on the other hand, the ratio of lean mass to total body mass rises. Nevertheless, larger clinical trials have reported converse findings and significant reductions in lean mass following treatment with semaglutide. This disparity in research findings emphasizes the necessity for additional studies on this subject because semaglutide use is rising quickly.\n\n[3] This study indicates that the treatment of GLP-1RAs can decrease fat mass. Lean mass loss was observed in the majority of studies, and the effect is more prominent in overweight and obese patients as well as in those with long-term treatment. However, there was no disparity in the effect of GLP-1RAs on the lean mass percentage.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "All three passages confirm lean mass loss occurs alongside fat loss with GLP-1 RAs."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 3 shows no disparity in lean mass percentage and passage 2 shows mixed/controversial findings, supporting the claim of unclear disproportion."
+          },
+          {
+            "index": 3,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passages 1 and 3 specify T2D/overweight/obesity populations, but passage 2 does not mention this population at all."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 3 is described as a meta-analysis of RCTs showing lean mass loss in most trials but no disparity in lean mass percentage, consistent with a treatment-vs-comparator comparison."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 2 explicitly states the ratio of lean mass to total body mass rises in some studies."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Passage 2 explicitly states larger trials found converse results with significant reductions in lean mass."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Passage 2 explicitly calls for additional studies due to disparate findings."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Passage 1 describes early-stage pharmacological adjuncts preserving lean mass, with limited long-term safety data and need for larger trials."
+          },
+          {
+            "index": 9,
+            "label": "UNSUPPORTED",
+            "why": "This asserts a conclusion without citing any passage, violating the no-citation rule even though it summarizes prior content."
+          },
+          {
+            "index": 10,
+            "label": "NOT_APPLICABLE",
+            "why": "This is generic advice, not a factual claim from the sources."
+          }
+        ],
+        "answers_the_question": 2,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 17,
+      "question": "What is sarcopenic obesity and why is it a concern in older adults with type 2 diabetes?",
+      "status": "answered",
+      "generated_answer": "Sarcopenic obesity is when someone loses muscle mass and strength (a condition called sarcopenia) while also carrying too much body fat. Researchers are now treating this combination as its own health problem, separate from either muscle loss or obesity alone. This evidence mainly concerns people with type 2 diabetes, though one source looked at both type 1 and type 2 diabetes together. In older adults, sarcopenic obesity has been linked to worsening insulin resistance, which means the body has a harder time using insulin properly, along with ongoing low-level inflammation. These changes are tied to a higher chance of heart and blood vessel disease, type 2 diabetes, and problems with memory or thinking. Studies also show a strong, independent link between sarcopenia or sarcopenic obesity, type 2 diabetes, and cardiovascular disease. Diabetes itself seems to speed up muscle loss through high blood sugar, ongoing inflammation, and oxidative stress, which is damage caused by unstable molecules in the body. Despite these risks, awareness of diabetes-related muscle loss remains low among patients, healthcare workers, and policymakers, leaving gaps in research, screening, and treatment. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Sarcopenia, initially described as a disease of the elderly and its coexistence with obesity, now termed as 'sarcopenic obesity' (SO), are now emerging to be important health problems worldwide. Their relatively recent recognition as distinct clinical entities with growing research has shown an increasing prevalence of both sarcopenia and SO. There is a strong independent association, which exists between sarcopenia/SO, type 2 diabetes mellitus (T2DM), and cardiovascular disease (CVD). Studies investigating prevalence of sarcopenia/SO indicate considerable heterogeneity, likely due to the lack of a universally accepted definition, differences in age groups, gender, ethnicity, and socio-demographic factors of the population studied, apart from use of distinct diagnostic criteria and methods of estimation based on either muscle mass or strength.\n\n[2] The older segment of the global population is increasing at a rapid pace. Advancements in public health and modern medicine lengthened life expectancy and reduced the burden of disease in communities worldwide. Concurrent with this demographic change is the rise in overweight people and obesity, which is evident in all age groups. There is also an aging-related reduction in muscle mass and function, or sarcopenia, that is exacerbated by sedentary lifestyle and poor nutrition. The coexistence of muscle loss and elevated body mass index, termed \"sarcopenic obesity\", has particularly deleterious consequences in older individuals. Worsening insulin resistance and a proinflammatory state operate at the pathophysiologic level and lead to adverse health outcomes such as a proclivity to cardiovascular disease, type 2 diabetes, and even cognitive dysfunction. Although the concept of sarcopenic obesity as a disease construct is being increasingly recognized, a clearer understanding is warranted in order to define its components and health impact. Research is needed at the molecular-cellular level to tie together derangements in insulin action, cytokines, myokines, and endothelial dysfunction with clinical outcomes. Lifestyle modifications as well as targeted nonpharmacologic approaches, such as supplements and antioxidants, appear to have a promising role in reducing the chronic burden of this emerging disorder. Breakthroughs in drug therapies that retard or even reverse the underlying dynamics of sarcopenia and obesity in older persons are being actively explored.\n\n[3] Diabetes mellitus is a systemic chronic disease with growing prevalence and potential multiorgan complications leading to clinical, social, and economic burdens. Nutritional and metabolic derangements are important components of both type 1 (T1DM) and type 2 diabetes (T2DM), but assessment of nutritional state, body composition and muscle function is commonly neglected. Likely reasons include high prevalence of overweight, obesity, or excess visceral fat in highly-prevalent T2DM, potentially diverting attention from undernutrition risk. Diabetes and adiposity are mechanistically related to sarcopenia, defined as reduction of skeletal muscle strength and mass, through complex muscle-catabolic derangements, conferring additional risk for negative outcomes. Awareness of diabetes-induced muscle abnormalities remains low among healthcare professionals, patients and policymakers, contributing to research, knowledge and practice gaps. Lifestyle recommendations and treatments centered on nutritional care and physical activity to preserve and improve muscle mass and function remain poorly implemented. The European Society for Clinical Nutrition and Metabolism (ESPEN) and the Diabetes Nutrition Study Group (DNSG), reference group for the European Association for the Study of Diabetes, recognize sarcopenic diabetes as a distinct clinical condition and priority for research and education, and call for action to enhance awareness, stimulate research and promote consensus on sarcopenic diabetes diagnostic criteria, prevention and management.\n\n[4] Diabetes prevalence is increasing rapidly in older people, and sarcopenia is prevalent as a novel complication, particularly in patients with type 2 diabetes mellitus (T2DM). Therefore, sarcopenia prevention and treatment in these people is necessary. Diabetes accelerates sarcopenia through several mechanisms, such as hyperglycemia, chronic inflammation and oxidative stress. The effects of diet, exercise, and pharmacotherapy on sarcopenia in patients with T2DM need to be considered. In diet, low intake of energy, protein, vitamin D, and ω-3 fatty acid are associated with sarcopenia risk. In exercises, although intervention studies in people, especially older and non-obese patients with diabetes, are few, accumulating evidence shows the usefulness of exercise, particularly resistance exercise for muscle mass and strength, and aerobic exercise for physical performance in sarcopenia. In pharmacotherapy, certain classes of anti-diabetes compounds have possibility of preventing sarcopenia. However, much data on diet, exercise, and pharmacotherapy were obtained in obese and non-elderly patients with T2DM, demanding actual clinical data on non-obese and older patients with diabetes.\n\n[5] Sarcopenia is common in middle-aged and older Asian adults with type 2 diabetes mellitus. Interventions targeting glycemic control, complications, body composition, nutrition, and metformin may help reduce risk. This study highlights the importance of early sarcopenia screening and prevention, especially in middle-aged individuals with type 2 diabetes mellitus. Further studies are needed to establish causal relationships for prevention.\n\n[6] Middle-aged and elderly individuals in Asia with type 2 diabetes mellitus have an increased risk of developing sarcopenia. This systematic review and meta-analysis aimed to estimate sarcopenia prevalence and identify key risk factors among middle-aged and elderly type 2 diabetes mellitus persons in Asia.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 2 defines sarcopenic obesity as muscle loss plus elevated BMI, consistent with the sentence."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Both passages describe sarcopenic obesity emerging/being recognized as a distinct clinical entity."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 3 explicitly mentions both T1DM and T2DM while 4,5,6 focus on T2DM, matching the sentence's framing."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 2 states worsening insulin resistance and proinflammatory state in older individuals with sarcopenic obesity."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 2 lists cardiovascular disease, type 2 diabetes, and cognitive dysfunction as outcomes."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Passage 1 states a strong independent association between sarcopenia/SO, T2DM, and CVD."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Passage 4 lists hyperglycemia, chronic inflammation, and oxidative stress as mechanisms of diabetes-accelerated sarcopenia."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Passage 3 states awareness remains low among healthcare professionals, patients, and policymakers, causing gaps."
+          },
+          {
+            "index": 9,
+            "label": "NOT_APPLICABLE",
+            "why": "This is generic advice, not a factual claim tied to sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 19,
+      "question": "Does long-term metformin use affect vitamin B12 status?",
+      "status": "answered_partial",
+      "generated_answer": "People with type 2 diabetes who take metformin, a common diabetes medicine, appear to be more likely to develop low vitamin B12 levels. One study looking at metformin-treated type 2 diabetes patients found they were at higher risk of vitamin B12 deficiency and of having worse nerve-damage symptoms, called peripheral neuropathy. That same study noted there is not yet an official recommendation on whether people in this situation should take vitamin B12 supplements. A separate review also listed vitamin B12 deficiency as one of the known issues linked to metformin use, along with stomach-related side effects and rare but serious complications. This evidence comes only from research in people with type 2 diabetes. The studies gathered here don't show whether this link to low vitamin B12 specifically depends on how long someone has been taking metformin. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Metformin-treated type 2 diabetes mellitus (T2DM) patients are at higher risk of vitamin B12 deficiency and more severe neuropathy symptoms. There is still no guideline suggesting vitamin B12 supplementation for this population. This study aimed to analyze the efficacy of vitamin B12 supplementation in this population.\n\n[2] Metformin, a first-line pharmacologic agent for type 2 diabetes, exerts its primary antidiabetic effects by suppressing hepatic gluconeogenesis via both AMP-activated protein kinases-dependent and -independent pathways. Beyond glycemic control, metformin exhibits pleiotropic benefits, including improved insulin sensitivity, modulation of gut microbiota, and protection against various metabolic, cardiovascular, renal, neurodegenerative, and inflammatory diseases. However, its clinical use is often limited by gastrointestinal side effects, vitamin B12 deficiency, and rare but serious complications such as lactic acidosis, highlighting the need for adjunctive strategies to enhance efficacy and reduce adverse effects. Curcumin, as a bioactive polyphenol, has garnered significant attention because of its extensive pharmacological activities and excellent safety profile. Curcumin modulates key intracellular signaling pathways, including nuclear factor-kappa B, mitogen-activated protein kinases, and phosphatidylinositol 3-kinase/protein kinase B, providing anti-inflammatory, antioxidant, anticancer, and metabolic regulatory effects. Nonetheless, its clinical application is constrained by poor bioavailability because of limited absorption, rapid metabolism, and systemic elimination. Recent evidence suggests that coadministration of metformin and curcumin yields synergistic therapeutic outcomes in diverse disease models. This combination improves glycemic control, mitigates oxidative stress and inflammation, and provides organ-protective effects, particularly in the liver, heart, and skin. Furthermore, it shows promise in cancer prevention and therapy, polycystic ovary syndrome management, and pain modulation, with enhanced outcomes when delivered via nanoparticle-based systems. This review aims to provide a comprehensive analysis of the combined therapeutic potential of metformin and curcumin across a spectrum of pathological conditions.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Both passages state metformin-treated T2DM patients are at higher risk of B12 deficiency."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Directly matches passage 1's findings on B12 deficiency and neuropathy risk."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 1 explicitly states no guideline exists for B12 supplementation in this population."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 2 lists vitamin B12 deficiency alongside GI side effects and lactic acidosis as metformin issues."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Both passages concern T2DM patient populations only."
+          },
+          {
+            "index": 6,
+            "label": "UNSUPPORTED",
+            "why": "No passages are cited, yet it asserts a specific claim about duration-dependence not addressed in the sources."
+          },
+          {
+            "index": 7,
+            "label": "NOT_APPLICABLE",
+            "why": "General advice, not a factual claim from sources."
+          }
+        ],
+        "answers_the_question": 6,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 25,
+      "question": "What eye complications require laser treatment in diabetic retinopathy?",
+      "status": "answered_partial",
+      "generated_answer": "The studies provided mention that a laser treatment called panretinal photocoagulation, which uses a laser to treat the back of the eye, is used for proliferative diabetic retinopathy, an advanced stage of the disease where abnormal new blood vessels grow in the retina. This information comes from research covering mixed groups of people with diabetes, not one specific type like type 1 or type 2. The same studies note that laser treatment is usually used alongside other options, including medicines that block a blood-vessel-growth signal in the eye, steroid shots, and eye surgery. One study points out that even with these treatments, some people still go on to develop serious problems such as bleeding inside the eye, scar tissue pulling on the retina, or high pressure inside the eye from abnormal vessels. The studies found here don't specifically identify which individual eye complications of diabetic retinopathy require laser treatment versus other treatments. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Diabetic retinopathy (DR) remains a leading cause of blindness among individuals with diabetes mellitus (DM), with a continuously rising global prevalence. While anti-vascular endothelial growth factor (anti-VEGF) therapy, corticosteroids, laser photocoagulation, and vitreoretinal surgery have improved outcomes, none can permanently prevent disease progression. The complex pathophysiology of DR, which includes inflammation, oxidative stress, and neurodegeneration, highlights the need for additional systemic strategies. This narrative review was informed by a structured search of PubMed, Scopus, and Web of Science covering the period from January 2000 to September 10, 2025. Original studies, systematic reviews, and meta-analyses were included, whereas case reports and editorials were excluded. Findings were synthesized qualitatively. Preclinical models suggest that sodium-glucose cotransporter 2 (SGLT2) inhibitors exert neuroprotective, anti-inflammatory, and antioxidant effects on the retina, preserve the blood-retinal barrier, and reduce vascular endothelial growth factor (VEGF) expression. However, whether these retinal effects are only partially independent of glycemic control remains speculative, as clinical studies have not adequately controlled for changes in glycated hemoglobin (HbA1c) or for differences in concomitant glucose-lowering therapies. Observational clinical studies have associated SGLT2 inhibitor use with a lower risk of DR progression, a reduced incidence of proliferative DR, and fewer vision-threatening interventions compared with some other antihyperglycemic agents. Owing to the established indications in heart failure and chronic kidney disease associated with SGLT2 inhibitors, these agents appear promising for DR prevention and risk modification. However, current clinical evidence is based mainly on observational and retrospective studies and remains vulnerable to confounding and selection bias. Prospective randomized studies with ophthalmic endpoints are needed before firm conclusions can be drawn.\n\n[2] Proliferative diabetic retinopathy (PDR) is a leading cause of severe vision loss in working-aged adults and represents the end stage of chronic neurovascular injury in diabetes. Despite advances in screening and treatment, including panretinal photocoagulation (PRP), intravitreal anti-vascular endothelial growth factor (anti-VEGF) agents, and pars plana vitrectomy (PPV), outcomes remain heterogeneous: many eyes stabilise, whereas others progress to vitreous hemorrhage, tractional retinal detachment, or neovascular glaucoma despite apparently adequate therapy. This review synthesizes current knowledge on the pathophysiology, morphological phenotypes and treatment paradigms of PDR, with a specific focus on predictors of onset, progression, and recurrence. PDR is contextualised as a multifactorial neurovascular and inflammatory disease, integrating data on hypoxia-driven angiogenesis, glial activation, microvascular rarefaction, neurodegeneration, and vitreoretinal interface remodeling. Histopathological and multimodal imaging characteristics of neovascular complexes and the vitreoretinal interface are described, highlighting how phenotypes on color fundus photography, widefield fluorescein angiography, optical coherence tomography (OCT), and OCT angiography relate to ischemic burden and clinical behaviour. Systemic, ocular, imaging, biomarker, and genetic factors associated with progression from non-proliferative diabetic retinopathy to PDR and with progression within established PDR after PRP, anti-VEGF therapy, and PPV are critically appraised. Across modalities, younger age, diabetes duration, poor glycemic control, renal disease, extensive non-perfusion, high neovascular burden, complex fibrovascular proliferation, and incomplete or unsustained treatment consistently emerge as determinants of guarded outcomes. Outstanding gaps in mechanistic understanding, risk stratification, regenerative therapy, and implementation are identified, alongside a proposed research agenda aimed at delivering mechanistically grounded risk-prediction tools and disease-modifying interventions for PDR.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 2 confirms PRP is used for PDR, which involves abnormal new blood vessel growth."
+          },
+          {
+            "index": 2,
+            "label": "UNSUPPORTED",
+            "why": "Neither passage specifies whether the population is mixed or type-specific; this claim is an unsupported inference."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 1 lists anti-VEGF, corticosteroids, laser photocoagulation, and vitreoretinal surgery together as treatments."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 2 explicitly lists vitreous hemorrhage, tractional retinal detachment, and neovascular glaucoma as outcomes despite treatment."
+          },
+          {
+            "index": 5,
+            "label": "NOT_APPLICABLE",
+            "why": "This is a meta-comment about the limits of the sources rather than a factual claim requiring support."
+          },
+          {
+            "index": 6,
+            "label": "NOT_APPLICABLE",
+            "why": "Generic advice, not a factual claim tied to sources."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 29,
+      "question": "How long can a continuous glucose monitor sensor be worn before it needs to be replaced?",
+      "status": "answered_partial",
+      "generated_answer": null,
+      "cited_chunk_texts": "",
+      "verdict": {
+        "sentence_grades": [],
+        "answers_the_question": null,
+        "overall": "UNSUPPORTED",
+        "grading_error": "no sentences to grade"
+      }
+    },
+    {
+      "id": 31,
+      "question": "What are the standard treatments for painful diabetic peripheral neuropathy?",
+      "status": "answered_partial",
+      "generated_answer": "Standard care for painful diabetic peripheral neuropathy (nerve damage from diabetes that causes pain, tingling, or numbness) usually starts with controlling blood sugar levels, along with diet and lifestyle changes. Alongside this, doctors often use medicines aimed at easing the nerve pain itself, including certain antidepressants and pain-relieving drugs. Another medicine sometimes used for this type of nerve pain works by calming overactive nerve signals, though researchers are still studying the best way to dose it and whether blood sugar control affects how well it works. This information comes mainly from research on people with type 2 diabetes, as well as some studies that included a mix of diabetes types. Some researchers are also exploring whether certain dietary or nutritional supplements could help with nerve pain symptoms, but these are not described as standard treatments. The studies gathered here don't give a full, detailed list of which medicines are usually recommended first, or cover all the standard options used to treat this type of nerve pain. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Painful diabetic neuropathy (PDN) is a common complication of type 1 and type 2 diabetes, causing substantial morbidity. Current treatments, including antidepressants and analgesics, are often only partially effective and may have significant side effects. Vitamin D deficiency affects around 60% of people with diabetes, making supplementation a low-toxicity, biologically plausible intervention. Observational studies suggest potential benefit, but robust evidence from randomised controlled trials (RCTs) is lacking.\n\n[2] Diabetic neuropathy, the most common long-term complication of diabetes, frequently presents as painful diabetic peripheral neuropathy (pDPN), significantly impairing patients' quality of life. Pregabalin is an established treatment for pDPN, but optimal dosing and the influence of glycemic control on efficacy remain uncertain.\n\n[3] Painful diabetic neuropathy (PDN) is a serious and very common complication of diabetes mellitus (DM). It negatively affects the quality of life, increases morbidity and poses a financial burden on the health care system. Currently, treatment of PDN focuses on glycaemic control, while pathogenesis-oriented therapy has not yielded satisfactory results. The need to improve therapy remains. There is accumulating evidence on the potential benefit of nutritional interventions. This narrative review aims to examine the potential benefit of dietary and nutritional supplementation for PDN management. According to the preliminary research, supplementation with vitamin E, B-complex, omega-3 fatty acids, CoQ10 or N-acetylcysteine seems to be associated with promising results in improving PDN symptoms.\n\n[4] Diabetes is the most common cause of neuropathy in the United States, with diabetic neuropathy being the leading complication, ultimately affecting up to 50% of patients with type 1 and type 2 diabetes mellitus. Various types of neuropathies can be associated with diabetes, with symptoms commonly including numbness, tingling, pain, and occasionally weakness. Metabolic, vascular, and immune theories have been proposed for the pathogenesis of diabetic neuropathy. Management of diabetic neuropathy should begin at the time of diabetes diagnosis and primarily focuses on glycemic control, along with diet and lifestyle modifications. Additionally, various medications are available to treat neuropathic pain.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 4 states management focuses on glycemic control, diet and lifestyle modifications."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 1 mentions antidepressants and analgesics as current treatments, consistent with passage 4's mention of medications for neuropathic pain."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Passage 2 describes pregabalin as an established treatment with uncertain optimal dosing and glycemic influence, matching the functional description given."
+          },
+          {
+            "index": 4,
+            "label": "UNSUPPORTED",
+            "why": "The sources largely reference mixed or unspecified diabetes types (type 1 and 2), not predominantly type 2 as claimed."
+          },
+          {
+            "index": 5,
+            "label": "SUPPORTED",
+            "why": "Passage 3 discusses nutritional supplements as emerging, not standard, treatments, matching the claim."
+          },
+          {
+            "index": 6,
+            "label": "NOT_APPLICABLE",
+            "why": "This is a meta-commentary on the limits of the provided sources, not a factual claim requiring support."
+          },
+          {
+            "index": 7,
+            "label": "NOT_APPLICABLE",
+            "why": "This is generic advice, not a factual claim."
+          }
+        ],
+        "answers_the_question": 2,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 32,
+      "question": "What diagnostic tests are used to confirm diabetic peripheral neuropathy?",
+      "status": "answered_partial",
+      "generated_answer": null,
+      "cited_chunk_texts": "",
+      "verdict": {
+        "sentence_grades": [],
+        "answers_the_question": null,
+        "overall": "UNSUPPORTED",
+        "grading_error": "no sentences to grade"
+      }
+    },
+    {
+      "id": 33,
+      "question": "What wound care protocol is typically used for treating a diabetic foot ulcer?",
+      "status": "answered_partial",
+      "generated_answer": "Typical care for a diabetic foot ulcer (an open sore on the foot that can develop in people with diabetes) usually combines several steps together: controlling blood sugar, treating any infection, taking pressure off the sore, and helping the wound heal. One way to take pressure off the ulcer is surgery that shifts weight away from the sore, and this works best when blood sugar is well controlled and a team of different specialists is involved in the person's care. Another common step is called debridement, which means removing dead or damaged tissue from the wound, and this is considered an important part of getting the healing process started. Researchers have also compared different types of wound dressings against usual care to see which ones help these ulcers heal better. This information comes mostly from research that did not specify a particular type of diabetes, along with some studies in people with type 2 diabetes. The studies gathered here don't lay out one single, complete, step-by-step standard protocol from start to finish; instead, each one looks at a different piece of care, such as pressure relief, removing damaged tissue, or comparing specific dressings, rather than describing the whole typical treatment plan as one package.",
+      "cited_chunk_texts": "[2] The prevalence of diabetic foot ulcers (DFU), one of the most common complications of diabetes mellitus (DM), varies significantly across different countries, but remains high globally. The presence of DFU is associated with escalated healthcare expenditures, compromised physical functioning, and diminished quality of life, with a 5-year mortality rate 2.5 times higher than diabetes patients without foot ulcers. Common therapeutic strategies for DFU include glycemic control, eradication of infections, alleviation of pressure on the ulcers, and facilitation of wound healing. CHM, a fundamental element of Traditional Chinese Medicine, has gained widespread recognition in both oral and topical applications for the management of chronic wounds, owing to its functions of detoxification, promotion of blood circulation, removal of blood stasis, and enhancement of wound healing, as outlined in Chinese Medicine theories. Therefore, it is imperative to conduct a comprehensive literature review on the utilization of topical CHM for treating DFU in order to provide evidence-based guidance for clinical practice.\n\n[3] to assess the effects of advanced wound dressings (AWD) commonly used in the treatment of predominantly neuropathic diabetic foot ulcers (DFU) The present meta-analysis was designed to support the development of the Italian Guidelines for the Treatment of Diabetic Foot Syndrome (DFS).\n\n[4] Diabetic foot ulcers are severe complications of diabetes resulting in high health care costs and reduced quality of life. Persistent mechanical pressure, neuropathy, foot deformity, and patient comorbidities contribute to the ulcer formation and poor healing. While nonsurgical offloading techniques are common, they are associated with noncompliance, skin irritation, and limited wound assessment capability. Surgical offloading offers a direct approach in reducing and redistributing pressures to promote ulcer healing. Its success depends on proper patient selection, glycemic control, and postoperative care. When combined with multidisciplinary management, surgical offloading plays a pivotal role in promoting healing, reducing infection, and preventing infections.\n\n[5] Diabetic foot ulcers usually are hard to heal, and amputation is sometimes necessary. Wound bed preparation helps promote the normal healing process, and debridement is fundamental to improving the wound microenvironment. Hydrogel enriched with sodium alginate and vitamins A and E is a new treatment that can aid in debridement and WBP.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 2 explicitly lists glycemic control, infection treatment, pressure relief, and wound healing as common strategies."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 4 states surgical offloading success depends on glycemic control and multidisciplinary management."
+          },
+          {
+            "index": 3,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 5 confirms debridement is fundamental to wound bed preparation but does not define debridement as removing dead tissue."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Passage 3 describes a meta-analysis comparing advanced wound dressings to standard of care for DFU healing."
+          },
+          {
+            "index": 5,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "None of passages 2,3,4,5 specify diabetes type, so the claim that some studies focus on type 2 diabetes is unsupported by these sources."
+          },
+          {
+            "index": 6,
+            "label": "UNSUPPORTED",
+            "why": "This sentence asserts a synthesized conclusion without citing any passage."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 36,
+      "question": "What are the diagnostic criteria for diabetic ketoacidosis?",
+      "status": "answered",
+      "generated_answer": "Diabetic ketoacidosis (DKA) is defined as a combination of high blood sugar, a build-up of ketones (acids your body makes when it breaks down fat for energy instead of sugar), and a condition where your blood becomes too acidic, called metabolic acidosis. This usually happens when the body doesn't have enough insulin and has too much of certain stress hormones that raise blood sugar. DKA can occur in both type 1 and type 2 diabetes, though it is more common in type 1. The studies found here don't address the specific lab test cutoffs, such as exact blood sugar, blood acid level, or ketone level thresholds, that doctors use to officially diagnose DKA. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[4] Diabetic Ketoacidosis (DKA), Hyperosmolar Hyperglycemic State (HHS), and Hypoglycemia remain among the most serious acute complications of diabetes mellitus, often leading to hospitalization and increased morbidity. DKA is defined by hyperglycemia, ketosis, and metabolic acidosis, typically resulting from insulin deficiency and excess counterregulatory hormones, and can occur in both type 1 and type 2 diabetes. HHS, by contrast, is characterized by profound hyperglycemia, hyperosmolality, and dehydration with minimal ketosis, most commonly affecting older adults with type 2 diabetes. Hypoglycemia, defined as glucose less than 70 mg/dL, continues to pose a major barrier to optimal glycemic control.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "SUPPORTED",
+            "why": "Passage 4 defines DKA as hyperglycemia, ketosis, and metabolic acidosis, matching the sentence."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Passage 4 states DKA results from insulin deficiency and excess counterregulatory hormones."
+          },
+          {
+            "index": 3,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 4 says DKA can occur in both types but does not state it is more common in type 1."
+          },
+          {
+            "index": 4,
+            "label": "NOT_APPLICABLE",
+            "why": "This is a meta-comment about the limitations of the provided sources rather than a factual claim about DKA."
+          },
+          {
+            "index": 5,
+            "label": "NOT_APPLICABLE",
+            "why": "Generic disclaimer, not a factual claim."
+          }
+        ],
+        "answers_the_question": 1,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    },
+    {
+      "id": 37,
+      "question": "How is diabetic ketoacidosis typically managed in the emergency department?",
+      "status": "answered_partial",
+      "generated_answer": "Diabetic ketoacidosis (DKA), a serious complication where the blood becomes too acidic from a lack of insulin, is usually treated with insulin given through a vein, known as IV insulin infusion, which is described as the standard treatment. The available research here looked at mixed groups of people with diabetes, as well as a study focused specifically on people with type 2 diabetes recovering from surgery. One study describes the steps used to manage ketoacidosis that develops after surgery in people with type 2 diabetes, which include giving fluids through a vein, insulin therapy, correcting imbalances in body salts and minerals (called electrolytes), and treating whatever triggered the episode. This description applies to the time after surgery, not to a general picture of emergency department care for everyone with ketoacidosis. Some hospitals use computer-based systems to help guide insulin infusion doses instead of standard paper-based protocols. Research comparing these computer-guided systems to standard insulin infusion methods found no clear difference in how quickly ketoacidosis went away, how long people stayed in intensive care or the hospital, or how long the insulin infusion lasted. Low blood sugar episodes were recorded less often with the computer-guided systems, but the researchers said this finding needs confirmation from stronger studies before it can be relied on. Other research has looked at starting a long-acting insulin shot under the skin early, while the insulin infusion through the vein is still running, to see if it changes blood sugar outcomes. The studies found here don't show a complete, step-by-step picture of how diabetic ketoacidosis is typically managed in a general emergency department, including routine fluid and electrolyte care and handling of underlying triggers outside the after-surgery setting. Talk to your doctor or pharmacist before changing anything.",
+      "cited_chunk_texts": "[1] Background and Objectives: Electronic glycemic management systems (eGMSs) are increasingly used to guide intravenous insulin infusion for hospitalized patients with diabetic ketoacidosis (DKA), but available comparative evidence remains non-randomized and clinically heterogeneous and includes multiple algorithmically distinct platforms. Methods and Materials: We conducted a systematic review and meta-analysis in accordance with PRISMA guidance and a prospectively registered protocol (PROSPERO: 2025 CRD420251019614). Seven non-randomized studies comprising 3874 hospitalized patients were included; six studies contributed data to the primary meta-analysis of time to DKA resolution. The primary outcome was time to DKA resolution. Secondary outcomes included ICU length of stay (LOS), hospital LOS, duration of insulin infusion, and hypoglycemia (mild and severe). Random-effects models were applied. Results: Six studies contributed to the primary meta-analysis of time to DKA resolution; across the review, seven studies included 3874 patients. The pooled analysis showed no statistically significant difference between groups (SMD -0.04, 95% CI -0.22 to 0.14; I2 = 74.8%). Recorded hypoglycemia was lower among patients managed with eGMS; however, these estimates should be interpreted cautiously because of heterogeneity, serious-to-critical risk of bias, and potential differences in glucose-monitoring and documentation practices. ICU and hospital LOSs and duration of insulin infusion showed no statistically significant differences overall, with heterogeneity across studies. Conclusions: In available non-randomized evidence, eGMS-guided insulin infusion was not associated with a clear difference in time to DKA resolution, ICU length of stay, hospital length of stay, or insulin infusion duration compared with conventional protocols. Lower recorded hypoglycemia was observed with eGMSs, but this finding should be considered hypothesis-generating because of serious-to-critical risk of bias, residual confounding, substantial heterogeneity, and possible detection bias. High-quality randomized trials or target trial emulation studies are needed before recommending widespread adoption, as certainty of evidence was very low across all outcomes.\n\n[2] Diabetic ketoacidosis (DKA) typically affects patients with type 1 diabetes but can also occur in type 2 diabetes under severe stress or relative insulin deficiency. The postoperative phase constitutes a high-risk interval for diabetic ketoacidosis in individuals with type 2 diabetes, attributable to surgical stress, altered medication routines, and metabolic changes. The introduction of sodium-glucose cotransporter-2 (SGLT2) inhibitors has added complexity, as these medications can precipitate euglycemic DKA where ketoacidosis occurs without marked hyperglycemia. This review examines postoperative DKA in type 2 diabetes, focusing on pathophysiology, clinical outcomes, prevention strategies, and management approaches. The pathophysiology involves insulin deficiency, counterregulatory hormone excess, and SGLT2 inhibitor effects that promote ketogenesis. Risk factors include emergency surgery, poor glycemic control, insulin-dependent status, and SGLT2 inhibitor use. Prevention strategies include optimizing preoperative glycemic control, discontinuing SGLT2 inhibitors at least 3 days before surgery, maintaining basal insulin during the perioperative period, and monitoring for ketosis. Management requires aggressive fluid resuscitation, insulin therapy, electrolyte management, and addressing any precipitating factors. Early recognition is essential, particularly for euglycemic DKA which may be overlooked due to near-normal blood glucose levels. With proper preventive measures and timely management, most cases of postoperative DKA in type 2 diabetes can be avoided or successfully treated.\n\n[3] Diabetic ketoacidosis (DKA) is a life-threatening metabolic emergency requiring prompt insulin therapy. Although intravenous (IV) insulin infusion remains the standard treatment, early initiation of subcutaneous (SC) basal insulin during IV therapy may improve outcomes. We evaluated the efficacy and safety of early basal insulin administration in adults with DKA.",
+      "verdict": {
+        "sentence_grades": [
+          {
+            "index": 1,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 3 confirms IV insulin is standard treatment but does not define DKA as blood acidity from insulin lack."
+          },
+          {
+            "index": 2,
+            "label": "SUPPORTED",
+            "why": "Accurately summarizes the populations studied across the three passages."
+          },
+          {
+            "index": 3,
+            "label": "SUPPORTED",
+            "why": "Matches passage 2's listed management steps for postoperative DKA."
+          },
+          {
+            "index": 4,
+            "label": "SUPPORTED",
+            "why": "Correctly notes passage 2 is specific to postoperative DKA, not general ED care."
+          },
+          {
+            "index": 5,
+            "label": "PARTIALLY_SUPPORTED",
+            "why": "Passage 1 mentions conventional protocols but never specifies 'paper-based' methods."
+          },
+          {
+            "index": 6,
+            "label": "SUPPORTED",
+            "why": "Matches the meta-analysis results in passage 1."
+          },
+          {
+            "index": 7,
+            "label": "SUPPORTED",
+            "why": "Matches passage 1's cautionary note on lower hypoglycemia findings."
+          },
+          {
+            "index": 8,
+            "label": "SUPPORTED",
+            "why": "Matches passage 3's description of early SC basal insulin during IV therapy."
+          },
+          {
+            "index": 9,
+            "label": "UNSUPPORTED",
+            "why": "Asserts a conclusion without pointing to any supporting passage."
+          },
+          {
+            "index": 10,
+            "label": "NOT_APPLICABLE",
+            "why": "General advisory statement, not a factual claim from sources."
+          }
+        ],
+        "answers_the_question": 3,
+        "overall": "PARTIALLY_SUPPORTED",
+        "model": "claude-sonnet-5"
+      }
+    }
+  ]
+}

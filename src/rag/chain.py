@@ -957,6 +957,13 @@ def stream_generation(
         yield {"event": "error", "data": {"message": f"Generation failed: {e}"}}
         out["failed"] = True
         return
+    except Exception as e:
+        # A connection dropped mid-stream surfaces as the HTTP transport's own read
+        # error (httpx's ReadError), not anthropic.APIError, and used to crash the
+        # whole request. Any failure here is reported the same way.
+        yield {"event": "error", "data": {"message": f"Generation failed: connection lost ({e})"}}
+        out["failed"] = True
+        return
 
     out.update(sentences=full_sentences, usage=usage, truncated=truncated, model=model_used)
 

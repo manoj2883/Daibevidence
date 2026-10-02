@@ -147,6 +147,7 @@ rebuilds the table from `data/`.
 | Baseline: two-stage judge, revised prompts | 14/24 | 1/17 | 0/2 | 47% (7/15) |
 | Run A: v2_5k + background, no scope judge | 14/24 | 7/17 | 0/2 | 48% (10/21) |
 | Run B: full v3 | 17/24 | 8/17 | 0/2 | 56% (14/25) |
+| Run B + drug-name check (ids 8, 12 re-run) | 17/24 | 8/17 | 0/2 | 56% (14/25) |
 
 - Dropping the scope judge (Run A) kept in-scope answers level and answered 6 more adjacent
   questions, with fewer UNSUPPORTED answers (1 of 21 vs 3 of 15).
@@ -154,10 +155,20 @@ rebuilds the table from `data/`.
   share fully supported: 12 of 17 in-scope answers SUPPORTED; adjacent answers were mostly partial
   (2 SUPPORTED, 5 PARTIALLY_SUPPORTED, 1 UNSUPPORTED of 8). UNSUPPORTED overall: ids 7, 12, 15, 35.
 - Patient mode named an unmentioned medicine twice in Run B: id 8 ("basal insulin") and id 12
-  ("metformin", "SGLT-2 inhibitors"). The prompt rule alone does not hold.
+  ("metformin", "SGLT-2 inhibitors"); the prompt rule alone does not hold. Added a deterministic check
+  (`src/rag/safety.py` lexicon, `_patient_generation` in `src/rag/pipeline.py`): scan the answer,
+  regenerate once with the flagged names forbidden, then replace any left with "some diabetes
+  medicines". Catches are logged to `data/drug_check_log.jsonl`. Re-running ids 8 and 12: both caught,
+  both fixed by the regeneration (no replacement needed). Id 8 stayed SUPPORTED; id 12 went from
+  UNSUPPORTED to PARTIALLY_SUPPORTED. Patient answers now hold back text until the check passes.
 - Smoke test (unscored): type 1 vs type 2 → answered_partial (2 PubMed reviews + 3 ADA/CDC pages);
   "What is HbA1c?" and "What is insulin resistance?" → answered, from PubMed reviews/meta-analyses
   only; no background page reached the top 6.
+- Questions refused by the baseline and answered by Run B: in-scope ids 12, 15, 17, 19, 22; adjacent
+  ids 25, 31, 33, 34, 35, 36, 37. Of these, ids 15, 19, 22, 25, 33, 34, 36, 37 cite at least one
+  passage found only by BM25 (not in dense top 20), and every one except id 17 (and id 35, which
+  cites nothing) cites a paper that Run A's dense top-6 chunks did not contain. Ids 12, 15, 35 were UNSUPPORTED; id 35 cites no passage at all.
+  Detail per id: `eval/results/v3_2026-10-02/moved_to_answered.md`.
 - A parser bug dropped answers the model wrote before its contradiction block (3 answers in each
   run). Fixed in `src/rag/chain.py`; only those 6 questions were re-run. The invalid outputs are kept
   as `*.INVALID_empty_answers.*`.

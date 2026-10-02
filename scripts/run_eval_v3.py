@@ -117,6 +117,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", choices=sorted(CONFIGS))
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--ids", default=None, help="Comma-separated ids: re-run only these into --out (never overwrites the full run).")
+    parser.add_argument("--out", default=None, help="Output path for an --ids re-run.")
     args = parser.parse_args()
     load_dotenv()
     # One cache file per run, so runs going in parallel never overwrite each other's cache.
@@ -129,7 +131,15 @@ def main():
     if not args.config:
         parser.error("--config or --smoke is required")
     c = CONFIGS[args.config]
-    run(load_questions(QUESTIONS_PATH), c["namespace"], c["strategy"], c["out"], c["label"])
+    questions = load_questions(QUESTIONS_PATH)
+    if args.ids:
+        if not args.out:
+            parser.error("--ids needs --out")
+        wanted = {int(i) for i in args.ids.split(",")}
+        run([q for q in questions if q["id"] in wanted], c["namespace"], c["strategy"], args.out,
+            f"{c['label']} (re-run of ids {sorted(wanted)})")
+        return
+    run(questions, c["namespace"], c["strategy"], c["out"], c["label"])
 
 
 if __name__ == "__main__":

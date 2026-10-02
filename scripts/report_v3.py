@@ -16,6 +16,8 @@ RUNS = [
     ("Run A: v2_5k + background, no scope judge", "data/eval_v3_runA_v2_5k_noscope.json",
      "data/eval_v3_runA_v2_5k_noscope_faithfulness.json"),
     ("Run B: full v3", "data/eval_v3_runB_full.json", "data/eval_v3_runB_full_faithfulness.json"),
+    ("Run B + drug-name check (ids 8, 12 re-run)", "data/eval_v3_runB_drugcheck.json",
+     "data/eval_v3_runB_drugcheck_faithfulness.json"),
 ]
 SMOKE_PATH = "data/eval_v3_smoke.json"
 OUT = "data/eval_v3_report.md"

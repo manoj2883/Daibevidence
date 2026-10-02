@@ -1,0 +1,881 @@
+{
+  "pipeline": "Run B: full v3 (query step + hybrid on v3_5k_recursive + parents + ordering), patient mode (re-run of ids [8, 12])",
+  "namespace": "v3_5k_recursive",
+  "strategy": "hybrid",
+  "audience": "patient",
+  "results": [
+    {
+      "id": 8,
+      "topic": "glycemic_control",
+      "in_scope": true,
+      "question": "Does continuous glucose monitoring (CGM) improve glycemic control compared with self-monitoring of blood glucose?",
+      "reference_answer": "RCTs and meta-analyses show CGM use is associated with greater HbA1c reduction and more time-in-range compared with traditional fingerstick self-monitoring, in both type 1 and insulin-treated type 2 diabetes.",
+      "status": "answered",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "41591479",
+          "title": "Continuous glucose monitoring versus self-monitoring of blood glucose in gestational diabetes: an updated systematic review and meta-analysis of randomized controlled trials.",
+          "journal": "Acta diabetologica",
+          "year": "2026",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis; Comparative Study",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "gestational",
+          "excerpt": "AIMS: Continuous glucose monitoring (CGM) benefits pregnant women with type 1 or type 2 diabetes, but its role in gestational diabetes (GDM) remains uncertain. We aimed to compare the effects of CGM with self-monitoring of blood glucose (SMBG) on glycemic, maternal, and neonatal outcomes in women with GDM. METHODS: We compared CGM with SMBG in women with GDM through a systematic search across randomized controlled trials (RCTs) in PubMed, Cochrane Library, Embase, and Scopus. We evaluated glycemic, maternal and neonatal outcomes using a random-effects model. RESULTS: Eleven RCTs (n = 1225) met inclusion criteria. The use of CGM increased the likelihood of achieving appropriate maternal weight gain (RR 1.37, 95% CI 1.02 to 1.82; I2 = 0%) and reduced mean neonatal birth weight (MD - 122.79 g, 95% CI - 189.78 to - 55.79; I2 = 0%). CGM use did not change maternal time in range (TIR), time above range (TAR), time below range (TBR), glycated hemoglobin, gestational hypertension, cesarean delivery, macrosomia, preterm delivery, neonatal hypoglycemia, or neonatal intensive care unit admissions. CONCLUSIONS: In women with GDM, the use of CGM improved the likelihood of appropriate maternal weight gain and lowered neonatal birth weight compared with SMBG, but it did not improve overall glycemic control or other maternal and fetal outcomes. TRIAL REGISTRATION: PROSPERO CRD420251044960 (registered 2025).",
+          "matched_chunk": "Continuous glucose monitoring versus self-monitoring of blood glucose in gestational diabetes: an updated systematic review and meta-analysis of randomized controlled trials. | 2026 | Gestational diabetes | Meta-analysis\nAIMS: Continuous glucose monitoring (CGM) benefits pregnant women with type 1 or type 2 diabetes, but its role in gestational diabetes (GDM) remains uncertain. We aimed to compare the effects of CGM with self-monitoring of blood glucose (SMBG) on glycemic, maternal, and neonatal outcomes in women with GDM. METHODS: We compared CGM with SMBG in women with GDM through a systematic search across randomized controlled trials (RCTs) in PubMed, Cochrane Library, Embase, and Scopus. We evaluated glycemic, maternal and neonatal outcomes using a random-effects model.",
+          "fusion_rank": 1,
+          "dense_rank": null,
+          "bm25_rank": 1,
+          "score": 0.01639344262295082
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41457339",
+          "title": "Comparative effectiveness of glucose monitoring methods and glycaemic control in patients with type 2 diabetes: An umbrella review.",
+          "journal": "Diabetes, obesity & metabolism",
+          "year": "2026",
+          "publication_type": "Journal Article; Systematic Review; Comparative Study",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Type 2 diabetes is highly prevalent, and many adults, especially those not using insulin, struggle to reach HbA1c targets. This review aimed to evaluate the effect of self-monitoring blood glucose (SMBG) and continuous glucose monitoring (CGM) on glycaemic control in adults with type 2 diabetes. We searched MEDLINE, Cochrane Library, Embase, and Scopus from January 2014 to May 2025 for systematic reviews of randomized controlled trials enrolling adults with type 2 diabetes that evaluated SMBG or CGM versus no monitoring or SMBG, respectively. Fifteen systematic reviews comprising 81 unique studies and 23 657 participants were included. Reviews comparing SMBG with no monitoring demonstrated a modest but significant reduction in HbA1c (MD -0.23%, 95% CI -0.29 to -0.18; I2 = 21%). Reviews directly comparing CGM with SMBG showed greater HbA1c reduction with CGM (MD -0.29%, 95% CI -0.34 to -0.24; I2 = 0%). Subgroup analyses for SMBG indicated consistent benefits across follow-up duration, monitoring structure, and study quality, although heterogeneity was high in some comparisons. Subgroup analyses for CGM types found both isCGM/FGM (MD -0.27%, 95% CI -0.43 to -0.11) and rtCGM (MD -0.36%, 95% CI -0.45 to -0.27) superior to SMBG. These findings support glucose monitoring for optimizing glycaemic management and outcomes. Further investment in cost-effectiveness studies is warranted to assess broader implementation in this population.",
+          "matched_chunk": "Comparative effectiveness of glucose monitoring methods and glycaemic control in patients with type 2 diabetes: An umbrella review. | 2026 | Type 2 diabetes | Review\nType 2 diabetes is highly prevalent, and many adults, especially those not using insulin, struggle to reach HbA1c targets. This review aimed to evaluate the effect of self-monitoring blood glucose (SMBG) and continuous glucose monitoring (CGM) on glycaemic control in adults with type 2 diabetes. We searched MEDLINE, Cochrane Library, Embase, and Scopus from January 2014 to May 2025 for systematic reviews of randomized controlled trials enrolling adults with type 2 diabetes that evaluated SMBG or CGM versus no monitoring or SMBG, respectively. Fifteen systematic reviews comprising 81 unique studies and 23 657 participants were included. Reviews comparing SMBG with no monitoring demonstrated a modest but significant reduction in HbA1c (MD -0.23%, 95% CI -0.29 to -0.18; I2 = 21%).",
+          "fusion_rank": 3,
+          "dense_rank": null,
+          "bm25_rank": 2,
+          "score": 0.016129032258064516
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "31059282",
+          "title": "Lag Time Remains with Newer Real-Time Continuous Glucose Monitoring Technology During Aerobic Exercise in Adults Living with Type 1 Diabetes.",
+          "journal": "Diabetes technology & therapeutics",
+          "year": "2019",
+          "publication_type": "Journal Article; Randomized Controlled Trial; Research Support, Non-U.S. Gov't",
+          "evidence_badge": "RCT",
+          "publisher": "",
+          "source_url": "",
+          "population": "type1",
+          "excerpt": "Background: Real-time continuous glucose monitoring (CGM) devices help detect glycemic excursions associated with exercise, meals, and insulin dosing in patients with type 1 diabetes (T1D). However, the delay between interstitial and blood glucose may result in CGM underestimating the true change in glycemia during activity. The purpose of this study was to examine CGM discrepancies during exercise and the meal postexercise versus self-monitoring of blood glucose (SMBG). Methods: Seventeen adults with T1D using insulin pump therapy and CGM completed 60 min of aerobic exercise on three occasions. A standardized meal was given 30 min postexercise. SMBG was measured during exercise and in recovery using OmniPod® Personal Diabetes Manager (PDM; Insulet, Billerica, MA) with built-in glucose meter (FreeStyle; Abbott Laboratories, Abbott Park, IL), while CGM was measured with Dexcom G4® with 505 algorithm (n = 4) or G5® (n = 13), which were calibrated with subjects' own PDM. Results: SMBG showed a large drop in glycemia during exercise, while CGM showed a lag of 12 ± 11 (mean ± standard deviation) minutes and bias of -7 ± 19 mg/dL/min during activity. Mean absolute relative difference (MARD) for CGM versus SMBG was 13 (6-22)% [median (interquartile range)] during exercise and 8 (5-14)% during mealtime. Clarke error grids showed CGM values were in zones A and B 94%-99% of the time for SMBG. Conclusion: In summary, the drop in CGM lags behind the drop in blood glucose during prolonged aerobic exercise by 12 ± 11 min, and MARD increases to 13 (6-22)% during exercise as well. Therefore, if hypoglycemia is suspected during exercise, individuals should confirm glucose levels with a capillary glucose measurement.",
+          "matched_chunk": "Lag Time Remains with Newer Real-Time Continuous Glucose Monitoring Technology During Aerobic Exercise in Adults Living with Type 1 Diabetes. | 2019 | Type 1 diabetes | RCT\nBackground: Real-time continuous glucose monitoring (CGM) devices help detect glycemic excursions associated with exercise, meals, and insulin dosing in patients with type 1 diabetes (T1D). However, the delay between interstitial and blood glucose may result in CGM underestimating the true change in glycemia during activity. The purpose of this study was to examine CGM discrepancies during exercise and the meal postexercise versus self-monitoring of blood glucose (SMBG). Methods: Seventeen adults with T1D using insulin pump therapy and CGM completed 60 min of aerobic exercise on three occasions. A standardized meal was given 30 min postexercise.",
+          "fusion_rank": 4,
+          "dense_rank": null,
+          "bm25_rank": 3,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "42035781",
+          "title": "Continuous glucose monitoring versus self-monitoring of blood glucose in individuals with type 2 diabetes: a randomised, multicentre, open-label, superiority trial.",
+          "journal": "The lancet. Diabetes & endocrinology",
+          "year": "2026",
+          "publication_type": "Journal Article; Multicenter Study; Randomized Controlled Trial; Equivalence Trial",
+          "evidence_badge": "RCT",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "BACKGROUND: Type 2 diabetes is the most common metabolic disorder worldwide, accounting for about 90% of people living with diabetes. Glycated haemoglobin (HbA1c), a measure of chronic glycaemic exposure, correlates with the risk of long-term complications, which can result in substantial morbidity for people with diabetes and major costs to health-care systems. The value of continuous glucose monitoring (CGM) in people with type 2 diabetes managed with basal insulin and modern therapies remains unclear. FreeDM2 aimed to evaluate the effectiveness of real-time CGM in adults with type 2 diabetes. METHODS: This open-label, parallel-design, randomised controlled trial conducted across 24 primary and secondary care centres in the UK enrolled adults with type 2 diabetes managed with basal insulin and SGLT2 inhibitors or GLP-1 receptor agonists or dual GIP/GLP-1 receptor agonists with HbA1c 7·5-11·0%. Participants were assigned (2:1; using permuted block randomisation by study site, generated by Sealed Envelope) to CGM (intervention) or continuation of self-monitoring of blood glucose (SMBG; control), across two phases: weeks 1-16, self-management with basal insulin self-titration; and weeks 17-32, clinician-supported where additional therapies could be initiated in line with national guidance. Participants and study site staff were not masked to group allocation. The primary outcome was difference between groups in HbA1c concentrations at 16 weeks, and the key secondary outcome was the difference between groups at 32 weeks, both in the treatment policy estimand. Safety analysis included all randomly assigned participants. The FreeDM2 randomised controlled trial is registered at ClinicalTrials.gov (NCT05944432) and is complete. FINDINGS: Between July 26, 2023, and Jan 31, 2025, 469 individuals underwent screening for potential study inclusion, 140 were excluded due to not meeting inclusion criteria, and 329 were included in the baseline phase of the study. 26 individuals were then excluded due to insufficient data capture or withdrawal, and 303 participants were randomly assigned; 198 to the CGM intervention group and 105 to the SMBG control group. 204 (67%) participants were male and 99 (33%) were female, the mean age of the cohort was 60·7 years (SD 9·8), and mean diabetes duration was 16·7 years (6·9). Baseline HbA1c concentration was 8·8% (SD 1·0) in the CGM group and 8·8% (1·1) in the control group, decreasing to 8·0% (0·9) in the CGM group and to 8·7% (1·1) in the control group at week 16 (adjusted difference -0·6 [95% CI -0·8 to -0·3]; p<0·0001) and decreasing further to 7·8% (0·9) in the CGM group and to 8·3% (1·2) in the control group at week 32 (adjusted difference -0·5 [95% CI -0·7 to -0·2]; p<0·0001). There was a similar incidence of non-device-related adverse events in both groups, and two instances of severe hypoglycaemia in the control group. INTERPRETATION: In adults with type 2 diabetes on basal insulin plus modern therapies, real-time CGM improved glycaemic control versus SMBG during self-management and under clinician-supported management. FUNDING: Abbott Diabetes Care.",
+          "matched_chunk": "",
+          "fusion_rank": 5,
+          "dense_rank": 3,
+          "bm25_rank": null,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41618269",
+          "title": "Effectiveness of continuous glucose monitoring on maternal and neonatal outcomes in gestational diabetes mellitus: a systematic review and meta-analysis.",
+          "journal": "BMC pregnancy and childbirth",
+          "year": "2026",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "gestational",
+          "excerpt": "BACKGROUND: Continuous Glucose Monitoring (CGM) by providing real-time glucose data and glucose trends is a useful tool in the management of gestational diabetes mellitus (GDM). This systematic review and meta-analysis of Randomized Clinical Trials (RCTs) evaluated the impact of CGM on maternal and neonatal outcomes in women with GDM. METHODS: A comprehensive search of PubMed, Cochrane Library, EMBASE, and Scopus identified RCTs comparing CGM with SMBG in women with GDM. Outcomes were analyzed using mean differences and odds ratios, with meta-analysis performed in RevMan 5.4. RESULTS: Five studies were included in this review. Maternal outcomes showed a significant reduction in HbA1c [MD: -0.21% (-0.39, -0.03) p = 0.02] with CGM compared to Self-Monitoring of Blood Glucose (SMBG). Neonatal outcomes indicated a lower rate of macrosomia [OR: 0.50 (0.40, 0.61) p < 0.00001] and reduced birth weight [MD: -151.68 gm (-237.21, -66.14) p = 0.0005] in the CGM group. However, no significant differences were observed in other secondary outcomes. CONCLUSION: The study demonstrated that the CGM group had a significantly lower HbA1c, with lower rates of macrosomia and reduced birth weights compared to SMBG. While CGM is effective for improving outcomes in GDM, further research is needed to establish pregnancy-specific glucose targets and address cost and accessibility challenges.",
+          "matched_chunk": "Effectiveness of continuous glucose monitoring on maternal and neonatal outcomes in gestational diabetes mellitus: a systematic review and meta-analysis. | 2026 | Gestational diabetes | Meta-analysis\nBACKGROUND: Continuous Glucose Monitoring (CGM) by providing real-time glucose data and glucose trends is a useful tool in the management of gestational diabetes mellitus (GDM). This systematic review and meta-analysis of Randomized Clinical Trials (RCTs) evaluated the impact of CGM on maternal and neonatal outcomes in women with GDM. METHODS: A comprehensive search of PubMed, Cochrane Library, EMBASE, and Scopus identified RCTs comparing CGM with SMBG in women with GDM. Outcomes were analyzed using mean differences and odds ratios, with meta-analysis performed in RevMan 5.4. RESULTS: Five studies were included in this review. Maternal outcomes showed a significant reduction in HbA1c [MD: -0.21% (-0.39, -0.03) p = 0.02] with CGM compared to Self-Monitoring of Blood Glucose (SMBG).",
+          "fusion_rank": 6,
+          "dense_rank": null,
+          "bm25_rank": 5,
+          "score": 0.015384615384615385
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41659334",
+          "title": "Impact of real-time continuous glucose monitoring on glycaemic control in adults with type 2 diabetes: systematic review and meta-analysis.",
+          "journal": "Frontiers in endocrinology",
+          "year": "2025",
+          "publication_type": "Journal Article; Systematic Review; Meta-Analysis",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "OBJECTIVE: To evaluate the effectiveness of real-time continuous glucose monitoring compared with self-monitoring of blood glucose in adults with type 2 diabetes, focusing on glycaemic control, cardiometabolic outcomes, and patient-centred measures. METHODS: Randomised controlled trials published in English with study intervention period ≥12 weeks, which compared real-time continuous glucose monitoring with self-monitoring of blood glucose in adults with type 2 diabetes were included in this systematic review. Analyses were conducted using Review Manager version 9.6. Risk of bias was evaluated using the Cochrane risk-of-bias tool. The Grading of Recommendations Assessment, Development and Evaluations approach was used to assess certainty of evidence. DATA SOURCES: The search was conducted across PubMed, CINAHL, Web of Science, the Cochrane Library databases and ClinicalTrials.gov from inception to July 2025. RESULTS: This systematic review was reported in accordance with the Preferred Reporting Items for Systematic Reviews and Meta-Analyses guidelines. Eleven studies which compared real-time continuous glucose monitoring (n=437) with self-monitoring of blood glucose (n=352) were included. Real-time continuous glucose monitoring use was associated with a significant reduction in HbA1c (mean difference=-0.20%), improved time-in-range (mean difference=7.41%), reduced time-above-range (mean difference=6.93%) and reduced time-below-range (mean difference=0.26%). Glucose variability was significantly lower (mean difference=-1.06%) and users demonstrated greater improvements in readiness for diabetes self-management (standardised mean difference=0.69). No significant differences were observed in cardiometabolic or psychosocial outcomes. CONCLUSION: Real-time continuous glucose monitoring improves glycaemic control and self-management capacity compared with self-monitoring of blood glucose in adults with type 2 diabetes. These findings support the integration of real-time continuous glucose monitoring into routine clinical care, particularly for individuals requiring intensive glucose monitoring and tailored self-care support. SYSTEMATIC REVIEW REGISTRATION: https://www.crd.york.ac.uk/prospero/, identifier CRD42025625444.",
+          "matched_chunk": "",
+          "fusion_rank": 2,
+          "dense_rank": 1,
+          "bm25_rank": null,
+          "score": 0.01639344262295082
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "Yes, in several studies continuous glucose monitoring (CGM), a sensor worn on the body that tracks blood sugar all day and night, lowered average blood sugar levels more than self-monitoring of blood glucose (SMBG), which means checking blood sugar with finger-prick tests.",
+          "chunk_ids": [
+            2,
+            4,
+            6
+          ],
+          "pmids": [
+            "41457339",
+            "42035781",
+            "41659334"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This pattern was seen most clearly in people with type 2 diabetes.",
+          "chunk_ids": [
+            2,
+            4,
+            6
+          ],
+          "pmids": [
+            "41457339",
+            "42035781",
+            "41659334"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "In one large trial, adults with type 2 diabetes who were using some diabetes medicines along with insulin and switched to CGM saw their HbA1c (a blood test showing average blood sugar over about three months) drop more than those who kept using SMBG, both after four months and after eight months.",
+          "chunk_ids": [
+            4
+          ],
+          "pmids": [
+            "42035781"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "A review that combined results from many studies of people with type 2 diabetes found that CGM lowered HbA1c a bit more than SMBG, and this held true for different types of CGM devices.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "41457339"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Another combined analysis in type 2 diabetes found that real-time CGM not only lowered HbA1c slightly but also increased the amount of time blood sugar stayed in a healthy range and reduced time spent with very high or very low blood sugar, compared with SMBG.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "41659334"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "In gestational diabetes, which is diabetes that starts during pregnancy, the research results are mixed.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true
+        },
+        {
+          "sentence": "One review of several trials found that CGM led to a small but meaningful drop in HbA1c compared with SMBG in women with gestational diabetes, along with lower rates of babies being born very large and lower birth weights overall.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            "41618269"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "However, another, larger review found that CGM did not improve HbA1c or most other blood sugar measures in gestational diabetes, although it did help more women gain a healthier amount of weight during pregnancy and was linked to lower average birth weight in babies.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "41591479"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "In type 1 diabetes, one study looked at how well CGM tracks blood sugar during exercise rather than at long-term control.",
+          "chunk_ids": [
+            3
+          ],
+          "pmids": [
+            "31059282"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "It found that even newer CGM devices lagged behind finger-prick blood sugar readings by about 12 minutes during exercise, and were somewhat less accurate during activity, so people were advised to double-check with a finger-prick test if they suspected low blood sugar while exercising.",
+          "chunk_ids": [
+            3
+          ],
+          "pmids": [
+            "31059282"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Overall, this evidence covers people with type 2 diabetes, gestational diabetes, and type 1 diabetes, with the strongest and most consistent support for CGM improving blood sugar control seen in type 2 diabetes.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Talk to your doctor or pharmacist before changing anything.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true,
+          "safety_note": true
+        }
+      ],
+      "num_contradictions": 1,
+      "error": null,
+      "query_step": {
+        "search_query": "Does continuous glucose monitoring improve glycemic control compared with self-monitoring of blood glucose?",
+        "keywords": [
+          "continuous glucose monitoring",
+          "self-monitoring blood glucose",
+          "glycemic control",
+          "HbA1c",
+          "CGM versus SMBG"
+        ],
+        "personal_dosing": false,
+        "fallback": null,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "41659334_1.0",
+            "score": 0.7555
+          },
+          {
+            "chunk_id": "41659334_2.0",
+            "score": 0.7231
+          },
+          {
+            "chunk_id": "42035781_5.0",
+            "score": 0.7112
+          },
+          {
+            "chunk_id": "42035781_3.0",
+            "score": 0.7083
+          },
+          {
+            "chunk_id": "42035781_4.0",
+            "score": 0.7049
+          },
+          {
+            "chunk_id": "42543995_1.0",
+            "score": 0.7018
+          },
+          {
+            "chunk_id": "41457339_0.0",
+            "score": 0.6846
+          },
+          {
+            "chunk_id": "41457339_2.0",
+            "score": 0.6728
+          },
+          {
+            "chunk_id": "41419058_1.0",
+            "score": 0.6722
+          },
+          {
+            "chunk_id": "42035781_1.0",
+            "score": 0.67
+          },
+          {
+            "chunk_id": "41419058_0.0",
+            "score": 0.6624
+          },
+          {
+            "chunk_id": "41942969_1.0",
+            "score": 0.6613
+          },
+          {
+            "chunk_id": "41457339_1.0",
+            "score": 0.6557
+          },
+          {
+            "chunk_id": "42543995_0.0",
+            "score": 0.6553
+          },
+          {
+            "chunk_id": "42545686_0.0",
+            "score": 0.654
+          },
+          {
+            "chunk_id": "42035781_0.0",
+            "score": 0.6534
+          },
+          {
+            "chunk_id": "42207272_0.0",
+            "score": 0.6528
+          },
+          {
+            "chunk_id": "41659334_0.0",
+            "score": 0.652
+          },
+          {
+            "chunk_id": "41192933_0.0",
+            "score": 0.6513
+          },
+          {
+            "chunk_id": "42002475_2.0",
+            "score": 0.6473
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "41591479_0",
+            "score": 39.651
+          },
+          {
+            "chunk_id": "41457339_0",
+            "score": 35.564
+          },
+          {
+            "chunk_id": "31059282_0",
+            "score": 33.493
+          },
+          {
+            "chunk_id": "42035781_5",
+            "score": 32.992
+          },
+          {
+            "chunk_id": "41618269_0",
+            "score": 32.313
+          },
+          {
+            "chunk_id": "41178671_0",
+            "score": 31.295
+          },
+          {
+            "chunk_id": "41178671_1",
+            "score": 31.247
+          },
+          {
+            "chunk_id": "42035781_3",
+            "score": 30.629
+          },
+          {
+            "chunk_id": "41591479_2",
+            "score": 30.528
+          },
+          {
+            "chunk_id": "42595054_0",
+            "score": 30.323
+          },
+          {
+            "chunk_id": "41618269_1",
+            "score": 29.983
+          },
+          {
+            "chunk_id": "42035781_1",
+            "score": 29.899
+          },
+          {
+            "chunk_id": "41102107_0",
+            "score": 29.828
+          },
+          {
+            "chunk_id": "41958878_0",
+            "score": 29.818
+          },
+          {
+            "chunk_id": "41651803_0",
+            "score": 29.616
+          },
+          {
+            "chunk_id": "41309353_1",
+            "score": 29.132
+          },
+          {
+            "chunk_id": "42215031_0",
+            "score": 28.869
+          },
+          {
+            "chunk_id": "41942969_0",
+            "score": 28.865
+          },
+          {
+            "chunk_id": "41419058_1",
+            "score": 28.686
+          },
+          {
+            "chunk_id": "42595054_2",
+            "score": 28.192
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "41591479",
+            "chunk_id": "41591479_0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "41659334",
+            "chunk_id": "41659334_1.0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "41457339",
+            "chunk_id": "41457339_0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "31059282",
+            "chunk_id": "31059282_0",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "42035781",
+            "chunk_id": "42035781_5.0",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "41618269",
+            "chunk_id": "41618269_0",
+            "score": 0.01538
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "sufficient",
+      "evidence_reason": "Multiple DIRECT passages (C2, C4, C6) in type 2 diabetes populations demonstrate that CGM improves glycemic control (HbA1c reduction) compared with SMBG, with consistent findings across recent systematic reviews and RCTs.",
+      "propositions": [
+        {
+          "claim": "Continuous glucose monitoring (CGM) improves glycemic control compared with self-monitoring of blood glucose (SMBG)",
+          "core": true,
+          "direct": [
+            2,
+            4,
+            6
+          ],
+          "partial": [
+            1,
+            5
+          ],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 0.1,
+        "retrieval": 3940.9,
+        "evidence": 7653.3,
+        "generation": 64685.9,
+        "total": 76310.6
+      },
+      "usage": {
+        "input_tokens": 6816,
+        "output_tokens": 3024
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": true,
+      "generated_answer": "Yes, in several studies continuous glucose monitoring (CGM), a sensor worn on the body that tracks blood sugar all day and night, lowered average blood sugar levels more than self-monitoring of blood glucose (SMBG), which means checking blood sugar with finger-prick tests. This pattern was seen most clearly in people with type 2 diabetes. In one large trial, adults with type 2 diabetes who were using some diabetes medicines along with insulin and switched to CGM saw their HbA1c (a blood test showing average blood sugar over about three months) drop more than those who kept using SMBG, both after four months and after eight months. A review that combined results from many studies of people with type 2 diabetes found that CGM lowered HbA1c a bit more than SMBG, and this held true for different types of CGM devices. Another combined analysis in type 2 diabetes found that real-time CGM not only lowered HbA1c slightly but also increased the amount of time blood sugar stayed in a healthy range and reduced time spent with very high or very low blood sugar, compared with SMBG. In gestational diabetes, which is diabetes that starts during pregnancy, the research results are mixed. One review of several trials found that CGM led to a small but meaningful drop in HbA1c compared with SMBG in women with gestational diabetes, along with lower rates of babies being born very large and lower birth weights overall. However, another, larger review found that CGM did not improve HbA1c or most other blood sugar measures in gestational diabetes, although it did help more women gain a healthier amount of weight during pregnancy and was linked to lower average birth weight in babies. In type 1 diabetes, one study looked at how well CGM tracks blood sugar during exercise rather than at long-term control. It found that even newer CGM devices lagged behind finger-prick blood sugar readings by about 12 minutes during exercise, and were somewhat less accurate during activity, so people were advised to double-check with a finger-prick test if they suspected low blood sugar while exercising. Overall, this evidence covers people with type 2 diabetes, gestational diabetes, and type 1 diabetes, with the strongest and most consistent support for CGM improving blood sugar control seen in type 2 diabetes. Talk to your doctor or pharmacist before changing anything.",
+      "wall_ms": 76314.4
+    },
+    {
+      "id": 12,
+      "topic": "glycemic_control",
+      "in_scope": true,
+      "question": "Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as monotherapy in type 2 diabetes?",
+      "reference_answer": "DPP-4 inhibitors as monotherapy typically lower HbA1c by roughly 0.5-0.8 percentage points versus placebo, a modest but clinically meaningful effect, with low hypoglycemia risk and weight neutrality.",
+      "status": "answered_partial",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "42070662",
+          "title": "DPP-4 inhibitors in current diabetes care: their foundational role in treating to target.",
+          "journal": "Diabetes research and clinical practice",
+          "year": "2026",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "Despite major advances in glucose-lowering therapies, a substantial proportion of individuals with type 2 diabetes (T2DM) do not achieve recommended glycemic targets, maintaining a high risk of microvascular and macrovascular complications. While current guidelines prioritize agents with proven cardiovascular and renal benefits (treat-to-benefit), optimal glycemic control (treat-to-target) remains a cornerstone of diabetes management. This review supports an integrated therapeutic framework in which both strategies are pursued in parallel and examines the role of dipeptidyl peptidase-4 inhibitors (DPP-4is) within this context. DPP-4is provide clinically meaningful HbA1c reductions, approximately 0.6-1.1%, with a low risk of hypoglycemia, weight neutrality, and a favorable tolerability profile. Cardiovascular outcome trials have established their cardiovascular safety, and they are particularly suitable as add-on treatment to metformin, SGLT-2 inhibitors, or insulin, enabling safe intensification to achieve glycemic targets while maintaining cardiorenal-protective regimens. DPP-4is tolerability makes them specifically indicated for older patients. In contemporary diabetes care, DPP-4is-particularly sitagliptin-remain a versatile option bridging treat-to-target and treat-to-benefit paradigms to support comprehensive cardiovascular-kidney-metabolic (CKM) reduction in T2DM.",
+          "matched_chunk": "",
+          "fusion_rank": 2,
+          "dense_rank": 1,
+          "bm25_rank": null,
+          "score": 0.01639344262295082
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "Some diabetes medicines called DPP-4 inhibitors (pills that help the body release more of its own insulin after meals) have been shown to lower HbA1c, a blood test that shows your average blood sugar over about three months, by a modest amount, roughly 0.6 to 1.1 percentage points.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "42070662"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This evidence comes from research in people with type 2 diabetes.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "42070662"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "The research described here looked at these medicines mainly as an add-on to other diabetes treatments, such as alongside other glucose-lowering drugs or insulin, rather than as a stand-alone treatment.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "42070662"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "The studies found here don't address whether DPP-4 inhibitors give a clinically meaningful HbA1c reduction when used alone, without any other diabetes medicine.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Talk to your doctor or pharmacist before changing anything.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true,
+          "safety_note": true
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "query_step": {
+        "search_query": "Are DPP-4 inhibitors effective as monotherapy for reducing HbA1c in type 2 diabetes mellitus?",
+        "keywords": [
+          "DPP-4 inhibitors",
+          "monotherapy",
+          "HbA1c reduction",
+          "type 2 diabetes",
+          "dipeptidyl peptidase-4"
+        ],
+        "personal_dosing": false,
+        "fallback": null,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "42070662_0.0",
+            "score": 0.7407
+          },
+          {
+            "chunk_id": "41026724_2.0",
+            "score": 0.7383
+          },
+          {
+            "chunk_id": "41026724_3.0",
+            "score": 0.7368
+          },
+          {
+            "chunk_id": "41026724_1.0",
+            "score": 0.7261
+          },
+          {
+            "chunk_id": "42070662_1.0",
+            "score": 0.7124
+          },
+          {
+            "chunk_id": "30261527_1.0",
+            "score": 0.7037
+          },
+          {
+            "chunk_id": "41454522_1.0",
+            "score": 0.6845
+          },
+          {
+            "chunk_id": "41100339_5.0",
+            "score": 0.679
+          },
+          {
+            "chunk_id": "42216339_2.0",
+            "score": 0.6691
+          },
+          {
+            "chunk_id": "42525873_2.0",
+            "score": 0.669
+          },
+          {
+            "chunk_id": "28489279_2.0",
+            "score": 0.6603
+          },
+          {
+            "chunk_id": "28489279_1.0",
+            "score": 0.6602
+          },
+          {
+            "chunk_id": "41026724_0.0",
+            "score": 0.6595
+          },
+          {
+            "chunk_id": "41925338_3.0",
+            "score": 0.657
+          },
+          {
+            "chunk_id": "41905822_2.0",
+            "score": 0.6528
+          },
+          {
+            "chunk_id": "41905822_4.0",
+            "score": 0.6522
+          },
+          {
+            "chunk_id": "42296968_1.0",
+            "score": 0.6503
+          },
+          {
+            "chunk_id": "42165377_7.0",
+            "score": 0.6455
+          },
+          {
+            "chunk_id": "42165377_2.0",
+            "score": 0.6406
+          },
+          {
+            "chunk_id": "36594724_2.0",
+            "score": 0.6343
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "31789451_0",
+            "score": 40.173
+          },
+          {
+            "chunk_id": "28786530_0",
+            "score": 39.165
+          },
+          {
+            "chunk_id": "42473296_0",
+            "score": 37.614
+          },
+          {
+            "chunk_id": "31789451_3",
+            "score": 37.278
+          },
+          {
+            "chunk_id": "33756226_1",
+            "score": 36.889
+          },
+          {
+            "chunk_id": "42216339_0",
+            "score": 35.904
+          },
+          {
+            "chunk_id": "41267147_0",
+            "score": 34.035
+          },
+          {
+            "chunk_id": "41026724_0",
+            "score": 32.619
+          },
+          {
+            "chunk_id": "33756226_0",
+            "score": 31.672
+          },
+          {
+            "chunk_id": "30261527_0",
+            "score": 31.578
+          },
+          {
+            "chunk_id": "29645341_0",
+            "score": 31.572
+          },
+          {
+            "chunk_id": "41925338_3",
+            "score": 31.278
+          },
+          {
+            "chunk_id": "42070662_0",
+            "score": 30.839
+          },
+          {
+            "chunk_id": "28177187_0",
+            "score": 30.787
+          },
+          {
+            "chunk_id": "32350172_0",
+            "score": 29.896
+          },
+          {
+            "chunk_id": "40936045_0",
+            "score": 29.598
+          },
+          {
+            "chunk_id": "31990936_0",
+            "score": 29.533
+          },
+          {
+            "chunk_id": "39160513_0",
+            "score": 29.092
+          },
+          {
+            "chunk_id": "31789451_2",
+            "score": 29.02
+          },
+          {
+            "chunk_id": "39661009_0",
+            "score": 28.923
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "31789451",
+            "chunk_id": "31789451_0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "42070662",
+            "chunk_id": "42070662_0.0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "28786530",
+            "chunk_id": "28786530_0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "41026724",
+            "chunk_id": "41026724_2.0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "42473296",
+            "chunk_id": "42473296_0",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "33756226",
+            "chunk_id": "33756226_1",
+            "score": 0.01538
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "partial",
+      "evidence_reason": "C6 directly states DPP-4 inhibitors provide clinically meaningful HbA1c reductions (0.6-1.1%) in type 2 diabetes, but it primarily describes add-on treatment rather than monotherapy, while C1 studies monotherapy effects on surrogate markers (glucose, hormones) rather than HbA1c reduction as the primary outcome.",
+      "propositions": [
+        {
+          "claim": "DPP-4 inhibitors provide clinically meaningful HbA1c reduction as monotherapy in type 2 diabetes",
+          "core": true,
+          "direct": [
+            6
+          ],
+          "partial": [
+            1
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The magnitude of HbA1c reduction is approximately 0.6-1.1%",
+          "core": false,
+          "direct": [
+            6
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "DPP-4 inhibitors are used as monotherapy (not combination therapy)",
+          "core": false,
+          "direct": [],
+          "partial": [
+            1
+          ],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 0.1,
+        "retrieval": 1573.3,
+        "evidence": 3692.6,
+        "generation": 11957.1,
+        "total": 17236.9
+      },
+      "usage": {
+        "input_tokens": 2513,
+        "output_tokens": 541
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": true,
+      "generated_answer": "Some diabetes medicines called DPP-4 inhibitors (pills that help the body release more of its own insulin after meals) have been shown to lower HbA1c, a blood test that shows your average blood sugar over about three months, by a modest amount, roughly 0.6 to 1.1 percentage points. This evidence comes from research in people with type 2 diabetes. The research described here looked at these medicines mainly as an add-on to other diabetes treatments, such as alongside other glucose-lowering drugs or insulin, rather than as a stand-alone treatment. The studies found here don't address whether DPP-4 inhibitors give a clinically meaningful HbA1c reduction when used alone, without any other diabetes medicine. Talk to your doctor or pharmacist before changing anything.",
+      "wall_ms": 17237.8
+    }
+  ]
+}

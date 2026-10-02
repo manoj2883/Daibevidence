@@ -36,7 +36,17 @@ DRUG_TERMS = [
     "insulin glargine", "insulin detemir", "insulin degludec", "insulin lispro", "insulin aspart",
     "glargine", "detemir", "degludec", "lispro", "aspart", "glulisine", "nph insulin", "lantus", "levemir",
     "tresiba", "humalog", "novolog", "basal insulin", "bolus insulin", "prandial insulin",
-    # supplements
+    # spelled-out class names, so a replacement never leaves a fragment like "... inhibitors"
+    "sglt-2 inhibitor", "sglt-2 inhibitors", "sglt2i", "dpp-4i", "glp-1 receptor agonist (glp-1 ra)",
+    "sodium-glucose cotransporter 2 inhibitor", "sodium-glucose cotransporter 2 inhibitors",
+    "sodium-glucose cotransporter-2 inhibitor", "sodium-glucose cotransporter-2 inhibitors",
+    "dipeptidyl peptidase-4 inhibitor", "dipeptidyl peptidase-4 inhibitors",
+    "glucagon-like peptide-1 receptor agonist", "glucagon-like peptide-1 receptor agonists",
+    "glp-1 agonist", "glp-1 agonists", "glp-1 medicines", "glp-1 drugs", "incretin-based therapies",
+]
+
+# Supplements are replaced with "some supplements", not "some diabetes medicines".
+SUPPLEMENT_TERMS = [
     "chromium", "cinnamon", "berberine", "magnesium supplement", "magnesium supplements", "vitamin d",
     "vitamin d supplementation", "vitamin b12", "omega-3", "fish oil", "probiotic", "probiotics", "inositol",
     "myo-inositol", "alpha-lipoic acid", "fenugreek", "curcumin", "ginseng", "zinc supplementation",
@@ -53,7 +63,24 @@ def _pattern(term: str) -> re.Pattern:
     return re.compile(r"(?<![a-z0-9])" + re.escape(term) + r"(?![a-z0-9])", re.IGNORECASE)
 
 
-_PATTERNS = [(t, _pattern(t)) for t in sorted(set(DRUG_TERMS), key=len, reverse=True)]
+ALL_TERMS = DRUG_TERMS + SUPPLEMENT_TERMS
+_SUPPLEMENTS = set(SUPPLEMENT_TERMS)
+_PATTERNS = [(t, _pattern(t)) for t in sorted(set(ALL_TERMS), key=len, reverse=True)]
+
+DRUG_PLACEHOLDER = "some diabetes medicines"
+SUPPLEMENT_PLACEHOLDER = "some supplements"
+_REPEATS = re.compile(
+    r"\b(some diabetes medicines|some supplements)(?:(?:\s*,\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+)\1\b)+",
+    re.IGNORECASE,
+)
+
+
+def replace_terms(text: str, terms) -> str:
+    """Fallback: swap each flagged term for a generic phrase, then collapse "X, X, or X" into "X"."""
+    for term in sorted(set(terms), key=len, reverse=True):
+        placeholder = SUPPLEMENT_PLACEHOLDER if term in _SUPPLEMENTS else DRUG_PLACEHOLDER
+        text = _pattern(term).sub(placeholder, text)
+    return _REPEATS.sub(r"\1", text)
 
 
 def drug_terms_in(text: str) -> List[str]:

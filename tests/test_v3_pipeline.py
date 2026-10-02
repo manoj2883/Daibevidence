@@ -157,3 +157,68 @@ def test_block_first_still_returns_only_what_follows():
 
     contradictions, rest = extract_contradiction_block('<<<CONTRADICTIONS>>>\n[]\n<<<END_CONTRADICTIONS>>>\n[{"sentence": "x"}]')
     assert contradictions == [] and rest.strip() == '[{"sentence": "x"}]'
+
+
+def test_replace_terms_generic_phrases_and_collapses_repeats():
+    from src.rag.safety import replace_terms
+
+    text = "Used with other medicines, such as metformin, SGLT-2 inhibitors, or insulin."
+    flagged = names_unmentioned_drugs("Do DPP-4 inhibitors lower HbA1c?", [text])
+    assert set(flagged) == {"metformin", "sglt-2 inhibitors"}
+    assert replace_terms(text, flagged) == "Used with other medicines, such as some diabetes medicines, or insulin."
+    assert replace_terms("People on basal insulin did well.", ["basal insulin"]) == "People on some diabetes medicines did well."
+    assert replace_terms("Cinnamon and berberine helped.", ["cinnamon", "berberine"]) == "some supplements helped."
+
+
+def _run_with_attempts(attempt_texts, audience="patient", tmp_path=None):
+    """Like _run, but each generation call returns the next text in attempt_texts."""
+    from src.rag import pipeline
+
+    evidence = {"propositions": [{"claim": "c", "core": True, "direct": [1], "partial": [], "absent": False}],
+                "question_population": "type 2", "evidence_populations": ["type2"], "population_mismatch": False,
+                "on_topic": True, "cross_study_comparison": False, "verdict": "sufficient", "reason": "r", "model": "m"}
+    calls = []
+
+    def fake_generation(client, system_prompt, question, chunks, t, out):
+        text = attempt_texts[len(calls)]
+        calls.append(system_prompt)
+        out.update(sentences=[{"sentence": text, "chunk_ids": [1], "supported": True, "new_paragraph": False}],
+                   usage=None, truncated=False, model="gen")
+        yield {"event": "contradictions", "data": {"contradictions": []}}
+        yield {"event": "sentence", "data": {"sentence": text, "chunk_ids": [1]}}
+
+    with patch.object(pipeline, "get_client", return_value=MagicMock()), \
+         patch.object(pipeline, "rewrite_query", return_value=QUERY), \
+         patch.object(pipeline, "hybrid_retrieve", return_value=(_chunks(), {"dense": [], "bm25": [], "fused": []})), \
+         patch.object(pipeline, "judge_evidence", return_value=evidence), \
+         patch.object(pipeline, "stream_generation", side_effect=fake_generation), \
+         patch.object(pipeline, "log_query_event"), \
+         patch.object(pipeline, "DRUG_CHECK_LOG_PATH", str(tmp_path / "drug_check.jsonl")):
+        events = list(pipeline.stream_answer_v3("Does walking help blood sugar?", audience=audience))
+    sentences = [e["data"]["sentence"] for e in events if e["event"] == "sentence"]
+    done = [e for e in events if e["event"] == "done"][0]["data"]
+    return sentences, done, calls
+
+
+def test_drug_check_regenerates_once_with_flagged_names_forbidden(tmp_path):
+    sentences, done, calls = _run_with_attempts(
+        ["Walking helps, like metformin does.", "Walking helps, like some diabetes medicines do."], tmp_path=tmp_path)
+    assert len(calls) == 2 and "metformin" in calls[1] and "metformin" not in calls[0].split("IMPORTANT")[-1]
+    assert sentences[0] == "Walking helps, like some diabetes medicines do."
+    assert done["drug_check"] == {"flagged": ["metformin"], "regenerated": True, "flagged_after_regeneration": [], "replaced": []}
+    assert "metformin" in (tmp_path / "drug_check.jsonl").read_text(encoding="utf-8")
+
+
+def test_drug_check_falls_back_to_replacement(tmp_path):
+    sentences, done, calls = _run_with_attempts(
+        ["People on basal insulin did well.", "People on basal insulin did well."], tmp_path=tmp_path)
+    assert len(calls) == 2
+    assert sentences[0] == "People on some diabetes medicines did well."
+    assert done["drug_check"]["replaced"] == ["basal insulin"]
+
+
+def test_drug_check_clean_answer_and_clinician_mode_make_one_call(tmp_path):
+    _, done, calls = _run_with_attempts(["Walking lowered blood sugar."], tmp_path=tmp_path)
+    assert len(calls) == 1 and done["drug_check"]["flagged"] == []
+    sentences, done, calls = _run_with_attempts(["Metformin users also benefited."], audience="clinician", tmp_path=tmp_path)
+    assert len(calls) == 1 and done["drug_check"] is None and sentences[0] == "Metformin users also benefited."

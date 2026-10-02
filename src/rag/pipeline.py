@@ -17,6 +17,8 @@ The query step's output is internal. The evidence judge and the generation promp
 always receive the user's original question; search_query/keywords/personal_dosing
 appear only in the "inspector" payload, which the UI shows in the retrieval inspector.
 """
+import json
+import logging
 import os
 import time
 from typing import Any, Dict, Generator, List, Optional
@@ -44,8 +46,10 @@ from src.rag.hybrid_retriever import dense_chunks_retrieve, hybrid_retrieve
 from src.rag.query_log import log_query_event
 from src.rag.query_rewriter import rewrite_query
 from src.rag.retriever import resolve_namespace
-from src.rag.safety import MEDICATION_NOTE, touches_medication
+from src.rag.safety import MEDICATION_NOTE, names_unmentioned_drugs, replace_terms, touches_medication
 from src.rag.types import RetrievedChunk
+
+logger = logging.getLogger("diabevidence")
 
 AUDIENCES = ("patient", "clinician")
 RETRIEVAL_STRATEGIES = ("hybrid", "dense_chunks")
@@ -186,6 +190,83 @@ def source_payload_v3(chunk: RetrievedChunk) -> Dict[str, Any]:
     }
 
 
+DRUG_CHECK_LOG_PATH = "data/drug_check_log.jsonl"
+
+
+def _event_texts(events: List[Dict[str, Any]]) -> List[str]:
+    """Every user-visible text in a generation's events: sentences and contradiction panels."""
+    texts = []
+    for ev in events:
+        if ev["event"] == "sentence":
+            texts.append(ev["data"]["sentence"])
+        elif ev["event"] == "contradictions":
+            for c in ev["data"].get("contradictions") or []:
+                texts += [str(c.get(k) or "") for k in ("claim", "position_a", "position_b", "differs_by")]
+    return texts
+
+
+def _replace_in_events(events: List[Dict[str, Any]], generation: Dict[str, Any], terms: List[str]) -> None:
+    for ev in events:
+        if ev["event"] == "sentence":
+            ev["data"]["sentence"] = replace_terms(ev["data"]["sentence"], terms)
+        elif ev["event"] == "contradictions":
+            for c in ev["data"].get("contradictions") or []:
+                for k in ("claim", "position_a", "position_b", "differs_by"):
+                    if isinstance(c.get(k), str):
+                        c[k] = replace_terms(c[k], terms)
+    for sentence in generation.get("sentences") or []:
+        sentence["sentence"] = replace_terms(sentence["sentence"], terms)
+
+
+def _log_drug_check(question: str, record: Dict[str, Any]) -> None:
+    logger.warning("Patient-mode drug-name check caught %s for %r", record["flagged"], question[:80])
+    try:
+        os.makedirs(os.path.dirname(DRUG_CHECK_LOG_PATH), exist_ok=True)
+        with open(DRUG_CHECK_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts": time.time(), "question": question, **record}, ensure_ascii=False) + "\n")
+    except OSError:
+        pass  # logging must never break an answer
+
+
+def _patient_generation(client, system_prompt: str, question: str, chunks: List[RetrievedChunk], t_gen: float):
+    """
+    Patient-mode generation with a deterministic drug-name check (src.rag.safety lexicon):
+    1. generate; scan sentences and contradiction text for drug/class/supplement names the
+       question didn't mention;
+    2. if any, regenerate once with those names explicitly forbidden;
+    3. if the regeneration still names any (or fails), replace them in the text with
+       "some diabetes medicines" / "some supplements".
+    Every catch is logged. Returns (events to emit, generation result, drug_check record or None).
+    """
+    generation: Dict[str, Any] = {}
+    events = list(stream_generation(client, system_prompt, question, chunks, t_gen, generation))
+    if generation.get("failed"):
+        return events, generation, None
+    flagged = names_unmentioned_drugs(question, _event_texts(events))
+    if not flagged:
+        return events, generation, {"flagged": [], "regenerated": False, "flagged_after_regeneration": [], "replaced": []}
+
+    record = {"flagged": flagged, "regenerated": True, "flagged_after_regeneration": [], "replaced": []}
+    retry_prompt = system_prompt + (
+        "\n\nIMPORTANT: your answer must not contain any of these names: " + ", ".join(flagged) +
+        ". The user did not mention them. Write \"some diabetes medicines\" (or \"some supplements\") instead."
+    )
+    retry: Dict[str, Any] = {}
+    retry_events = list(stream_generation(client, retry_prompt, question, chunks, t_gen, retry))
+    if not retry.get("failed"):
+        events, generation = retry_events, retry
+        remaining = names_unmentioned_drugs(question, _event_texts(events))
+    else:
+        record["regeneration_failed"] = True
+        remaining = flagged
+    record["flagged_after_regeneration"] = remaining
+    if remaining:
+        _replace_in_events(events, generation, remaining)
+        record["replaced"] = remaining
+    _log_drug_check(question, record)
+    return events, generation, record
+
+
 def _resolve_v3_namespace(namespace: Optional[str], strategy: str) -> str:
     if namespace is not None:
         return namespace
@@ -307,8 +388,14 @@ def stream_answer_v3(
     print_prompt_estimate(f"v3 query: {question[:60]!r}", system_prompt, question)
 
     t_gen = time.monotonic()
-    generation: Dict[str, Any] = {}
-    yield from stream_generation(client, system_prompt, question, gen_chunks, t_gen, generation)
+    drug_check = None
+    if audience == "patient":
+        # Held back until the drug-name check passes: text already shown can't be taken back.
+        events, generation, drug_check = _patient_generation(client, system_prompt, question, gen_chunks, t_gen)
+        yield from events
+    else:
+        generation = {}
+        yield from stream_generation(client, system_prompt, question, gen_chunks, t_gen, generation)
     if generation.get("failed"):
         return
     sentences = generation["sentences"]
@@ -331,7 +418,7 @@ def stream_answer_v3(
         "evidence_verdict": verdict, "population_mismatch": evidence["population_mismatch"],
         "medication_note": medication_note, "disclaimer": DISCLAIMER, "groundedness": groundedness,
         "timing_ms": timing, "usage": generation["usage"], "truncated": generation["truncated"],
-        "model": generation["model"],
+        "model": generation["model"], "drug_check": drug_check,
     }}
 
 

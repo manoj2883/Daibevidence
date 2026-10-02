@@ -146,3 +146,18 @@ CHUNK_OVERLAP_WORDS = 50
 # have to pull in a whole page's "risk factors" and "management" text too).
 BACKGROUND_CHUNK_SIZE_WORDS = 120
 BACKGROUND_CHUNK_OVERLAP_WORDS = 20
+
+# --- v3: recursive chunking + hybrid retrieval ------------------------------
+# Same 5,000 abstracts as v2_5k (minus retractions) + background pages,
+# re-chunked by src.ingest.recursive_chunker. corpus/ is tracked in git (data/
+# is not) because the query path reads it at runtime for BM25 and parents.
+NAMESPACE_V3 = "v3_5k_recursive"
+V3_CORPUS_PATH = "corpus/v3_5k_recursive.json.gz"
+V3_MANIFEST_PATH = "data/corpus_manifest_v3_5k_recursive.json"
+
+# Hybrid retrieval: dense top-N + BM25 top-N, reciprocal rank fusion, dedupe
+# by parent, keep the top FINAL parents.
+V3_DENSE_TOP_K = 20
+V3_BM25_TOP_K = 20
+V3_RRF_K = 60
+V3_FINAL_PARENTS = 6

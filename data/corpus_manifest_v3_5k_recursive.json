@@ -1,0 +1,31 @@
+{
+  "namespace": "v3_5k_recursive",
+  "created_at": "2026-10-02T16:09:56.140973+00:00",
+  "source_raw": [
+    "data/v2_5k_raw.json",
+    "data/background_raw.json"
+  ],
+  "splitter": "src.ingest.recursive_chunker (sections -> sentences -> words, last-sentence overlap)",
+  "max_chunk_tokens_with_header": 250,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_max_tokens": 256,
+  "chunks": 14658,
+  "evidence_chunks": 14630,
+  "background_chunks": 28,
+  "parents": 5011,
+  "retracted_excluded": [
+    "35958808",
+    "36994798"
+  ],
+  "study_design_counts_by_abstract": {
+    "Meta-analysis": 858,
+    "Review": 2466,
+    "RCT": 1538,
+    "Clinical trial": 135,
+    "Observational": 1,
+    "Background (NIDDK)": 2,
+    "Background (ADA)": 7,
+    "Background (CDC)": 4
+  },
+  "uploaded_to_pinecone": true
+}

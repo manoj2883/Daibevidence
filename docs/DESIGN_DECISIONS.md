@@ -172,3 +172,29 @@ rebuilds the table from `data/`.
 - A parser bug dropped answers the model wrote before its contradiction block (3 answers in each
   run). Fixed in `src/rag/chain.py`; only those 6 questions were re-run. The invalid outputs are kept
   as `*.INVALID_empty_answers.*`.
+
+## 10. Post-generation answer checks
+
+**Why change.** Run B's 25 answered cases split sharply by status: `answered` was 11/12 fully
+supported (92%), `answered_partial` 3/13 (23%), and all 3 UNSUPPORTED answers were partial; one
+(id 35) cited no passage at all.
+**Changed.** `src/rag/answer_checks.py`, run on every answer before it is shown, no model calls:
+a citation outside the retrieved passages (or a PMID in the text that wasn't retrieved) →
+`not_covered`, logged as a bug; an uncited factual sentence → removed, answer becomes
+`answered_partial`, logged; no citations left → `not_covered`. Sentences about the evidence itself
+(what the studies don't show, which population they cover) are kept. Answers in both modes are now
+held back until the checks pass. Log: `data/answer_check_log.jsonl`.
+**Result** (25 answered ids re-run, `eval/results/v3_2026-10-02/eval_v3_runB_checks_report.md`):
+
+| | answered | answered_partial | all |
+|---|---|---|---|
+| Before | 11/12 (92%) | 3/13 (23%) | 14/25 (56%) |
+| After | 8/10 (80%) | 7/15 (47%) | 15/25 (60%) |
+
+- The checks removed 8 sentences in 8 answers. 6 were real uncited claims (ids 1, 5, 8, 10, 16).
+  2 were wrong removals of sentences about the evidence (ids 19, 33); the pattern was fixed and
+  tested afterwards, without re-running those ids.
+- No answer was refused: none had zero citations or a citation outside its passages, and no bug
+  was logged. Id 35 cited passages this time.
+- The re-run regenerated every answer, so some grade changes are run-to-run variation, not the
+  checks: ids 12 and 36 dropped to UNSUPPORTED and ids 7 and 15 rose, with the check reporting "ok".

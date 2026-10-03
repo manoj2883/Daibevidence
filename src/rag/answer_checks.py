@@ -18,8 +18,12 @@ from typing import Any, Dict, Iterable, List
 
 EVIDENCE_META = re.compile(
     r"\b(?:studies|study|evidence|research|findings|information|topic|comparison|sources)\s+"
-    r"(?:gathered|found here|reviewed here|described (?:here|below|above)|retrieved|here|covers?|"
-    r"comes? from|applies to|apply to|has been studied|have been studied|is pieced|are pieced|was pieced)\b"
+    r"(?:gathered|found here|reviewed here|described (?:here|below|above)|retrieved|here|"
+    r"has been studied|have been studied|is pieced|are pieced|was pieced)\b"
+    # "this evidence (mainly) comes from", "the research behind these ideas comes from": up to 4 words
+    # between the subject and the verb.
+    r"|\b(?:studies|evidence|research|findings|information)\b(?:\s+[\w-]+){0,4}?\s+"
+    r"(?:comes? from|covers?|applies to|apply to)\b"
     r"|\bseparate studies\b|\bno (?:single )?stud(?:y|ies)\b|\bnone of the (?:studies|retrieved)\b",
     re.IGNORECASE,
 )

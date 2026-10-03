@@ -1,0 +1,137 @@
+Query-step cache: 41 entries (data/query_step_cache_B.json)
+  id=1 'Does adherence to a Mediterranean-style diet reduce the risk of develo'
+[cost] evidence: 'Does adherence to a Mediterranean-style diet reduce the risk': ~16123 chars, ~4030 tokens (rough estimate)
+[cost] v3 query: 'Does adherence to a Mediterranean-style diet reduce the risk': ~20696 chars, ~5174 tokens (rough estimate)
+    -> ERROR (not checkpointed): Generation failed: connection lost ([WinError 10054] An existing connection was forcibly closed by the remote host)
+  id=2 'How does dietary fiber intake affect the risk of developing type 2 dia'
+[cost] evidence: 'How does dietary fiber intake affect the risk of developing ': ~12704 chars, ~3176 tokens (rough estimate)
+[cost] v3 query: 'How does dietary fiber intake affect the risk of developing ': ~15896 chars, ~3974 tokens (rough estimate)
+    -> answered
+  id=3 'What is the evidence for low-carbohydrate diets versus low-fat diets i'
+[cost] evidence: 'What is the evidence for low-carbohydrate diets versus low-f': ~15392 chars, ~3848 tokens (rough estimate)
+[cost] v3 query: 'What is the evidence for low-carbohydrate diets versus low-f': ~10743 chars, ~2686 tokens (rough estimate)
+    -> answered_partial
+  id=4 'Is there evidence that plant-based diets improve glycemic control in p'
+[cost] evidence: 'Is there evidence that plant-based diets improve glycemic co': ~13508 chars, ~3377 tokens (rough estimate)
+[cost] v3 query: 'Is there evidence that plant-based diets improve glycemic co': ~16670 chars, ~4167 tokens (rough estimate)
+    -> answered
+  id=5 'Does time-restricted eating (intermittent fasting) improve markers of '
+[cost] evidence: 'Does time-restricted eating (intermittent fasting) improve m': ~12421 chars, ~3105 tokens (rough estimate)
+[cost] v3 query: 'Does time-restricted eating (intermittent fasting) improve m': ~12575 chars, ~3144 tokens (rough estimate)
+Answer check (partial) for 'Does time-restricted eating (intermittent fasting) improve markers of glycemic c': removed 1 uncited factual sentence(s)
+    -> answered_partial
+  id=7 'What HbA1c target is generally recommended for most nonpregnant adults'
+[cost] evidence: 'What HbA1c target is generally recommended for most nonpregn': ~15583 chars, ~3895 tokens (rough estimate)
+[cost] v3 query: 'What HbA1c target is generally recommended for most nonpregn': ~10462 chars, ~2615 tokens (rough estimate)
+    -> answered_partial
+  id=8 'Does continuous glucose monitoring (CGM) improve glycemic control comp'
+[cost] evidence: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~14753 chars, ~3688 tokens (rough estimate)
+[cost] v3 query: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~18219 chars, ~4555 tokens (rough estimate)
+Answer check (partial) for 'Does continuous glucose monitoring (CGM) improve glycemic control compared with ': removed 1 uncited factual sentence(s)
+    -> answered_partial
+  id=10 'How does postprandial exercise timing affect blood glucose control in '
+[cost] evidence: 'How does postprandial exercise timing affect blood glucose c': ~14756 chars, ~3689 tokens (rough estimate)
+[cost] v3 query: 'How does postprandial exercise timing affect blood glucose c': ~18295 chars, ~4574 tokens (rough estimate)
+Answer check (partial) for 'How does postprandial exercise timing affect blood glucose control in type 2 dia': removed 1 uncited factual sentence(s)
+    -> answered_partial
+  id=11 'What is glycemic variability and why is it clinically relevant?'
+[cost] evidence: 'What is glycemic variability and why is it clinically releva': ~12208 chars, ~3052 tokens (rough estimate)
+[cost] v3 query: 'What is glycemic variability and why is it clinically releva': ~15458 chars, ~3864 tokens (rough estimate)
+    -> ERROR (not checkpointed): Generation failed: connection lost ([WinError 10054] An existing connection was forcibly closed by the remote host)
+  id=12 'Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as m'
+[cost] evidence: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~12830 chars, ~3207 tokens (rough estimate)
+[cost] v3 query: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~7488 chars, ~1872 tokens (rough estimate)
+Patient-mode drug-name check caught ['metformin'] for 'Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as monotherapy'
+    -> answered_partial
+  id=13 'Does bariatric surgery lead to remission of type 2 diabetes?'
+[cost] evidence: 'Does bariatric [cost] v3 query: 'Does adherence to a Mediterranean-style diet reduce the risk': ~18040 chars, ~4510 tokens (rough estimate)
+Answer check (partial) for 'Does adherence to a Mediterranean-style diet reduce the risk of d    -> answered
+  id=14 'Can intensive low-calorie diet interventions induce remission of type '
+[cost] evidence: 'Can intensive low-calorie diet interventions induce remissio': ~16137 chars, ~4034 tokens (rough estimate)
+[cost] v3 query: 'Can intensive low-calorie diet interventions induce remissio': ~19617 chars, ~4904 tokens (rough estimate)
+    -> answered
+  id=15 'How does visceral adiposity relate to insulin resistance compared with'
+[cost] evidence: 'How does visceral adiposity relate to insulin resistance com': ~17385 chars, ~4346 tokens (rough estimate)
+[cost] v3 query: 'How does visceral adiposity relate to insulin resistance com': ~11565 chars, ~2891 tokens (rough estimate)
+    -> answered_partial
+  id=16 'Do GLP-1 receptor agonists cause disproportionate loss of lean body ma'
+[cost] evidence: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~12866 chars, ~3216 tokens (rough estimate)
+[cost] v3 query: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~14046 chars, ~3511 tokens (rough estimate)
+Answer check (partial) for 'Do GLP-1 receptor agonists cause disproportionate loss of lean body mass during ': removed 1 uncited factual sentence(s)
+    -> answered_partial
+  id=17 'What is sarcopenic obesity and why is it a concern in older adults wit'
+[cost] evidence: 'What is sarcopenic obesity and why is it a concern in older ': ~11717 chars, ~2929 tokens (rough estimate)
+[cost] v3 query: 'What is sarcopenic obesity and why is it a concern in older ': ~11496 chars, ~2874 tokens (rough estimate)
+    -> answered_partial
+  id=19 'Does long-term metformin use affect vitamin B12 status?'
+[cost] evidence: 'Does long-term metformin use affect vitamin B12 status?': ~11688 chars, ~2922 tokens (rough estimate)
+[cost] v3 query: 'Does long-term metformin use affect vitamin B12 status?': ~15023 chars, ~3756 tokens (rough estimate)
+Answer check (partial) for 'Does long-term metformin use affect vitamin B12 status?': removed 1 uncited factual sentence(s)
+    -> answered_partial
+  id=22 'Is there a known interaction between ketogenic/very-low-carbohydrate d'
+[cost] evidence: 'Is there a known interaction between ketogenic/very-low-carb': ~13376 chars, ~3344 tokens (rough estimate)
+[cost] v3 query: 'Is there a known interaction between ketogenic/very-low-carb': ~16452 chars, ~4113 tokens (rough estimate)
+    -> answered
+  id=25 'What eye complications require laser treatment in diabetic retinopathy'
+[cost] evidence: 'What eye complications require laser treatment in diabetic r': ~13546 chars, ~3386 tokens (rough estimate)
+[cost] v3 query: 'What eye complications require laser treatment in diabetic r': ~13280 chars, ~3320 tokens (rough estimate)
+    -> answered_partial
+  id=31 'What are the standard treatments for painful diabetic peripheral neuro'
+[cost] evidence: 'What are the standard treatments for painful diabetic periph': ~10070 chars, ~2517 tokens (rough estimate)
+[cost] v3 query: 'What are the standard treatments for painful diabetic periph': ~11126 chars, ~2781 tokens (rough estimate)
+    -> answered_partial
+  id=32 'What diagnostic tests are used to confirm diabetic peripheral neuropat'
+[cost] evidence: 'What diagnostic tests are used to confirm diabetic periphera': ~12290 chars, ~3072 tokens (rough estimate)
+[cost] v3 query: 'What diagnostic tests are used to confirm diabetic periphera': ~15494 chars, ~3873 tokens (rough estimate)
+    -> answered
+  id=33 'What wound care protocol is typically used for treating a diabetic foo'
+[cost] evidence: 'What wound care protocol is typically used for treating a di': ~12112 chars, ~3028 tokens (rough estimate)
+[cost] v3 query: 'What wound care protocol is typically used for treating a di': ~12062 chars, ~3015 tokens (rough estimate)
+    -> answered_partial
+  id=34 'What type of footwear is recommended to prevent diabetic foot complica'
+[cost] evidence: 'What type of footwear is recommended to prevent diabetic foo': ~13339 chars, ~3334 tokens (rough estimate)
+[cost] v3 query: 'What type of footwear is recommended to prevent diabetic foo': ~8127 chars, ~2032 tokens (rough estimate)
+    -> answered_partial
+  id=35 'How is peripheral arterial disease assessed during a diabetic foot exa'
+[cost] evidence: 'How is peripheral arterial disease assessed during a diabeti': ~15570 chars, ~3892 tokens (rough estimate)
+[cost] v3 query: 'How is peripheral arterial disease assessed during a diabeti': ~12496 chars, ~3124 tokens (rough estimate)
+    -> answered_partial
+  id=36 'What are the diagnostic criteria for diabetic ketoacidosis?'
+[cost] evidence: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~10297 chars, ~2574 tokens (rough estimate)
+[cost] v3 query: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~13435 chars, ~3359 tokens (rough estimate)
+    -> answered
+  id=37 'How is diabetic ketoacidosis typically managed in the emergency depart'
+[cost] evidence: 'How is diabetic ketoacidosis typically managed in the emerge': ~14032 chars, ~3508 tokens (rough estimate)
+[cost] v3 query: 'How is diabetic ketoacidosis typically managed in the emerge': ~17415 chars, ~4354 tokens (rough estimate)
+    -> answered
+2 failed: [1, 11]. Re-run the same command to retry only those.
+amin d'] for 'What are the standard treatments for painful diabetic peripheral neuropathy?'
+    -> answered_partial
+  id=32 'What diagnostic tests are used to confirm diabetic peripheral neuropat'
+[cost] evidence: 'What diagnostic tests are used to confirm diabetic periphera': ~12290 chars, ~3072 tokens (rough estimate)
+[cost] v3 query: 'What diagnostic tests are used to confirm diabetic periphera': ~15494 chars, ~3873 tokens (rough estimate)
+    -> answered
+  id=33 'What wound care protocol is typically used for treating a diabetic foo'
+[cost] evidence: 'What wound care protocol is typically used for treating a di': ~12112 chars, ~3028 tokens (rough estimate)
+[cost] v3 query: 'What wound care protocol is typically used for treating a di': ~14249 chars, ~3562 tokens (rough estimate)
+Answer check (partial) for 'What wound care protocol is typically used for treating a diabetic foot ulcer?': removed 1 uncited factual sentence(s)
+    -> answered_partial
+  id=34 'What type of footwear is recommended to prevent diabetic foot complica'
+[cost] evidence: 'What type of footwear is recommended to prevent diabetic foo': ~13339 chars, ~3334 tokens (rough estimate)
+[cost] v3 query: 'What type of footwear is recommended to prevent diabetic foo': ~8225 chars, ~2056 tokens (rough estimate)
+    -> answered_partial
+  id=35 'How is peripheral arterial disease assessed during a diabetic foot exa'
+[cost] evidence: 'How is peripheral arterial disease assessed during a diabeti': ~15570 chars, ~3892 tokens (rough estimate)
+[cost] v3 query: 'How is peripheral arterial disease assessed during a diabeti': ~19525 chars, ~4881 tokens (rough estimate)
+    -> answered_partial
+  id=36 'What are the diagnostic criteria for diabetic ketoacidosis?'
+[cost] evidence: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~10297 chars, ~2574 tokens (rough estimate)
+[cost] v3 query: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~13435 chars, ~3359 tokens (rough estimate)
+    -> answered
+  id=37 'How is diabetic ketoacidosis typically managed in the emergency depart'
+[cost] evidence: 'How is diabetic ketoacidosis typically managed in the emerge': ~14032 chars, ~3508 tokens (rough estimate)
+[cost] v3 query: 'How is diabetic ketoacidosis typically managed in the emerge': ~17415 chars, ~4354 tokens (rough estimate)
+    -> answered
+1 failed: [16]. Re-run the same command to retry only those.
+Query-step cache: 41 entries (data/query_step_cache_B.json)
+Saved 25 results to data/eval_v3_runB_checks.json

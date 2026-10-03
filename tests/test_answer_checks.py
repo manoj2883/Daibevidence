@@ -20,6 +20,9 @@ META_FROM_RUN_B = [
     "This information applies to a mix of diabetes types, including type 1 and type 2 diabetes.",
     "The evidence described below mostly comes from mixed groups of people with diabetic foot ulcers.",
     "The studies reviewed here do not describe what specific features or styles of footwear were used.",
+    # wrongly removed in the first answer-check re-run (ids 19 and 33), fixed after:
+    "This evidence mainly comes from studies in people with type 2 diabetes.",
+    "The research behind these ideas comes from mixed groups of people with diabetic foot ulcers.",
 ]
 
 
@@ -27,6 +30,10 @@ def test_sentences_about_the_evidence_are_not_factual_claims():
     assert all(is_evidence_meta(t) for t in META_FROM_RUN_B)
     assert not is_evidence_meta("In gestational diabetes, which is diabetes that starts during pregnancy, the research results are mixed.")
     assert not is_evidence_meta("Studies found that walking lowers blood sugar.")
+    # sentences the check correctly removed in the re-run (ids 1, 5, 10)
+    assert not is_evidence_meta("Type 2 diabetes is a condition where the body does not use insulin well.")
+    assert not is_evidence_meta("Overall, the studies agree that time-restricted eating can lower fasting glucose.")
+    assert not is_evidence_meta("However, other smaller studies found less clear-cut results for after-meal glucose.")
 
 
 def test_clean_answer_is_ok():

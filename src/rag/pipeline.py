@@ -47,6 +47,7 @@ from src.rag.hybrid_retriever import dense_chunks_retrieve, hybrid_retrieve
 from src.rag.query_log import log_query_event
 from src.rag.query_rewriter import rewrite_query
 from src.rag.retriever import resolve_namespace
+from src.rag.sentence_verifier import core_claim, decide, verify_sentences
 from src.rag.safety import MEDICATION_NOTE, names_unmentioned_drugs, replace_terms, touches_medication
 from src.rag.types import RetrievedChunk
 
@@ -286,6 +287,19 @@ def _log_answer_check(question: str, status: str, check: Dict[str, Any]) -> None
     except OSError:
         pass  # logging must never break an answer
 
+
+def _log_verifier(question: str, status: str, record: Dict[str, Any]) -> None:
+    """Every answer the sentence verifier changed or refused, in the same log as the code checks."""
+    logger.warning("Sentence verifier (%s) for %r: %s", record["outcome"], question[:80], record["reason"])
+    try:
+        os.makedirs(os.path.dirname(ANSWER_CHECK_LOG_PATH), exist_ok=True)
+        with open(ANSWER_CHECK_LOG_PATH, "a", encoding="utf-8") as f:
+            entry = {"ts": time.time(), "stage": "verifier", "question": question, "status_before": status,
+                     **{k: v for k, v in record.items() if k != "keep"}}
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except OSError:
+        pass  # logging must never break an answer
+
 def _resolve_v3_namespace(namespace: Optional[str], strategy: str) -> str:
     if namespace is not None:
         return namespace
@@ -429,7 +443,28 @@ def stream_answer_v3(
     if check["outcome"] == "partial":
         status = "answered_partial"
 
-    keep = set(check["keep"])
+    # --- 7. sentence verifier (one Haiku call; src.rag.sentence_verifier) --------------------------
+    t_verify = time.monotonic()
+    checked = sorted(check["keep"])
+    checked_sentences = [all_sentences[i] for i in checked]
+    verification = verify_sentences(client, question, core_claim(question, evidence), checked_sentences, gen_chunks)
+    verdict_v = decide(status, checked_sentences, verification["labels"])
+    timing["verifier"] = round((time.monotonic() - t_verify) * 1000, 1)
+    verifier_record = {**verdict_v, "labels": verification["labels"], "model": verification["model"],
+                       "error": verification["error"]}
+    if verdict_v["outcome"] != "ok":
+        _log_verifier(question, status, verifier_record)
+    if verdict_v["outcome"] == "not_covered":
+        log_query_event(question, sorted(requested_population), [], NOT_COVERED_TEXT, state="not_covered")
+        yield {"event": "refusal", "data": {**base, **judge_fields, "status": "not_covered", "state": "not_covered",
+                                            "message": NOT_COVERED_TEXT, "answer_check": check,
+                                            "verifier": verifier_record,
+                                            "considered_sources": [source_payload_v3(c) for c in chunks],
+                                            "timing_ms": timing}}
+        return
+    status = verdict_v["status"]
+
+    keep = {checked[j] for j in verdict_v["keep"]}
     sentences = [s for i, s in enumerate(all_sentences) if i in keep]
     retrieved = retrieved_population_set(gen_chunks)
     yield {"event": "sources", "data": {
@@ -439,6 +474,7 @@ def stream_answer_v3(
         "mismatch": is_population_mismatch(requested_population, retrieved),
         "sources": [source_payload_v3(c) for c in gen_chunks],
         "answer_check": check,
+        "verifier": verifier_record,
         "timing_ms": timing,
     }}
     sentence_index = 0
@@ -468,6 +504,7 @@ def stream_answer_v3(
         "medication_note": medication_note, "disclaimer": DISCLAIMER, "groundedness": groundedness,
         "timing_ms": timing, "usage": generation["usage"], "truncated": generation["truncated"],
         "model": generation["model"], "drug_check": drug_check, "answer_check": check,
+        "verifier": verifier_record,
     }}
 
 def run_pipeline(question: str, namespace: Optional[str] = None, audience: str = "patient"):

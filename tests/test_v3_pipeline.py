@@ -200,26 +200,23 @@ def _run_with_attempts(attempt_texts, audience="patient", tmp_path=None):
     return sentences, done, calls
 
 
-def test_drug_check_regenerates_once_with_flagged_names_forbidden(tmp_path):
-    sentences, done, calls = _run_with_attempts(
-        ["Walking helps, like metformin does.", "Walking helps, like some diabetes medicines do."], tmp_path=tmp_path)
-    assert len(calls) == 2 and "metformin" in calls[1] and "metformin" not in calls[0].split("IMPORTANT")[-1]
-    assert sentences[0] == "Walking helps, like some diabetes medicines do."
-    assert done["drug_check"] == {"flagged": ["metformin"], "regenerated": True, "flagged_after_regeneration": [], "replaced": []}
+def test_drug_check_replaces_flagged_names_without_regenerating(tmp_path):
+    sentences, done, calls = _run_with_attempts(["Walking helps, like metformin does."], tmp_path=tmp_path)
+    assert len(calls) == 1
+    assert sentences[0] == "Walking helps, like some diabetes medicines does."
+    assert done["drug_check"] == {"flagged": ["metformin"], "regenerated": False, "replaced": ["metformin"]}
     assert "metformin" in (tmp_path / "drug_check.jsonl").read_text(encoding="utf-8")
 
 
-def test_drug_check_falls_back_to_replacement(tmp_path):
-    sentences, done, calls = _run_with_attempts(
-        ["People on basal insulin did well.", "People on basal insulin did well."], tmp_path=tmp_path)
-    assert len(calls) == 2
+def test_drug_check_replacement_reads_naturally(tmp_path):
+    sentences, done, calls = _run_with_attempts(["People on basal insulin did well."], tmp_path=tmp_path)
+    assert len(calls) == 1
     assert sentences[0] == "People on some diabetes medicines did well."
-    assert done["drug_check"]["replaced"] == ["basal insulin"]
 
 
 def test_drug_check_clean_answer_and_clinician_mode_make_one_call(tmp_path):
     _, done, calls = _run_with_attempts(["Walking lowered blood sugar."], tmp_path=tmp_path)
-    assert len(calls) == 1 and done["drug_check"]["flagged"] == []
+    assert len(calls) == 1 and done["drug_check"]["flagged"] == [] and done["drug_check"]["regenerated"] is False
     sentences, done, calls = _run_with_attempts(["Metformin users also benefited."], audience="clinician", tmp_path=tmp_path)
     assert len(calls) == 1 and done["drug_check"] is None and sentences[0] == "Metformin users also benefited."
 

@@ -230,14 +230,14 @@ def _log_drug_check(question: str, record: Dict[str, Any]) -> None:
         pass  # logging must never break an answer
 
 
-def _patient_generation(client, system_prompt: str, question: str, chunks: List[RetrievedChunk], t_gen: float):
+def _patient_generation(client, system_prompt, question: str, chunks: List[RetrievedChunk], t_gen: float):
     """
-    Patient-mode generation with a deterministic drug-name check (src.rag.safety lexicon):
-    1. generate; scan sentences and contradiction text for drug/class/supplement names the
-       question didn't mention;
-    2. if any, regenerate once with those names explicitly forbidden;
-    3. if the regeneration still names any (or fails), replace them in the text with
-       "some diabetes medicines" / "some supplements".
+    Patient-mode generation with a deterministic drug-name check (src.rag.safety lexicon): scan
+    sentences and contradiction text for drug/class/supplement names the question didn't mention,
+    and replace each one directly with "some diabetes medicines" / "some supplements".
+
+    No regeneration: a second generation call roughly doubled the answer time on the ~1 in 4
+    patient answers it fired on (perf-latency branch measurements, docs/DESIGN_DECISIONS.md §12).
     Every catch is logged. Returns (events to emit, generation result, drug_check record or None).
     """
     generation: Dict[str, Any] = {}
@@ -246,30 +246,11 @@ def _patient_generation(client, system_prompt: str, question: str, chunks: List[
     if generation.get("failed"):
         return events, generation, None
     flagged = names_unmentioned_drugs(question, _event_texts(events))
-    if not flagged:
-        return events, generation, {"flagged": [], "regenerated": False, "flagged_after_regeneration": [], "replaced": []}
-
-    record = {"flagged": flagged, "regenerated": True, "flagged_after_regeneration": [], "replaced": []}
-    retry_prompt = system_prompt + (
-        "\n\nIMPORTANT: your answer must not contain any of these names: " + ", ".join(flagged) +
-        ". The user did not mention them. Write \"some diabetes medicines\" (or \"some supplements\") instead."
-    )
-    retry: Dict[str, Any] = {}
-    retry_events = list(stream_generation(client, retry_prompt, question, chunks, t_gen, retry))
-    if not retry.get("failed"):
-        retry["first_pass_ms"] = generation["first_pass_ms"]
-        events, generation = retry_events, retry
-        remaining = names_unmentioned_drugs(question, _event_texts(events))
-    else:
-        record["regeneration_failed"] = True
-        remaining = flagged
-    record["flagged_after_regeneration"] = remaining
-    if remaining:
-        _replace_in_events(events, generation, remaining)
-        record["replaced"] = remaining
-    _log_drug_check(question, record)
+    record = {"flagged": flagged, "regenerated": False, "replaced": flagged}
+    if flagged:
+        _replace_in_events(events, generation, flagged)
+        _log_drug_check(question, record)
     return events, generation, record
-
 
 ANSWER_CHECK_LOG_PATH = "data/answer_check_log.jsonl"
 

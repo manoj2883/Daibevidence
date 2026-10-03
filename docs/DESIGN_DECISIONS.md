@@ -191,7 +191,7 @@ held back until the checks pass. Log: `data/answer_check_log.jsonl`.
 | Before | 11/12 (92%) | 3/13 (23%) | 14/25 (56%) |
 | After | 8/10 (80%) | 7/15 (47%) | 15/25 (60%) |
 
-- The checks removed 8 sentences in 8 answers. 6 were real uncited claims (ids 1, 5, 8, 10, 16).
+- The checks removed 8 sentences from 7 answers. 6 were real uncited claims (2 in id 1; ids 5, 8, 10, 16).
   2 were wrong removals of sentences about the evidence (ids 19, 33); the pattern was fixed and
   tested afterwards, without re-running those ids.
 - No answer was refused: none had zero citations or a citation outside its passages, and no bug

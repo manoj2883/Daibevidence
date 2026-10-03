@@ -121,11 +121,11 @@ question has a definitional part and a research part, answer the definitional pa
 background documents, then what the studies show. State which diabetes population (type 1, type 2, \
 gestational, prediabetes, or a mix) the evidence applies to, as one of your sentences. Every caveat \
 comes AFTER the direct answer.
-6. The question was automatically classified as being about population(s) "{requested_population}" \
-("mixed" means none named). The documents cover population(s): {retrieved_populations}. Flag a \
-population mismatch, as a caveat after your main answer, only when "{requested_population}" is not \
-"mixed" AND none of the named population(s) are among the documents' populations AND those are not \
-"mixed". Otherwise just state which population(s) the evidence covers.
+6. QUESTION DETAILS below gives the population(s) the question was automatically classified as \
+being about ("mixed" means none named) and the population(s) the documents cover. Flag a population \
+mismatch, as a caveat after your main answer, only when the question's population is not "mixed" AND \
+none of the named population(s) are among the documents' populations AND those are not "mixed". \
+Otherwise just state which population(s) the evidence covers.
 7. If no document answers a specific claim in the question, end with exactly one plain-language \
 sentence saying the studies found here don't address [the specific claim], with chunk_ids [] and \
 supported false. Never stretch a document to appear to answer something it doesn't.
@@ -133,10 +133,38 @@ supported false. Never stretch a document to appear to answer something it doesn
 9. If the question or the evidence concerns diabetes medications, discuss them only in general, \
 informational terms. NEVER give dosing instructions, prescribing guidance, or advice to start, stop, \
 or adjust a medication.
-10. {status_instruction}
+10. Follow the status instruction in QUESTION DETAILS below."""
+
+# Per-question part of the generator's system prompt. It comes after SYSTEM_PROMPT_V3 (the
+# instructions, identical for every question in an audience mode), so the instructions can be
+# served from the prompt cache: 1,577 tokens in patient mode, above the generator model's
+# 1,024-token caching minimum.
+QUESTION_DETAILS_V3 = """QUESTION DETAILS
+Question population(s): "{requested_population}". Populations the documents cover: {retrieved_populations}.
+Status instruction: {status_instruction}
 
 {evidence_audit_note}Source documents:
 {context}"""
+
+
+def build_generation_system(audience, requested_population, retrieved_populations, status_instruction,
+                            evidence_audit_note, context):
+    """
+    The generator's system prompt as two blocks: the fixed instructions, marked for prompt caching,
+    then the per-question details. Only the first block is cacheable; nothing per-question may go in it.
+    """
+    instructions = SYSTEM_PROMPT_V3.format(
+        audience_rules=PATIENT_RULES if audience == "patient" else CLINICIAN_RULES,
+        pmid_rule=PMID_RULE[audience], contra_start=CONTRA_START, contra_end=CONTRA_END,
+    )
+    details = QUESTION_DETAILS_V3.format(
+        requested_population=requested_population, retrieved_populations=retrieved_populations,
+        status_instruction=status_instruction, evidence_audit_note=evidence_audit_note, context=context,
+    )
+    return [
+        {"type": "text", "text": instructions, "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": details},
+    ]
 
 PMID_RULE = {
     "patient": "never containing PMIDs or bracketed citations — attribution is carried by chunk_ids",
@@ -386,18 +414,15 @@ def stream_answer_v3(
     yield {"event": "progress", "data": {"stage": "writing_answer"}}
     # The whole answer is held back until the post-generation checks pass: text already shown
     # can't be taken back, and the checks can change the status or refuse outright.
-    system_prompt = SYSTEM_PROMPT_V3.format(
-        audience_rules=PATIENT_RULES if audience == "patient" else CLINICIAN_RULES,
-        pmid_rule=PMID_RULE[audience],
+    system_prompt = build_generation_system(
+        audience,
         requested_population=", ".join(sorted(requested_population)),
         retrieved_populations=retrieved_populations_summary(gen_chunks),
         status_instruction=_status_instruction(status, evidence),
         evidence_audit_note=_evidence_audit_note(evidence),
-        contra_start=CONTRA_START,
-        contra_end=CONTRA_END,
         context=format_context_v3(gen_chunks),
     )
-    print_prompt_estimate(f"v3 query: {question[:60]!r}", system_prompt, question)
+    print_prompt_estimate(f"v3 query: {question[:60]!r}", "\n\n".join(b["text"] for b in system_prompt), question)
 
     t_gen = time.monotonic()
     drug_check = None

@@ -10,7 +10,7 @@ import json
 import os
 import re
 import time
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Union
 
 import anthropic
 from dotenv import load_dotenv
@@ -824,7 +824,7 @@ def compute_groundedness(sentences: List[Dict[str, Any]], chunks: List[Retrieved
 
 def stream_generation(
     client: anthropic.Anthropic,
-    system_prompt: str,
+    system_prompt: Union[str, List[Dict[str, Any]]],
     question: str,
     chunks: List[RetrievedChunk],
     t_after_retrieval: float,

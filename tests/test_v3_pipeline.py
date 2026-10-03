@@ -72,7 +72,7 @@ def _run(query, verdict="sufficient", audience="patient", stream_text=None):
                 "on_topic": True, "cross_study_comparison": False, "verdict": verdict, "reason": "r", "model": "m"}
 
     def fake_generation(client, system_prompt, question, chunks, t, out):
-        fake_generation.prompt = system_prompt
+        fake_generation.prompt = system_prompt if isinstance(system_prompt, str) else "\n\n".join(b["text"] for b in system_prompt)
         fake_generation.question = question
         out.update(sentences=[{"sentence": stream_text or "It helps.", "chunk_ids": [1], "supported": True, "new_paragraph": False}],
                    usage=None, truncated=False, model="gen")
@@ -228,3 +228,18 @@ def test_progress_steps_arrive_in_order_before_the_answer():
     names = [e["event"] for e in events]
     last_progress = max(i for i, n in enumerate(names) if n == "progress")
     assert last_progress < names.index("sources") < names.index("sentence")
+
+
+def test_generator_instructions_are_cacheable_and_hold_no_per_question_values():
+    from src.rag.pipeline import build_generation_system
+
+    blocks = build_generation_system("patient", requested_population="POP-XYZ", retrieved_populations="type2",
+                                     status_instruction="STATUS-XYZ", evidence_audit_note="AUDIT-XYZ\n\n", context="CONTEXT-XYZ")
+    instructions, details = blocks
+    assert instructions["cache_control"] == {"type": "ephemeral"} and "cache_control" not in details
+    for value in ("POP-XYZ", "STATUS-XYZ", "AUDIT-XYZ", "CONTEXT-XYZ"):
+        assert value not in instructions["text"] and value in details["text"]
+    # identical instructions for two different questions in the same mode -> same cache prefix
+    other = build_generation_system("patient", "type1", "mixed", "s", "", "c")
+    assert other[0] == instructions
+    assert build_generation_system("clinician", "type1", "mixed", "s", "", "c")[0]["text"] != instructions["text"]

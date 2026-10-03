@@ -1,0 +1,291 @@
+Query-step cache: 41 entries (data/query_step_cache_B.json)
+  id=1 'Does adherence to a Mediterranean-style diet reduce the risk of develo'
+[cost] evidence: 'Does adherence to a Mediterranean-style diet reduce the risk': ~16123 chars, ~4030 tokens (rough estimate)
+[cost] v3 query: 'Does adherence to a Mediterranean-style diet reduce the risk': ~19610 chars, ~4902 tokens (rough estimate)
+[cost] verifier: 'Does adherence to a Mediterranean-style diet reduce the risk': ~15823 chars, ~3955 tokens (rough estimate)
+    -> answered
+  id=2 'How does dietary fiber intake affect the risk of developing type 2 dia'
+[cost] evidence: 'How does dietary fiber intake affect the risk of developing ': ~12704 chars, ~3176 tokens (rough estimate)
+[cost] v3 query: 'How does dietary fiber intake affect the risk of developing ': ~15896 chars, ~3974 tokens (rough estimate)
+[cost] verifier: 'How does dietary fiber intake affect the risk of developing ': ~10105 chars, ~2526 tokens (rough estimate)
+    -> answered
+  id=3 'What is the evidence for low-carbohydrate diets versus low-fat diets i'
+[cost] evidence: 'What is the evidence for low-carbohydrate diets versus low-f': ~15392 chars, ~3848 tokens (rough estimate)
+[cost] v3 query: 'What is the evidence for low-carbohydrate diets versus low-f': ~10705 chars, ~2676 tokens (rough estimate)
+[cost] verifier: 'What is the evidence for low-carbohydrate diets versus low-f': ~7118 chars, ~1779 tokens (rough estimate)
+    -> answered_partial
+  id=4 'Is there evidence that plant-based diets improve glycemic control in p'
+[cost] evidence: 'Is there evidence that plant-based diets improve glycemic co': ~13508 chars, ~3377 tokens (rough estimate)
+[cost] v3 query: 'Is there evidence that plant-based diets improve glycemic co': ~16670 chars, ~4167 tokens (rough estimate)
+[cost] verifier: 'Is there evidence that plant-based diets improve glycemic co': ~10086 chars, ~2521 tokens (rough estimate)
+    -> answered
+  id=5 'Does time-restricted eating (intermittent fasting) improve markers of '
+[cost] evidence: 'Does time-restricted eating (intermittent fasting) improve m': ~12421 chars, ~3105 tokens (rough estimate)
+[cost] v3 query: 'Does time-restricted eating (intermittent fasting) improve m': ~12550 chars, ~3137 tokens (rough estimate)
+[cost] verifier: 'Does time-restricted eating (intermittent fasting) improve m': ~9042 chars, ~2260 tokens (rough estimate)
+    -> answered_partial
+  id=7 'What HbA1c target is generally recommended for most nonpregnant adults'
+[cost] evidence: 'What HbA1c target is generally recommended for most nonpregn': ~15583 chars, ~3895 tokens (rough estimate)
+[cost] v3 query: 'What HbA1c target is generally recommended for most nonpregn': ~10640 chars, ~2660 tokens (rough estimate)
+Answer check (partial) for 'What HbA1c target is generally recommended for most nonpregnant adults with type': removed 1 uncited factual sentence(s)
+[cost] verifier: 'What HbA1c target is generally recommended for most nonpregn': ~6356 chars, ~1589 tokens (rough estimate)
+    -> answered_partial
+  id=8 'Does continuous glucose monitoring (CGM) improve glycemic control comp'
+[cost] evidence: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~14753 chars, ~3688 tokens (rough estimate)
+[cost] v3 query: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~18219 chars, ~4555 tokens (rough estimate)
+Answer check (partial) for 'Does continuous glucose monitoring (CGM) improve glycemic control compared with ': removed 1 uncited factual sentence(s)
+[cost] verifier: 'Does continuous glucose monitoring (CGM) improve glycemic co': ~14750 chars, ~3687 tokens (rough estimate)
+    -> answered_partial
+  id=10 'How does postprandial exercise timing affect blood glucose control in '
+[cost] evidence: 'How does postprandial exercise timing affect blood glucose c': ~14756 chars, ~3689 tokens (rough estimate)
+[cost] v3 query: 'How does postprandial exercise timing affect blood glucose c': ~14543 chars, ~3636 tokens (rough estimate)
+Patient-mode drug-name check caught ['dpp4'] for 'How does postprandial exercise timing affect blood glucose control in type 2 dia'
+[cost] verifier: 'How does postprandial exercise timing affect blood glucose c': ~10255 chars, ~2563 tokens (rough estimate)
+Sentence verifier (partial) for 'How does postprandial exercise timing affect blood glucose control in type 2 dia': removed 2 unsupported sentence(s)
+    -> answered_partial
+  id=11 'What is glycemic variability and why is it clinically relevant?'
+[cost] evidence: 'What is glycemic variability and why is it clinically releva': ~12208 chars, ~3052 tokens (rough estimate)
+[cost] v3 query: 'What is glycemic variability and why is it clinically releva': ~15458 chars, ~3864 tokens (rough estimate)
+[cost] verifier: 'What is glycemic variability and why is it clinically releva': ~6244 chars, ~1561 tokens (rough estimate)
+Sentence verifier (partial) for 'What is glycemic variability and why is it clinically relevant?': removed 1 unsupported sentence(s)
+    -> answered_partial
+  id=12 'Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as m'
+[cost] evidence: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~12830 chars, ~3207 tokens (rough estimate)
+[cost] v3 query: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~7487 chars, ~1872 tokens (rough estimate)
+Patient-mode drug-name check caught ['metformin'] for 'Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as monotherapy'
+[cost] verifier: 'Do DPP-4 inhibitors provide clinically meaningful HbA1c redu': ~3461 chars, ~865 tokens (rough estimate)
+Sentence verifier (partial) for 'Do DPP-4 inhibitors provide clinically meaningful HbA1c reduction as monotherapy': removed 1 unsupported sentence(s)
+    -> answered_partial
+  id=13 'Does bariatric surgery lead to remission of type 2 diabetes?'
+[cost] evidence: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~13876 chars, ~3469 tokens (rough estimate)
+[cost] v3 query: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~17449 chars, ~4362 tokens (rough estimate)
+    -> ERROR (not checkpointed): Generation failed: connection lost ([WinError 10054] An existing connection was forcibly closed by the remote host)
+  id=14 'Can intensive low-calorie diet interventions induce remission of type '
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\scripts\run_eval_v3.py", line 146, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\scripts\run_eval_v3.py", line 139, in main
+    run([q for q in questions if q["id"] in wanted], c["namespace"], c["strategy"], args.out,
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        f"{c['label']} (re-run of ids {sorted(wanted)})")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\scripts\run_eval_v3.py", line 98, in run
+    rec = run_one(q, namespace, strategy)
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\scripts\run_eval_v3.py", line 51, in run_one
+    for ev in stream_answer_v3(q["question"], namespace=namespace, audience=audience, retrieval_strategy=strategy):
+              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\src\rag\pipeline.py", line 358, in stream_answer_v3
+    chunks, retrieval_info = hybrid_retrieve(query["search_query"], query.get("keywords") or [], namespace=namespace)
+                             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\src\rag\hybrid_retriever.py", line 125, in hybrid_retrieve
+    dense = dense_search(search_query, namespace)
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\src\rag\hybrid_retriever.py", line 79, in dense_search
+    hits = retrieve(search_query, k=k, namespace=namespace)
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\src\rag\retriever.py", line 174, in retrieve
+    response = index.query(**query_kwargs)
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\utils\error_handling.py", line 24, in inner_func
+    raise e from e
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\utils\error_handling.py", line 15, in inner_func
+    return func(*args, **kwargs)
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\db_data\index.py", line 345, in query
+    response = self._query(
+        *args,
+    ...<8 lines>...
+        **kwargs,
+    )
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\db_data\index.py", line 395, in _query
+    return self._vector_api.query_vectors(request, **self._openapi_kwargs(kwargs))
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\endpoint.py", line 102, in __call__
+    return self.callable(self, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\core\openapi\db_data\api\vector_operations_api.py", line 388, in __query_vectors
+    return self.call_with_http_info(**kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\endpoint.py", line 134, in call_with_http_info
+    return self.api_client.call_api(
+           ~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.settings["endpoint_path"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        collection_formats=params["collection_format"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\api_client.py", line 306, in call_api
+    return self.__call_api(
+           ~~~~~~~~~~~~~~~^
+        resource_path,
+        ^^^^^^^^^^^^^^
+    ...<14 lines>...
+        _check_type,
+        ^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\api_client.py", line 170, in __call_api
+    response_data = self.request(
+        method,
+    ...<6 lines>...
+        _request_timeout=_request_timeout,
+    )
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\api_client.py", line 386, in request
+    return self.rest_client.POST(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        url,
+        ^^^^
+    ...<5 lines>...
+        body=body,
+        ^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\rest_utils.py", line 146, in POST
+    return self.request(
+           ~~~~~~~~~~~~^
+        "POST",
+        ^^^^^^^
+    ...<6 lines>...
+        body=body,
+        ^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\pinecone\openapi_support\rest_urllib3.py", line 190, in request
+    r = self.pool_manager.request(
+        method,
+    ...<4 lines>...
+        headers=headers,
+    )
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\_request_methods.py", line 143, in request
+    return self.request_encode_body(
+           ~~~~~~~~~~~~~~~~~~~~~~~~^
+        method, url, fields=fields, headers=headers, **urlopen_kw
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\_request_methods.py", line 278, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\poolmanager.py", line 457, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\connectionpool.py", line 872, in urlopen
+    return self.urlopen(
+           ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<13 lines>...
+        **response_kw,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\connectionpool.py", line 872, in urlopen
+    return self.urlopen(
+           ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<13 lines>...
+        **response_kw,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\connectionpool.py", line 872, in urlopen
+    return self.urlopen(
+           ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<13 lines>...
+        **response_kw,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  [Previous line repeated 2 more times]
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\connectionpool.py", line 842, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\Users\Manoj Kumar\projects\DiabEvidence\venv\Lib\site-packages\urllib3\util\retry.py", line 543, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='diabevidence-zujxlrw.svc.aped-4627-b74a.pinecone.io', port=443): Max retries exceeded with url: /query (Caused by NameResolutionError("HTTPSConnection(host='diabevidence-zujxlrw.svc.aped-4627-b74a.pinecone.io', port=443): Failed to resolve 'diabevidence-zujxlrw.svc.aped-4627-b74a.pinecone.io' ([Errno 11001] getaddrinfo failed)"))
+Query-step cache: 41 entries (data/query_step_cache_B.json)
+  id=13 'Does bariatric surgery lead to remission of type 2 diabetes?'
+[cost] evidence: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~13876 chars, ~3469 tokens (rough estimate)
+[cost] v3 query: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~17449 chars, ~4362 tokens (rough estimate)
+[cost] verifier: 'Does bariatric surgery lead to remission of type 2 diabetes?': ~13739 chars, ~3434 tokens (rough estimate)
+    -> answered
+  id=14 'Can intensive low-calorie diet interventions induce remission of type '
+[cost] evidence: 'Can intensive low-calorie diet interventions induce remissio': ~16137 chars, ~4034 tokens (rough estimate)
+[cost] v3 query: 'Can intensive low-calorie diet interventions induce remissio': ~19617 chars, ~4904 tokens (rough estimate)
+[cost] verifier: 'Can intensive low-calorie diet interventions induce remissio': ~16215 chars, ~4053 tokens (rough estimate)
+    -> answered
+  id=15 'How does visceral adiposity relate to insulin resistance compared with'
+[cost] evidence: 'How does visceral adiposity relate to insulin resistance com': ~17385 chars, ~4346 tokens (rough estimate)
+[cost] v3 query: 'How does visceral adiposity relate to insulin resistance com': ~13932 chars, ~3483 tokens (rough estimate)
+[cost] verifier: 'How does visceral adiposity relate to insulin resistance com': ~9787 chars, ~2446 tokens (rough estimate)
+    -> answered_partial
+  id=16 'Do GLP-1 receptor agonists cause disproportionate loss of lean body ma'
+[cost] evidence: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~12866 chars, ~3216 tokens (rough estimate)
+[cost] v3 query: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~15534 chars, ~3883 tokens (rough estimate)
+Patient-mode drug-name check caught ['glp-1 medicines'] for 'Do GLP-1 receptor agonists cause disproportionate loss of lean body mass during '
+[cost] verifier: 'Do GLP-1 receptor agonists cause disproportionate loss of le': ~11200 chars, ~2800 tokens (rough estimate)
+Sentence verifier (partial) for 'Do GLP-1 receptor agonists cause disproportionate loss of lean body mass during ': removed 1 unsupported sentence(s)
+    -> answered_partial
+  id=17 'What is sarcopenic obesity and why is it a concern in older adults wit'
+[cost] evidence: 'What is sarcopenic obesity and why is it a concern in older ': ~11717 chars, ~2929 tokens (rough estimate)
+[cost] v3 query: 'What is sarcopenic obesity and why is it a concern in older ': ~14984 chars, ~3746 tokens (rough estimate)
+[cost] verifier: 'What is sarcopenic obesity and why is it a concern in older ': ~8930 chars, ~2232 tokens (rough estimate)
+Sentence verifier (partial) for 'What is sarcopenic obesity and why is it a concern in older adults with type 2 d': removed 2 unsupported sentence(s)
+    -> answered_partial
+  id=19 'Does long-term metformin use affect vitamin B12 status?'
+[cost] evidence: 'Does long-term metformin use affect vitamin B12 status?': ~11688 chars, ~2922 tokens (rough estimate)
+[cost] v3 query: 'Does long-term metformin use affect vitamin B12 status?': ~10878 chars, ~2719 tokens (rough estimate)
+Patient-mode drug-name check caught ['vitamin d'] for 'Does long-term metformin use affect vitamin B12 status?'
+[cost] verifier: 'Does long-term metformin use affect vitamin B12 status?': ~6732 chars, ~1683 tokens (rough estimate)
+    -> answered_partial
+  id=22 'Is there a known interaction between ketogenic/very-low-carbohydrate d'
+[cost] evidence: 'Is there a known interaction between ketogenic/very-low-carb': ~13376 chars, ~3344 tokens (rough estimate)
+[cost] v3 query: 'Is there a known interaction between ketogenic/very-low-carb': ~16452 chars, ~4113 tokens (rough estimate)
+[cost] verifier: 'Is there a known interaction between ketogenic/very-low-carb': ~9217 chars, ~2304 tokens (rough estimate)
+    -> answered
+  id=25 'What eye complications require laser treatment in diabetic retinopathy'
+[cost] evidence: 'What eye complications require laser treatment in diabetic r': ~13546 chars, ~3386 tokens (rough estimate)
+[cost] v3 query: 'What eye complications require laser treatment in diabetic r': ~16816 chars, ~4204 tokens (rough estimate)
+[cost] verifier: 'What eye complications require laser treatment in diabetic r': ~12450 chars, ~3112 tokens (rough estimate)
+    -> answered
+  id=31 'What are the standard treatments for painful diabetic peripheral neuro'
+[cost] evidence: 'What are the standard treatments for painful diabetic periph': ~10070 chars, ~2517 tokens (rough estimate)
+[cost] v3 query: 'What are the standard treatments for painful diabetic periph': ~8491 chars, ~2123 tokens (rough estimate)
+[cost] verifier: 'What are the standard treatments for painful diabetic periph': ~4760 chars, ~1190 tokens (rough estimate)
+    -> answered_partial
+  id=32 'What diagnostic tests are used to confirm diabetic peripheral neuropat'
+[cost] evidence: 'What diagnostic tests are used to confirm diabetic periphera': ~12290 chars, ~3072 tokens (rough estimate)
+[cost] v3 query: 'What diagnostic tests are used to confirm diabetic periphera': ~15494 chars, ~3873 tokens (rough estimate)
+[cost] verifier: 'What diagnostic tests are used to confirm diabetic periphera': ~6335 chars, ~1583 tokens (rough estimate)
+    -> answered
+  id=33 'What wound care protocol is typically used for treating a diabetic foo'
+[cost] evidence: 'What wound care protocol is typically used for treating a di': ~12112 chars, ~3028 tokens (rough estimate)
+[cost] v3 query: 'What wound care protocol is typically used for treating a di': ~14404 chars, ~3601 tokens (rough estimate)
+[cost] verifier: 'What wound care protocol is typically used for treating a di': ~10071 chars, ~2517 tokens (rough estimate)
+    -> answered_partial
+  id=34 'What type of footwear is recommended to prevent diabetic foot complica'
+[cost] evidence: 'What type of footwear is recommended to prevent diabetic foo': ~13339 chars, ~3334 tokens (rough estimate)
+[cost] v3 query: 'What type of footwear is recommended to prevent diabetic foo': ~8300 chars, ~2075 tokens (rough estimate)
+[cost] verifier: 'What type of footwear is recommended to prevent diabetic foo': ~3654 chars, ~913 tokens (rough estimate)
+    -> answered_partial
+  id=35 'How is peripheral arterial disease assessed during a diabetic foot exa'
+[cost] evidence: 'How is peripheral arterial disease assessed during a diabeti': ~15570 chars, ~3892 tokens (rough estimate)
+[cost] v3 query: 'How is peripheral arterial disease assessed during a diabeti': ~8058 chars, ~2014 tokens (rough estimate)
+Answer check (not_covered) for 'How is peripheral arterial disease assessed during a diabetic foot exam?': no sentence cites a retrieved passage
+    -> not_covered
+  id=36 'What are the diagnostic criteria for diabetic ketoacidosis?'
+[cost] evidence: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~10297 chars, ~2574 tokens (rough estimate)
+[cost] v3 query: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~13435 chars, ~3359 tokens (rough estimate)
+[cost] verifier: 'What are the diagnostic criteria for diabetic ketoacidosis?': ~8674 chars, ~2168 tokens (rough estimate)
+    -> answered
+  id=37 'How is diabetic ketoacidosis typically managed in the emergency depart'
+[cost] evidence: 'How is diabetic ketoacidosis typically managed in the emerge': ~14032 chars, ~3508 tokens (rough estimate)
+[cost] v3 query: 'How is diabetic ketoacidosis typically managed in the emerge': ~11539 chars, ~2885 tokens (rough estimate)
+[cost] verifier: 'How is diabetic ketoacidosis typically managed in the emerge': ~7692 chars, ~1923 tokens (rough estimate)
+    -> answered_partial
+Saved 25 results to data/eval_v3_runB_verifier.json

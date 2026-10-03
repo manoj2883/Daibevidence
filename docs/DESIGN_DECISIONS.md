@@ -226,3 +226,18 @@ gap statement present. Missing coverage is not penalized. `answered` keeps the o
 Ids 19 and 33 re-run after the evidence-statement pattern fix: no sentence removed in either. Id 19
 came back `answered`, id 33 `answered_partial`; both SUPPORTED (were PARTIALLY_SUPPORTED under the
 original rubric with the wrong removals). With them: 9/11 answered (82%), 7/14 partial (50%), 16/25 (64%).
+
+## 12. Sentence verifier
+
+**Changed.** `src/rag/sentence_verifier.py`: one Haiku call after the code checks labels each
+sentence supported / unsupported / non_factual against the passages it cites, and whether it answers
+the core claim (the evidence judge's core proposition). Unsupported sentences are removed and logged;
+status only goes down; no supported sentence on the core claim -> `not_covered`; a partial answer
+must keep a supported sentence answering part of the question -> otherwise `not_covered`. Verifier
+failure fails closed. The grader stays on Sonnet.
+**Result (incomplete).** The 25 answered ids were re-run once (`eval_v3_runB_verifier.json`):
+9 answered, 15 answered_partial, 1 not_covered (id 35, as intended). Grading did not complete: the
+Anthropic credit balance ran out during it, and 17 of 24 grades are API failures recorded as
+UNSUPPORTED (`eval_v3_runB_verifier_faithfulness.INVALID_credit_exhausted.json`). The 7 valid grades:
+answered 3/3 SUPPORTED, answered_partial 2/4. Re-grade once credit is restored (answers do not need
+regenerating).

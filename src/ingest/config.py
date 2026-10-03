@@ -161,3 +161,7 @@ V3_DENSE_TOP_K = 20
 V3_BM25_TOP_K = 20
 V3_RRF_K = 60
 V3_FINAL_PARENTS = 6
+
+# How many full papers (parents) the evidence judge reads, and generation then uses. Default
+# V3_FINAL_PARENTS; override with the JUDGE_PASSAGES env var (see src.rag.pipeline.get_judge_passages).
+JUDGE_PASSAGES_DEFAULT = V3_FINAL_PARENTS

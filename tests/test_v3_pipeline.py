@@ -243,3 +243,14 @@ def test_generator_instructions_are_cacheable_and_hold_no_per_question_values():
     other = build_generation_system("patient", "type1", "mixed", "s", "", "c")
     assert other[0] == instructions
     assert build_generation_system("clinician", "type1", "mixed", "s", "", "c")[0]["text"] != instructions["text"]
+
+
+def test_judge_passage_count_is_configurable(monkeypatch):
+    from src.rag import pipeline
+
+    monkeypatch.delenv("JUDGE_PASSAGES", raising=False)
+    assert pipeline.get_judge_passages() == 6
+    monkeypatch.setenv("JUDGE_PASSAGES", "4")
+    assert pipeline.get_judge_passages() == 4
+    _, hr, _, _ = _run(QUERY)
+    assert hr.call_args.kwargs["final_k"] == 4

@@ -23,7 +23,7 @@ import os
 import time
 from typing import Any, Dict, Generator, List, Optional
 
-from src.ingest.config import NAMESPACE_V3
+from src.ingest.config import JUDGE_PASSAGES_DEFAULT, NAMESPACE_V3
 from src.ingest.population import classify_population
 from src.rag.chain import (
     CONTRA_END,
@@ -61,6 +61,14 @@ SEE_CLINICIAN_TEXT = (
     "This question asks about a dose or a medication change for you personally. That decision needs "
     "someone who knows your health history, so please ask your doctor or pharmacist."
 )
+
+
+def get_judge_passages() -> int:
+    """Papers sent to the evidence judge (and on to generation): JUDGE_PASSAGES env var, else the config default."""
+    value = int(os.environ.get("JUDGE_PASSAGES", str(JUDGE_PASSAGES_DEFAULT)))
+    if value < 1:
+        raise ValueError(f"JUDGE_PASSAGES must be at least 1, got {value}")
+    return value
 
 
 def scope_judge_enabled() -> bool:
@@ -368,7 +376,8 @@ def stream_answer_v3(
     t0 = time.monotonic()
     try:
         if retrieval_strategy == "hybrid":
-            chunks, retrieval_info = hybrid_retrieve(query["search_query"], query.get("keywords") or [], namespace=namespace)
+            chunks, retrieval_info = hybrid_retrieve(query["search_query"], query.get("keywords") or [], namespace=namespace,
+                                                     final_k=get_judge_passages())
         else:
             chunks, retrieval_info = dense_chunks_retrieve(question, namespace)
     except (ValueError, FileNotFoundError) as e:

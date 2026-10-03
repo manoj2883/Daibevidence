@@ -1,0 +1,135 @@
+{
+ "label": "after_judge6",
+ "results": [
+  {
+   "id": 2,
+   "status": "answered",
+   "timing_ms": {
+    "query": 993.7,
+    "retrieval": 2009.7,
+    "evidence": 4840.6,
+    "generation": 18208.8,
+    "drug_check": 9.5,
+    "citation_checks": 0.1,
+    "verifier": 1822.8,
+    "total": 27911.5
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 4556,
+    "output_tokens": 2061,
+    "cache_creation_input_tokens": 1620,
+    "cache_read_input_tokens": 0
+   },
+   "wall_ms": 27912.4
+  },
+  {
+   "id": 8,
+   "status": "answered_partial",
+   "timing_ms": {
+    "query": 1040.2,
+    "retrieval": 124.1,
+    "evidence": 10335.4,
+    "generation": 39697.2,
+    "drug_check": 9.8,
+    "citation_checks": 1.0,
+    "verifier": 2204.1,
+    "total": 53413.8
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 4922,
+    "output_tokens": 4272,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1620
+   },
+   "wall_ms": 53415.3
+  },
+  {
+   "id": 12,
+   "status": "answered_partial",
+   "timing_ms": {
+    "query": 1381.1,
+    "retrieval": 124.7,
+    "evidence": 7255.6,
+    "generation": 9296.1,
+    "drug_check": 4.6,
+    "citation_checks": 0.1,
+    "verifier": 1209.5,
+    "total": 19275.0
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 968,
+    "output_tokens": 967,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1620
+   },
+   "wall_ms": 19276.4
+  },
+  {
+   "id": 15,
+   "status": "answered_partial",
+   "timing_ms": {
+    "query": 1005.0,
+    "retrieval": 143.3,
+    "evidence": 7738.4,
+    "generation": 14313.0,
+    "drug_check": 4.4,
+    "citation_checks": 0.1,
+    "verifier": 2037.2,
+    "total": 25244.1
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 2128,
+    "output_tokens": 1614,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1620
+   },
+   "wall_ms": 25246.1
+  },
+  {
+   "id": 22,
+   "status": "answered",
+   "timing_ms": {
+    "query": 1689.3,
+    "retrieval": 124.1,
+    "evidence": 3834.3,
+    "generation": 20904.0,
+    "drug_check": 6.5,
+    "citation_checks": 0.1,
+    "verifier": 1513.6,
+    "total": 28074.6
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 3805,
+    "output_tokens": 2253,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1620
+   },
+   "wall_ms": 28076.5
+  }
+ ]
+}

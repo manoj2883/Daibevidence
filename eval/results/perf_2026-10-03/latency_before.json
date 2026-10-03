@@ -1,0 +1,132 @@
+{
+ "label": "before",
+ "results": [
+  {
+   "id": 2,
+   "status": "answered",
+   "timing_ms": {
+    "query": 1182.1,
+    "retrieval": 3789.1,
+    "evidence": 4573.3,
+    "generation": 10717.3,
+    "drug_check": 7.8,
+    "citation_checks": 0.1,
+    "verifier": 1749.1,
+    "total": 22062.4
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "flagged_after_regeneration": [],
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 6408,
+    "output_tokens": 1242,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+   },
+   "wall_ms": 22063.7
+  },
+  {
+   "id": 8,
+   "status": "answered_partial",
+   "timing_ms": {
+    "query": 937.3,
+    "retrieval": 194.2,
+    "evidence": 8204.9,
+    "generation": 20206.3,
+    "drug_check": 10.7,
+    "citation_checks": 1.8,
+    "verifier": 2635.2,
+    "total": 32201.9
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "flagged_after_regeneration": [],
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 6962,
+    "output_tokens": 2493,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+   },
+   "wall_ms": 32203.4
+  },
+  {
+   "id": 12,
+   "status": "answered",
+   "timing_ms": {
+    "query": 1329.1,
+    "retrieval": 238.2,
+    "evidence": 3118.4,
+    "generation": 26630.3,
+    "drug_check": 15472.8,
+    "citation_checks": 0.1,
+    "verifier": 1609.9,
+    "total": 48401.4
+   },
+   "drug_check": {
+    "flagged": [
+     "sglt-2 inhibitor",
+     "metformin"
+    ],
+    "regenerated": true,
+    "flagged_after_regeneration": [],
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 6526,
+    "output_tokens": 1660,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+   },
+   "wall_ms": 48403.0
+  },
+  {
+   "id": 15,
+   "status": "not_covered",
+   "timing_ms": {
+    "query": 1065.2,
+    "retrieval": 252.6,
+    "evidence": 3896.9,
+    "generation": 10138.1,
+    "drug_check": 9.8,
+    "citation_checks": 0.1,
+    "verifier": 1573.3
+   },
+   "drug_check": null,
+   "usage": null,
+   "wall_ms": 16949.5
+  },
+  {
+   "id": 22,
+   "status": "answered",
+   "timing_ms": {
+    "query": 1379.3,
+    "retrieval": 206.1,
+    "evidence": 3576.5,
+    "generation": 44922.9,
+    "drug_check": 7.1,
+    "citation_checks": 0.1,
+    "verifier": 1865.4,
+    "total": 51960.6
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "flagged_after_regeneration": [],
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 5817,
+    "output_tokens": 5145,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+   },
+   "wall_ms": 51962.3
+  }
+ ]
+}

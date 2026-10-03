@@ -1,0 +1,90 @@
+{
+ "label": "after_judge4",
+ "results": [
+  {
+   "id": 2,
+   "status": "answered",
+   "timing_ms": {
+    "query": 1714.5,
+    "retrieval": 1919.0,
+    "evidence": 4244.0,
+    "generation": 10454.7,
+    "drug_check": 10.3,
+    "citation_checks": 0.1,
+    "verifier": 1662.9,
+    "total": 20031.2
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 3306,
+    "output_tokens": 1153,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1620
+   },
+   "wall_ms": 20033.4
+  },
+  {
+   "id": 8,
+   "status": "answered_partial",
+   "timing_ms": {
+    "query": 875.4,
+    "retrieval": 182.3,
+    "evidence": 6915.5,
+    "generation": 14478.4,
+    "drug_check": 10.3,
+    "citation_checks": 1.5,
+    "verifier": 1801.9,
+    "total": 24277.7
+   },
+   "drug_check": {
+    "flagged": [],
+    "regenerated": false,
+    "replaced": []
+   },
+   "usage": {
+    "input_tokens": 3713,
+    "output_tokens": 1637,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1620
+   },
+   "wall_ms": 24279.3
+  },
+  {
+   "id": 12,
+   "status": null,
+   "timing_ms": {},
+   "drug_check": null,
+   "usage": null,
+   "error": "Generation failed: {'type': 'error', 'error': {'details': None, 'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CfeiojGJo78y9q1DWMsXB'}",
+   "wall_ms": 21144.2
+  },
+  {
+   "id": 15,
+   "status": "not_covered",
+   "timing_ms": {
+    "query": 372.0,
+    "retrieval": 175.4,
+    "evidence": 175.9
+   },
+   "drug_check": null,
+   "usage": null,
+   "wall_ms": 727.1
+  },
+  {
+   "id": 22,
+   "status": "not_covered",
+   "timing_ms": {
+    "query": 201.6,
+    "retrieval": 207.4,
+    "evidence": 186.4
+   },
+   "drug_check": null,
+   "usage": null,
+   "wall_ms": 597.8
+  }
+ ]
+}

@@ -226,3 +226,30 @@ gap statement present. Missing coverage is not penalized. `answered` keeps the o
 Ids 19 and 33 re-run after the evidence-statement pattern fix: no sentence removed in either. Id 19
 came back `answered`, id 33 `answered_partial`; both SUPPORTED (were PARTIALLY_SUPPORTED under the
 original rubric with the wrong removals). With them: 9/11 answered (82%), 7/14 partial (50%), 16/25 (64%).
+
+## 12. Latency (branch perf-latency)
+
+**Measured** with `scripts/measure_latency.py`: 5 dev questions (ids 2, 8, 12, 15, 22), patient
+mode, production settings. Files: `eval/results/perf_2026-10-03/`. Mean seconds per stage:
+
+| | rewrite | search | judge | generation | drug check | citation checks | verifier | total |
+|---|---|---|---|---|---|---|---|---|
+| Before | 1.2 | 0.9 | 4.7 | 22.5 | 3.1 | 0.0 | 1.9 | 34.3 |
+| After (judge reads 6) | 1.2 | 0.5 | 6.8 | 20.5 | 0.0 | 0.0 | 1.8 | 30.8 |
+
+- Generation is about two thirds of the wait, and it tracks output length (about 9 ms per output
+  token; id 22 wrote 5,145 tokens in 45 s before, 2,253 in 21 s after). Output length varies a lot
+  between runs of the same question, so with 5 questions the generation and judge differences above
+  are mostly run-to-run noise, not the changes.
+- **Drug check**: before, it regenerated the whole answer whenever it fired: 1 of these 5 (id 12, +15.5 s),
+  and 8 of about 30 patient answers in the eval logs. Now flagged names are replaced directly
+  (0.0 s). Cost: replacement can break grammar ("like some diabetes medicines does").
+- **Prompt caching**: generator instructions (1,577 tokens patient mode) moved to a cached first
+  block; per-question values moved to a QUESTION DETAILS block after it (rules 6 and 10 reworded to
+  point there). Verified: 1,620 tokens written on the first answer, read on the next four. It saves
+  input cost; latency gain is small because output dominates. The judge (745 tokens of fixed
+  instructions) and verifier (293) run on Haiku 4.5, whose caching minimum is 4,096 tokens, and the
+  judge prompt puts the question before its instructions, so neither can be cached; no marker added.
+- **Progress steps**: Searching papers / Checking evidence / Writing answer / Checking sources.
+- **Judge papers 4 vs 6**: `JUDGE_PASSAGES` (default 6). The 4-paper run is invalid: the Anthropic
+  credit balance ran out during it (`latency_after_judge4.INVALID_credit_exhausted.json`). Not yet tested.

@@ -947,6 +947,9 @@ def stream_generation(
             usage = {
                 "input_tokens": final_message.usage.input_tokens,
                 "output_tokens": final_message.usage.output_tokens,
+                # input_tokens is the uncached remainder only; these are 0 unless prompt caching applies.
+                "cache_creation_input_tokens": getattr(final_message.usage, "cache_creation_input_tokens", None),
+                "cache_read_input_tokens": getattr(final_message.usage, "cache_read_input_tokens", None),
             }
             truncated = final_message.stop_reason == "max_tokens"
             # The exact model string the API actually served this request

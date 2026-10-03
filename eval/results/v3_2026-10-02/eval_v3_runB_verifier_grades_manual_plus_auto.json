@@ -1,0 +1,173 @@
+{
+ "note": "17 grades by Claude Code by hand (the automated grader failed: API credit exhausted), same rules as scripts/grade_faithfulness.py (partial_v2 for answered_partial); plain-language term explanations not penalized. 7 grades from the automated Sonnet grader. Mixed graders: not strictly comparable with earlier runs.",
+ "results": [
+  {
+   "id": 1,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 2,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 3,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 4,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 5,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 7,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 8,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "claude-sonnet-5",
+   "note": ""
+  },
+  {
+   "id": 10,
+   "status": "answered_partial",
+   "overall": "UNSUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "S5 says no single study compared post- vs pre-meal exercise; the cited meta-analysis [1] pooled eight 3-armed RCTs comparing exactly that."
+  },
+  {
+   "id": 11,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "S6 says HbA1c variability predicted mortality; [4] reports that for fasting-glucose variability. No gap statement."
+  },
+  {
+   "id": 12,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Effect size supported; S3 states the review covers add-on use, not monotherapy (gap stated)."
+  },
+  {
+   "id": 13,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "All findings supported; S4 says long-term where [4] says mid-term (minor)."
+  },
+  {
+   "id": 14,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "All numbers match the cited papers."
+  },
+  {
+   "id": 15,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Claims supported; gap stated."
+  },
+  {
+   "id": 16,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Claims supported, but no sentence states what the studies do not cover."
+  },
+  {
+   "id": 17,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "S2 adds a comparison [3] does not make; no gap statement."
+  },
+  {
+   "id": 19,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "S1 adds 'for a long time'; [3]/[1] only say metformin-treated patients."
+  },
+  {
+   "id": 22,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Interaction, EDKA risk and triggers all supported."
+  },
+  {
+   "id": 25,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Laser targets PDR and DME per [1]/[2]; term explanations not penalized."
+  },
+  {
+   "id": 31,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Management components supported; gap (no named drugs) stated."
+  },
+  {
+   "id": 32,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "NCS, exam, MRI, biomarkers, QST and scores all in the cited papers."
+  },
+  {
+   "id": 33,
+   "status": "answered_partial",
+   "overall": "PARTIALLY_SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "S3 adds 'special footwear' as offloading; [3] does not say it."
+  },
+  {
+   "id": 34,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "One supported sentence plus gap; thin answer, passes the partial rule."
+  },
+  {
+   "id": 36,
+   "status": "answered",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Definition and euglycemic DKA supported; cutoffs gap stated."
+  },
+  {
+   "id": 37,
+   "status": "answered_partial",
+   "overall": "SUPPORTED",
+   "grader": "manual (Claude Code, API credit exhausted)",
+   "note": "Fluids/insulin/electrolytes and early basal insulin findings supported; gap stated."
+  }
+ ]
+}

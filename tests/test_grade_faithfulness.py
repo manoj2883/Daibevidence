@@ -134,3 +134,62 @@ def test_write_hand_grading_csv_has_empty_human_grade_column(tmp_path):
     assert reader[0]["human_grade"] == ""
     assert reader[0]["automated_grade"] == "SUPPORTED"
     assert reader[0]["id"] == "1"
+
+
+def test_partial_rubric_shares_no_stage_b_vocabulary():
+    from scripts.grade_faithfulness import PARTIAL_RUBRIC
+
+    for term in ["DECOMPOSE", "AUDIT.", "DIRECT:", "PARTIAL:", "ABSENT:", "Topical similarity"]:
+        assert term not in PARTIAL_RUBRIC
+
+
+def test_partial_overall_rule():
+    from scripts.grade_faithfulness import partial_overall
+
+    g = lambda *labels: [{"index": i, "label": l} for i, l in enumerate(labels, 1)]
+    # every factual sentence supported + gap stated -> SUPPORTED, gap sentence itself is NOT_APPLICABLE
+    assert partial_overall(g("SUPPORTED", "SUPPORTED", "NOT_APPLICABLE"), True) == "SUPPORTED"
+    # missing gap statement is not "fully supported"
+    assert partial_overall(g("SUPPORTED"), False) == "PARTIALLY_SUPPORTED"
+    assert partial_overall(g("SUPPORTED", "PARTIALLY_SUPPORTED"), True) == "PARTIALLY_SUPPORTED"
+    assert partial_overall(g("SUPPORTED", "UNSUPPORTED"), True) == "UNSUPPORTED"
+    # nothing factual at all -> nothing was answered
+    assert partial_overall(g("NOT_APPLICABLE"), True) == "UNSUPPORTED"
+
+
+def test_partial_answers_use_the_partial_rubric_and_code_computed_overall():
+    from scripts.grade_faithfulness import PARTIAL_RUBRIC, grade_answer
+
+    mock_client = MagicMock()
+    # The model's own overall penalizes missing coverage; the partial rule must override it.
+    mock_client.messages.create.return_value = _mock_response(json.dumps({
+        "sentence_grades": [{"index": 1, "label": "SUPPORTED", "why": "ok"}, {"index": 2, "label": "NOT_APPLICABLE", "why": "gap"}],
+        "answers_the_question": None, "overall": "UNSUPPORTED", "states_gap": True,
+    }))
+    result = grade_answer(mock_client, "q?", [{"excerpt": "e"}],
+                          [{"sentence": "s", "chunk_ids": [1]}, {"sentence": "The studies found here don't address x.", "chunk_ids": []}],
+                          status="answered_partial")
+    assert mock_client.messages.create.call_args.kwargs["system"].endswith(PARTIAL_RUBRIC)
+    assert result["overall"] == "SUPPORTED" and result["model_overall"] == "UNSUPPORTED" and result["rubric"] == "partial_v2"
+
+
+def test_answered_status_keeps_the_original_rubric():
+    from scripts.grade_faithfulness import GRADER_SYSTEM_PROMPT, grade_answer
+
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(json.dumps({
+        "sentence_grades": [{"index": 1, "label": "SUPPORTED", "why": "ok"}], "answers_the_question": 1, "overall": "SUPPORTED",
+    }))
+    grade_answer(mock_client, "q?", [{"excerpt": "e"}], [{"sentence": "s", "chunk_ids": [1]}], status="answered")
+    assert mock_client.messages.create.call_args.kwargs["system"] == GRADER_SYSTEM_PROMPT
+
+
+def test_partial_grade_without_states_gap_fails_closed():
+    from scripts.grade_faithfulness import grade_answer
+
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _mock_response(json.dumps({
+        "sentence_grades": [{"index": 1, "label": "SUPPORTED", "why": "ok"}], "answers_the_question": 1, "overall": "SUPPORTED",
+    }))
+    result = grade_answer(mock_client, "q?", [{"excerpt": "e"}], [{"sentence": "s", "chunk_ids": [1]}], status="answered_partial")
+    assert result["overall"] == "UNSUPPORTED" and "states_gap" in result["grading_error"]

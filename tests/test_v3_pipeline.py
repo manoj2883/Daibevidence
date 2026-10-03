@@ -222,3 +222,10 @@ def test_drug_check_clean_answer_and_clinician_mode_make_one_call(tmp_path):
     assert len(calls) == 1 and done["drug_check"]["flagged"] == []
     sentences, done, calls = _run_with_attempts(["Metformin users also benefited."], audience="clinician", tmp_path=tmp_path)
     assert len(calls) == 1 and done["drug_check"] is None and sentences[0] == "Metformin users also benefited."
+
+
+def test_progress_event_precedes_the_held_back_answer():
+    events, _, _, _ = _run(QUERY)
+    names = [e["event"] for e in events]
+    assert names.index("progress") < names.index("sources") < names.index("sentence")
+    assert [e for e in events if e["event"] == "progress"][0]["data"] == {"stage": "checking_sources"}

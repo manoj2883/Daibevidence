@@ -675,6 +675,7 @@
         try { data = JSON.parse(dataStr); } catch (e) { continue; }
 
         if (eventType === "query" && handlers.onQuery) handlers.onQuery(data);
+        else if (eventType === "progress" && handlers.onProgress) handlers.onProgress(data);
         else if (eventType === "sources" && handlers.onSources) handlers.onSources(data);
         else if (eventType === "contradictions" && handlers.onContradictions) handlers.onContradictions(data);
         else if (eventType === "sentence" && handlers.onSentence) handlers.onSentence(data);
@@ -949,6 +950,10 @@
       onQuery: function (data) {
         queryData = data;
         els.status.textContent = STATUS_STAGES[1];
+      },
+      // The answer is drafted and then checked against its sources before anything is shown.
+      onProgress: function (data) {
+        if (data.stage === "checking_sources") els.status.textContent = "Checking sources…";
       },
       onSources: function (data) {
         if (queryData && !data.query_step) data.query_step = queryData.query_step;

@@ -78,6 +78,35 @@ Reply with ONLY a JSON object, nothing else, no code fences, in exactly this sha
 question, or null>, "overall": "<SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED>"}"""
 
 
+# answered_partial rubric (2026-10-02). A partial answer is designed to answer only what the
+# evidence supports and then say what it doesn't cover, so the base rubric's "did it resolve the
+# whole question" judgment would mark every honest partial answer down. For partial answers the
+# model only labels sentences and reports whether a gap statement is present; the overall grade
+# is then computed from those labels in partial_overall() below, not taken from the model.
+PARTIAL_RUBRIC_VERSION = "partial_v2"
+PARTIAL_RUBRIC = """
+
+THIS ANSWER IS A PARTIAL ANSWER. The system found evidence for only part of the question and is meant to say what the sources do not cover. Grade it on that basis:
+- A sentence that says what the sources do not show, cover, or address, or that only describes which people the studies were done in, is NOT_APPLICABLE: it is a statement about the evidence, not a finding.
+- Do not penalize the answer for leaving part of the question unanswered.
+- Add the key "states_gap": true if at least one sentence tells the reader what the sources do not cover, otherwise false.
+Reply with the same JSON object as above, plus "states_gap"."""
+
+
+def partial_overall(sentence_grades, states_gap):
+    """
+    SUPPORTED only if every factual sentence (label other than NOT_APPLICABLE) is SUPPORTED by its
+    cited passages AND the answer states what is not covered. Missing coverage is not penalized.
+    """
+    labels = [g.get("label") for g in sentence_grades or [] if isinstance(g, dict)]
+    factual = [l for l in labels if l != "NOT_APPLICABLE"]
+    if not factual or "UNSUPPORTED" in factual:
+        return "UNSUPPORTED"
+    if "PARTIALLY_SUPPORTED" in factual or not states_gap:
+        return "PARTIALLY_SUPPORTED"
+    return "SUPPORTED"
+
+
 def _format_sources(sources):
     blocks = []
     for i, s in enumerate(sources, start=1):
@@ -98,11 +127,13 @@ def _default_verdict(reason):
     return {"sentence_grades": [], "answers_the_question": None, "overall": "UNSUPPORTED", "grading_error": reason}
 
 
-def grade_answer(client, question, sources, sentence_records):
+def grade_answer(client, question, sources, sentence_records, status=None):
     """
     Never raises: an API failure or malformed response both default to
     overall=UNSUPPORTED with grading_error set, never a silent pass.
+    status="answered_partial" grades with PARTIAL_RUBRIC (see partial_overall).
     """
+    partial = status == "answered_partial"
     if not sentence_records:
         return _default_verdict("no sentences to grade")
 
@@ -120,7 +151,7 @@ def grade_answer(client, question, sources, sentence_records):
             # in the first v2 grading pass were truncated or empty (found live;
             # see eval/REPORT_twostage_judge.md). 8000 leaves ample headroom.
             max_tokens=8000,
-            system=GRADER_SYSTEM_PROMPT,
+            system=GRADER_SYSTEM_PROMPT + (PARTIAL_RUBRIC if partial else ""),
             messages=[{"role": "user", "content": user_content}],
         )
         raw = "".join(b.text for b in response.content if b.type == "text")
@@ -151,6 +182,13 @@ def grade_answer(client, question, sources, sentence_records):
 
     parsed["model"] = model_used
     parsed.setdefault("sentence_grades", [])
+    if partial:
+        if not isinstance(parsed.get("states_gap"), bool):
+            logger.error("Partial grade missing boolean 'states_gap': %r", raw[:500])
+            return _default_verdict("partial grade missing 'states_gap'")
+        parsed["model_overall"] = overall
+        parsed["overall"] = partial_overall(parsed["sentence_grades"], parsed["states_gap"])
+        parsed["rubric"] = PARTIAL_RUBRIC_VERSION
     parsed.setdefault("answers_the_question", None)
     return parsed
 
@@ -215,7 +253,8 @@ def main():
             graded.append(prior)
             continue
         print(f"  id={record['id']} status={record['status']} {record['question'][:60]!r}")
-        verdict = grade_answer(client, record["question"], record.get("sources") or [], record.get("sentence_records") or [])
+        verdict = grade_answer(client, record["question"], record.get("sources") or [], record.get("sentence_records") or [],
+                               status=record.get("status"))
         row = {
             "id": record["id"],
             "question": record["question"],

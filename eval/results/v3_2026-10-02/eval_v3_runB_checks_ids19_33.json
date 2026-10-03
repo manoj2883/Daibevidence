@@ -1,0 +1,1028 @@
+{
+  "pipeline": "Run B: full v3 (query step + hybrid on v3_5k_recursive + parents + ordering), patient mode (re-run of ids [19, 33])",
+  "namespace": "v3_5k_recursive",
+  "strategy": "hybrid",
+  "audience": "patient",
+  "results": [
+    {
+      "id": 19,
+      "topic": "diet_medication_interaction",
+      "in_scope": true,
+      "question": "Does long-term metformin use affect vitamin B12 status?",
+      "reference_answer": "Long-term metformin use is associated with reduced vitamin B12 absorption and lower serum B12 levels; the ADA and other guidelines recommend periodic B12 monitoring in patients on long-term metformin therapy.",
+      "status": "answered",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "29667290",
+          "title": "Long-term treatment with metformin in type 2 diabetes and vitamin D levels: A post-hoc analysis of a randomized placebo-controlled trial.",
+          "journal": "Diabetes, obesity & metabolism",
+          "year": "2018",
+          "publication_type": "Journal Article; Multicenter Study; Randomized Controlled Trial; Research Support, Non-U.S. Gov't",
+          "evidence_badge": "RCT",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "AIMS: To study the effects of metformin, as compared to placebo, on serum levels of vitamin D (25-hydroxyvitamin D [25(OH)D]) in patients with advanced type 2 diabetes. MATERIALS AND METHODS: In the HOME trial, a randomized placebo-controlled trial, 390 insulin-treated patients with type 2 diabetes were treated with 850 mg metformin or placebo thrice daily for 52 months. In a post-hoc analysis, we examined changes in the combined levels of 25(OH)D2 and 25(OH)D3 at 4 and 16 months during the study. RESULTS: Mean combined 25(OH)D at baseline was 68.2 nmoL/L (95% confidence interval [CI]: 65.5-71.1). In mixed model analysis, metformin, as compared to placebo, had no effect on 25(OH)D levels during 16 months (coefficient: 1.002 per month, multiplicative model; 95% CI: 0.998-1.006, P = .30). Metformin was associated with a small increase of 25(OH)D2 (coefficient: 1.012 per month; 95% CI: 1.003-1.021, P = .008). However, 25(OH)D2 is only a very small fraction (3%) of 25(OH)D. Seasonal variation had the biggest impact on 25(OH)D levels. Vitamin B12 levels were not associated with the levels of 25(OH)D. CONCLUSION: Metformin had no effect on serum 25(OH)D during 16 months in the setting of a clinical randomized controlled trial in patients with type 2 diabetes. Our results show that metformin doesn't lead to vitamin D deficiency.",
+          "matched_chunk": "Long-term treatment with metformin in type 2 diabetes and vitamin D levels: A post-hoc analysis of a randomized placebo-controlled trial. | 2018 | Type 2 diabetes | RCT\nVitamin B12 levels were not associated with the levels of 25(OH)D. CONCLUSION: Metformin had no effect on serum 25(OH)D during 16 months in the setting of a clinical randomized controlled trial in patients with type 2 diabetes. Our results show that metformin doesn't lead to vitamin D deficiency.",
+          "fusion_rank": 1,
+          "dense_rank": null,
+          "bm25_rank": 1,
+          "score": 0.01639344262295082
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "36448193",
+          "title": "Vitamin B12 and Diabetic Foot: Α Mini-Review.",
+          "journal": "The international journal of lower extremity wounds",
+          "year": "2025",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "This narrative mini-review article aimed to investigate the potential association of vitamin B12 levels with diabetic neuropathy (DN) and diabetic foot ulcers (DFUs). It was demonstrated that B12 deficiency seems to be related to DFUs in cases of metformin administration and bariatric surgery. B12 supplementation with dietary measures and agents may improve DN and quality of life (QoL). However, data are still preliminary and more experience is needed.",
+          "matched_chunk": "Vitamin B12 and Diabetic Foot: Α Mini-Review. | 2025 | Mixed or general diabetes | Review\nThis narrative mini-review article aimed to investigate the potential association of vitamin B12 levels with diabetic neuropathy (DN) and diabetic foot ulcers (DFUs). It was demonstrated that B12 deficiency seems to be related to DFUs in cases of metformin administration and bariatric surgery. B12 supplementation with dietary measures and agents may improve DN and quality of life (QoL). However, data are still preliminary and more experience is needed.",
+          "fusion_rank": 3,
+          "dense_rank": null,
+          "bm25_rank": 2,
+          "score": 0.016129032258064516
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "35870897",
+          "title": "Vitamin B12 status and folic acid/vitamin B12 related to the risk of gestational diabetes mellitus in pregnancy: a systematic review and meta-analysis of observational studies.",
+          "journal": "BMC pregnancy and childbirth",
+          "year": "2022",
+          "publication_type": "Journal Article; Meta-Analysis; Systematic Review",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "gestational",
+          "excerpt": "BACKGROUND: This review was conducted to investigate the association between serum vitamin B12 levels as well as folic acid/vitamin B12 during pregnancy and the risk of gestational diabetes mellitus (GDM). METHODS: A comprehensive search of electronic databases (Embase, PubMed, and Web of Science) was performed. The odds ratios (ORs) with 95% confidence intervals (CIs) of GDM risk were summarized using a random effects model. We also performed subgroup analyses to explore the source of heterogeneity. RESULTS: A total of 10 studies, including 10,595 pregnant women were assessed. Women with vitamin B12 deficiency were at higher risk for developing GDM when compared with those who were vitamin B12 sufficient (OR, 1.46; 95% CI 1.21-1.79; I2: 59.0%). Subgroup analysis indicated that this association might differ based on sample size and geographical distribution. Elevated vitamin B12 levels may decrease the risk of GDM by 23%. The role of excess folic acid and low vitamin B12 levels in the occurrence of GDM is also controversial. CONCLUSION: In summary, vitamin B12 deficiency is associated with increased risk of GDM, it is necessary to pay more attention to the balance of vitamin B12 and folic acid. However, more in-depth studies across multiple populations are needed to verify these results.",
+          "matched_chunk": "Vitamin B12 status and folic acid/vitamin B12 related to the risk of gestational diabetes mellitus in pregnancy: a systematic review and meta-analysis of observational studies. | 2022 | Gestational diabetes | Meta-analysis\nWe also performed subgroup analyses to explore the source of heterogeneity. RESULTS: A total of 10 studies, including 10,595 pregnant women were assessed. Women with vitamin B12 deficiency were at higher risk for developing GDM when compared with those who were vitamin B12 sufficient (OR, 1.46; 95% CI 1.21-1.79; I2: 59.0%). Subgroup analysis indicated that this association might differ based on sample size and geographical distribution. Elevated vitamin B12 levels may decrease the risk of GDM by 23%. The role of excess folic acid and low vitamin B12 levels in the occurrence of GDM is also controversial. CONCLUSION: In summary, vitamin B12 deficiency is associated with increased risk of GDM, it is necessary to pay more attention to the balance of vitamin B12 and folic acid. However, more in-depth studies across multiple populations are needed to verify these results.",
+          "fusion_rank": 4,
+          "dense_rank": null,
+          "bm25_rank": 3,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "33513879",
+          "title": "Vitamin B12 Supplementation in Diabetic Neuropathy: A 1-Year, Randomized, Double-Blind, Placebo-Controlled Trial.",
+          "journal": "Nutrients",
+          "year": "2021",
+          "publication_type": "Journal Article; Randomized Controlled Trial",
+          "evidence_badge": "RCT",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "AIM: To investigate the effect of normalizing vitamin B12 (B12) levels with oral B12 (methylcobalamin) 1000 μg/day for one year in patients with diabetic neuropathy (DN). PATIENTS AND METHODS: In this prospective, double-blind, placebo-controlled trial, 90 patients with type 2 diabetes on metformin for at least four years and both peripheral and autonomic DN were randomized to an active treatment group (n = 44) receiving B12 and a control group (n = 46) receiving a placebo. All patients had B12 levels less than 400 pmol/L. Subjects underwent measurements of sural nerve conduction velocity (SNCV), sural nerve action potential (amplitude) (SNAP), and vibration perception threshold (VPT), and they performed cardiovascular autonomic reflex tests (CARTs: mean circular resultant (MCR), Valsalva test, postural index, and orthostatic hypotension). Sudomotor function was assessed with the SUDOSCAN that measures electrochemical skin conductance in hands and feet (ESCH and ESCF, respectively). We also used the Michigan Neuropathy Screening Instrument Questionnaire and Examination (MNSIQ and MNSIE, respectively) and questionnaires to evaluate quality of life (QoL) and level of pain (pain score). RESULTS: B12 levels increased from 232.0 ± 71.8 at baseline to 776.7 ± 242.3 pmol/L at follow-up, p < 0.0001, in the active group but not in the control group. VPT, MNSIQ, QoL, pain score, SNCV, SNAP, and ESCF significantly improved in the active group (p < 0.001, p = 0.002, p < 0.0001, p < 0.000, p < 0.0001, p < 0.0001, and p = 0.014, respectively), whereas CARTS and MNSIE improved but not significantly. MCR, MNSIQ, SNCV, SNAP, and pain score significantly deteriorated in the control group (p = 0.025, p = 0.017, p = 0.045, p < 0.0001, and p < 0.0001, respectively). CONCLUSIONS: The treatment of patients with DN with 1 mg of oral methylcobalamin for twelve months increased plasma B12 levels and improved all neurophysiological parameters, sudomotor function, pain score, and QoL, but it did not improve CARTS and MNSIE.",
+          "matched_chunk": "",
+          "fusion_rank": 5,
+          "dense_rank": 5,
+          "bm25_rank": null,
+          "score": 0.015384615384615385
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "37299560",
+          "title": "Clinical Pathobiochemistry of Vitamin B12 Deficiency: Improving Our Understanding by Exploring Novel Mechanisms with a Focus on Diabetic Neuropathy.",
+          "journal": "Nutrients",
+          "year": "2023",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "Vitamin B12 (B12) is an essential cofactor of two important biochemical pathways, the degradation of methylmalonic acid and the synthesis of methionine from homocysteine. Methionine is an important donor of methyl groups for numerous biochemical reactions, including DNA synthesis and gene regulation. Besides hematological abnormalities (megaloblastic anemia or even pancytopenia), a deficiency in B12 may cause neurological symptoms, including symptoms resembling diabetic neuropathy. Although extensively studied, the underlining molecular mechanism for the development of diabetic peripheral neuropathy (DPN) is still unclear. Most studies have found a contribution of oxidative stress in the development of DPN. Detailed immunohistochemical investigations in sural nerve biopsies obtained from diabetic patients with DPN point to an activation of inflammatory pathways induced via elevated advanced glycation end products (AGE), ultimately resulting in increased oxidative stress. Similar results have been found in patients with B12 deficiency, indicating that the observed neural changes in patients with DPN might be caused by cellular B12 deficiency. Since novel results show that B12 exerts intrinsic antioxidative activity in vitro and in vivo, B12 may act as an intracellular, particularly as an intramitochondrial, antioxidant, independent from its classical, well-known cofactor function. These novel findings may provide a rationale for the use of B12 for the treatment of DPN, even in subclinical early states.",
+          "matched_chunk": "Clinical Pathobiochemistry of Vitamin B12 Deficiency: Improving Our Understanding by Exploring Novel Mechanisms with a Focus on Diabetic Neuropathy. | 2023 | Mixed or general diabetes | Review\nDetailed immunohistochemical investigations in sural nerve biopsies obtained from diabetic patients with DPN point to an activation of inflammatory pathways induced via elevated advanced glycation end products (AGE), ultimately resulting in increased oxidative stress. Similar results have been found in patients with B12 deficiency, indicating that the observed neural changes in patients with DPN might be caused by cellular B12 deficiency. Since novel results show that B12 exerts intrinsic antioxidative activity in vitro and in vivo, B12 may act as an intracellular, particularly as an intramitochondrial, antioxidant, independent from its classical, well-known cofactor function. These novel findings may provide a rationale for the use of B12 for the treatment of DPN, even in subclinical early states.",
+          "fusion_rank": 6,
+          "dense_rank": null,
+          "bm25_rank": 5,
+          "score": 0.015384615384615385
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "36240684",
+          "title": "The efficacy of vitamin B12 supplementation for treating vitamin B12 deficiency and peripheral neuropathy in metformin-treated type 2 diabetes mellitus patients: A systematic review.",
+          "journal": "Diabetes & metabolic syndrome",
+          "year": "2022",
+          "publication_type": "Systematic Review; Journal Article",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "type2",
+          "excerpt": "BACKGROUND AND AIMS: Metformin-treated type 2 diabetes mellitus (T2DM) patients are at higher risk of vitamin B12 deficiency and more severe neuropathy symptoms. There is still no guideline suggesting vitamin B12 supplementation for this population. This study aimed to analyze the efficacy of vitamin B12 supplementation in this population. METHOD: Studies reporting the efficacy of vitamin B12 supplementation in metformin-treated T2DM patients were systematically searched in PubMed, Cochrane, EBSCOHost, and Scopus following the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) guideline. Additional relevant studies were searched manually through citations. Study quality and risk of bias were assessed using suitable tools. RESULTS: Seven clinical trials with a total of 506 participants were included. Using the Cochrane's Risk of Bias 2 tools for clinical trials, 4 studies were assessed to have high risk of bias and 3 studies had low risk of bias. There were 5 studies that measured changes in serum vitamin B12 level, all of which reported a statistically significant increase after supplementation. Significant reductions in homocysteine after supplementation were found in 2 studies. Its effect on neuropathy symptoms was still unclear, with 2 studies reporting a significant improvement and 1 study reporting no significant effect. CONCLUSIONS: The results of this systematic review support the implementation of vitamin B12 supplementation for metformin-treated T2DM to prevent or treat vitamin B12 deficiency and neuropathy. More high-quality clinical studies are required to generate quantitative analysis and to encourage supplementation in available guidelines.",
+          "matched_chunk": "",
+          "fusion_rank": 2,
+          "dense_rank": 2,
+          "bm25_rank": null,
+          "score": 0.016129032258064516
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "Yes, long-term use of metformin (a common diabetes medicine) has been linked to lower vitamin B12 (a vitamin needed for healthy nerves and blood cells) levels in people with type 2 diabetes.",
+          "chunk_ids": [
+            2,
+            6
+          ],
+          "pmids": [
+            "36448193",
+            "36240684"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "This risk seems to be higher when metformin use is combined with other factors, such as weight-loss surgery, and may contribute to foot ulcers in some people with diabetes.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "36448193"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "A review of several clinical trials in people with type 2 diabetes taking metformin found that these patients are at higher risk of low vitamin B12 and worse nerve damage, called neuropathy.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "36240684"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "In that review, every study that measured blood B12 levels after supplementation found a clear increase.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "36240684"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Some studies also found that supplements lowered homocysteine, a substance linked to nerve damage, after taking B12.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "36240684"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Whether B12 supplements actually improved nerve symptoms was less clear, with some studies showing improvement and one showing no real change.",
+          "chunk_ids": [
+            6
+          ],
+          "pmids": [
+            "36240684"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "A one-year study of people with type 2 diabetes who had been on metformin for years and had low B12 found that daily B12 supplements raised their B12 levels and improved nerve signal speed, vibration sensing, pain, and quality of life.",
+          "chunk_ids": [
+            4
+          ],
+          "pmids": [
+            "33513879"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "Researchers think low B12 may contribute to diabetic nerve damage because B12 normally helps protect nerve cells from a kind of cell stress called oxidative stress, though the exact cause of this nerve damage is still not fully understood.",
+          "chunk_ids": [
+            5
+          ],
+          "pmids": [
+            "37299560"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "This evidence on metformin and vitamin B12 mainly comes from studies in people with type 2 diabetes, along with some broader reviews that did not specify a single diabetes type.",
+          "chunk_ids": [
+            2,
+            4,
+            5,
+            6
+          ],
+          "pmids": [
+            "36448193",
+            "33513879",
+            "37299560",
+            "36240684"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Talk to your doctor or pharmacist before changing anything.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true,
+          "safety_note": true
+        }
+      ],
+      "num_contradictions": 0,
+      "error": null,
+      "query_step": {
+        "search_query": "Does long-term metformin therapy affect vitamin B12 absorption or serum B12 levels?",
+        "keywords": [
+          "metformin",
+          "vitamin B12",
+          "cobalamin deficiency",
+          "long-term treatment",
+          "malabsorption"
+        ],
+        "personal_dosing": false,
+        "fallback": null,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "29667290_2.0",
+            "score": 0.6929
+          },
+          {
+            "chunk_id": "36240684_0.0",
+            "score": 0.6535
+          },
+          {
+            "chunk_id": "29667290_0.0",
+            "score": 0.629
+          },
+          {
+            "chunk_id": "29667290_1.0",
+            "score": 0.6271
+          },
+          {
+            "chunk_id": "33513879_0.0",
+            "score": 0.6173
+          },
+          {
+            "chunk_id": "36240684_1.0",
+            "score": 0.5949
+          },
+          {
+            "chunk_id": "41782745_3.0",
+            "score": 0.5828
+          },
+          {
+            "chunk_id": "36448193_0.0",
+            "score": 0.5816
+          },
+          {
+            "chunk_id": "41389439_3.0",
+            "score": 0.5788
+          },
+          {
+            "chunk_id": "28681986_0.0",
+            "score": 0.5778
+          },
+          {
+            "chunk_id": "28718236_2.0",
+            "score": 0.5547
+          },
+          {
+            "chunk_id": "36642944_2.0",
+            "score": 0.5423
+          },
+          {
+            "chunk_id": "34371883_0.0",
+            "score": 0.5422
+          },
+          {
+            "chunk_id": "27862873_3.0",
+            "score": 0.5417
+          },
+          {
+            "chunk_id": "27761984_2.0",
+            "score": 0.5404
+          },
+          {
+            "chunk_id": "42139118_2.0",
+            "score": 0.5396
+          },
+          {
+            "chunk_id": "28681986_2.0",
+            "score": 0.5378
+          },
+          {
+            "chunk_id": "33513879_3.0",
+            "score": 0.5369
+          },
+          {
+            "chunk_id": "41539435_0.0",
+            "score": 0.5365
+          },
+          {
+            "chunk_id": "34489860_1.0",
+            "score": 0.536
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "29667290_2",
+            "score": 28.292
+          },
+          {
+            "chunk_id": "36448193_0",
+            "score": 25.207
+          },
+          {
+            "chunk_id": "35870897_1",
+            "score": 23.349
+          },
+          {
+            "chunk_id": "36240684_0",
+            "score": 23.337
+          },
+          {
+            "chunk_id": "37299560_1",
+            "score": 22.586
+          },
+          {
+            "chunk_id": "33513879_0",
+            "score": 21.148
+          },
+          {
+            "chunk_id": "36240684_1",
+            "score": 21.117
+          },
+          {
+            "chunk_id": "37299560_0",
+            "score": 19.648
+          },
+          {
+            "chunk_id": "29667290_1",
+            "score": 18.209
+          },
+          {
+            "chunk_id": "41127511_0",
+            "score": 17.916
+          },
+          {
+            "chunk_id": "41539435_0",
+            "score": 17.687
+          },
+          {
+            "chunk_id": "35831940_1",
+            "score": 16.71
+          },
+          {
+            "chunk_id": "35870897_0",
+            "score": 16.44
+          },
+          {
+            "chunk_id": "41549912_1",
+            "score": 16.139
+          },
+          {
+            "chunk_id": "34960022_3",
+            "score": 15.59
+          },
+          {
+            "chunk_id": "41762420_1",
+            "score": 15.286
+          },
+          {
+            "chunk_id": "41782745_2",
+            "score": 14.93
+          },
+          {
+            "chunk_id": "28483335_2",
+            "score": 14.599
+          },
+          {
+            "chunk_id": "41782745_3",
+            "score": 14.56
+          },
+          {
+            "chunk_id": "29667290_0",
+            "score": 14.419
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "29667290",
+            "chunk_id": "29667290_2",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "36240684",
+            "chunk_id": "36240684_0.0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "36448193",
+            "chunk_id": "36448193_0",
+            "score": 0.01613
+          },
+          {
+            "parent_id": "35870897",
+            "chunk_id": "35870897_1",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "33513879",
+            "chunk_id": "33513879_0.0",
+            "score": 0.01538
+          },
+          {
+            "parent_id": "37299560",
+            "chunk_id": "37299560_1",
+            "score": 0.01538
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "sufficient",
+      "evidence_reason": "C2 and C6 directly state that metformin use is associated with vitamin B12 deficiency in type 2 diabetes patients; C4 and C6 confirm long-term metformin use (≥4 years) as the context; C6 is a systematic review of supplementation efficacy in this exact population, confirming the underlying B12 deficiency problem metformin causes.",
+      "propositions": [
+        {
+          "claim": "Long-term metformin use affects vitamin B12 status (in the direction of reducing B12 levels)",
+          "core": true,
+          "direct": [
+            2,
+            6
+          ],
+          "partial": [
+            4
+          ],
+          "absent": false
+        },
+        {
+          "claim": "The effect is specific to long-term (multi-year) use",
+          "core": false,
+          "direct": [
+            4,
+            6
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "This occurs in type 2 diabetes patients",
+          "core": false,
+          "direct": [
+            4,
+            6
+          ],
+          "partial": [],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 0.2,
+        "retrieval": 4197.8,
+        "evidence": 3678.9,
+        "generation": 58197.6,
+        "total": 66117.0
+      },
+      "usage": {
+        "input_tokens": 5552,
+        "output_tokens": 3305
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": true,
+      "generated_answer": "Yes, long-term use of metformin (a common diabetes medicine) has been linked to lower vitamin B12 (a vitamin needed for healthy nerves and blood cells) levels in people with type 2 diabetes. This risk seems to be higher when metformin use is combined with other factors, such as weight-loss surgery, and may contribute to foot ulcers in some people with diabetes. A review of several clinical trials in people with type 2 diabetes taking metformin found that these patients are at higher risk of low vitamin B12 and worse nerve damage, called neuropathy. In that review, every study that measured blood B12 levels after supplementation found a clear increase. Some studies also found that supplements lowered homocysteine, a substance linked to nerve damage, after taking B12. Whether B12 supplements actually improved nerve symptoms was less clear, with some studies showing improvement and one showing no real change. A one-year study of people with type 2 diabetes who had been on metformin for years and had low B12 found that daily B12 supplements raised their B12 levels and improved nerve signal speed, vibration sensing, pain, and quality of life. Researchers think low B12 may contribute to diabetic nerve damage because B12 normally helps protect nerve cells from a kind of cell stress called oxidative stress, though the exact cause of this nerve damage is still not fully understood. This evidence on metformin and vitamin B12 mainly comes from studies in people with type 2 diabetes, along with some broader reviews that did not specify a single diabetes type. Talk to your doctor or pharmacist before changing anything.",
+      "wall_ms": 66118.6
+    },
+    {
+      "id": 33,
+      "topic": "out_of_scope_diabetes_adjacent",
+      "in_scope": false,
+      "question": "What wound care protocol is typically used for treating a diabetic foot ulcer?",
+      "reference_answer": null,
+      "status": "answered_partial",
+      "sources": [
+        {
+          "source_type": "evidence",
+          "pmid": "36219460",
+          "title": "Hydrogel enriched with sodium alginate and vitamins A and E for diabetic foot ulcer: a randomized controlled trial.",
+          "journal": "Wounds : a compendium of clinical research and practice",
+          "year": "2022",
+          "publication_type": "Journal Article; Randomized Controlled Trial",
+          "evidence_badge": "RCT",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "INTRODUCTION: Diabetic foot ulcers usually are hard to heal, and amputation is sometimes necessary. Wound bed preparation helps promote the normal healing process, and debridement is fundamental to improving the wound microenvironment. Hydrogel enriched with sodium alginate and vitamins A and E is a new treatment that can aid in debridement and WBP. OBJECTIVE: This study evaluates the efficacy of the autolytic debridement promoted by hydrogel in the healing of DFU. MATERIALS AND METHODS: This was a single-blind randomized controlled trial with a 12-week follow-up period. Twenty-six patients were randomized into either the control group (cleaning and a simple dressing) or the experimental group (hydrogel treatment). Nineteen patients completed the trial. The wound area, healing, and wound severity classification based on PUSH were evaluated, and microscopic evaluation of the presence of inflammatory infiltrate and collagen production was performed. RESULTS: The average patient age, duration of the open wound, and presence of diabetes were similar between the groups. The initial wound area was larger in the experimental group than in the control group, however. No statistically significant differences were found in any of the outcomes (lesion area and PUSH subscores) between the groups. Histological analysis demonstrated a reduction in the inflammatory infiltrate in the experimental group; however, there was no increase in collagen production. CONCLUSIONS: The use of enriched hydrogel was found to be of no benefit compared with conventional dressings in the management of DFU.",
+          "matched_chunk": "Hydrogel enriched with sodium alginate and vitamins A and E for diabetic foot ulcer: a randomized controlled trial. | 2022 | Mixed or general diabetes | RCT\nINTRODUCTION: Diabetic foot ulcers usually are hard to heal, and amputation is sometimes necessary. Wound bed preparation helps promote the normal healing process, and debridement is fundamental to improving the wound microenvironment. Hydrogel enriched with sodium alginate and vitamins A and E is a new treatment that can aid in debridement and WBP. OBJECTIVE: This study evaluates the efficacy of the autolytic debridement promoted by hydrogel in the healing of DFU. MATERIALS AND METHODS: This was a single-blind randomized controlled trial with a 12-week follow-up period. Twenty-six patients were randomized into either the control group (cleaning and a simple dressing) or the experimental group (hydrogel treatment). Nineteen patients completed the trial. The wound area, healing, and wound severity classification based on PUSH were evaluated, and microscopic evaluation of the presence of inflammatory infiltrate and collagen production was performed.",
+          "fusion_rank": 1,
+          "dense_rank": null,
+          "bm25_rank": 1,
+          "score": 0.01639344262295082
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "35287509",
+          "title": "The Effect of Topical Cow's Milk on the Healing of Diabetic Foot Ulcers: A Randomized Controlled Pilot Clinical Trial.",
+          "journal": "The international journal of lower extremity wounds",
+          "year": "2024",
+          "publication_type": "Journal Article; Randomized Controlled Trial",
+          "evidence_badge": "RCT",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "Diabetic foot ulcer (DFU) is a very serious side effect among the diabetic patients with substantial clinical and economic consequences. The aim of this study was to investigate the efficacy of cows' milk topical ointment, as an available and cost-effective natural product, on accelerating the healing of DFU. In this randomized controlled clinical trial, patients with grade 1 or 2 DFU were randomly divided into two groups of intervention (n = 50) and control (n = 49). For patients of intervention group, cows' milk 20% topical ointment was applied on the ulcer once daily for two weeks, while a type of novel dressing was used for control group with the same frequency and duration. Both groups received usual standard wound care measures. The percentage of change in the ulcer size and the number of cases with complete wound healing (>90% reduction in the ulcer size) were recorded in the both groups. The ulcer size significantly reduced in both groups on the seventh and 14th days of intervention; however, the percentage of reduction was significantly higher in the intervention (milk) group compared to control at both time points (44.64 ± 15.98 vs. 24.95 ± 12.78, P < .001; 67.67 ± 22.15 vs. 42.87 ± 19.74, P < .001). Furthermore, although more patients in the intervention group (n = 4, 8%) showed complete healing of the ulcer compared to control (n = 0), the difference was not statistically significant (P = .117). Cow's milk 20% topical ointment improves and accelerates the healing of diabetic foot ulcers. However, more clinical studies are required to confirm these effects.",
+          "matched_chunk": "The Effect of Topical Cow's Milk on the Healing of Diabetic Foot Ulcers: A Randomized Controlled Pilot Clinical Trial. | 2024 | Mixed or general diabetes | RCT\nDiabetic foot ulcer (DFU) is a very serious side effect among the diabetic patients with substantial clinical and economic consequences. The aim of this study was to investigate the efficacy of cows' milk topical ointment, as an available and cost-effective natural product, on accelerating the healing of DFU. In this randomized controlled clinical trial, patients with grade 1 or 2 DFU were randomly divided into two groups of intervention (n = 50) and control (n = 49). For patients of intervention group, cows' milk 20% topical ointment was applied on the ulcer once daily for two weeks, while a type of novel dressing was used for control group with the same frequency and duration. Both groups received usual standard wound care measures. The percentage of change in the ulcer size and the number of cases with complete wound healing (>90% reduction in the ulcer size) were recorded in the both groups.",
+          "fusion_rank": 3,
+          "dense_rank": null,
+          "bm25_rank": 3,
+          "score": 0.015873015873015872
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "41101883",
+          "title": "Surgical Offloading in the Diabetic Foot.",
+          "journal": "Clinics in podiatric medicine and surgery",
+          "year": "2025",
+          "publication_type": "Journal Article; Review",
+          "evidence_badge": "Review",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "Diabetic foot ulcers are severe complications of diabetes resulting in high health care costs and reduced quality of life. Persistent mechanical pressure, neuropathy, foot deformity, and patient comorbidities contribute to the ulcer formation and poor healing. While nonsurgical offloading techniques are common, they are associated with noncompliance, skin irritation, and limited wound assessment capability. Surgical offloading offers a direct approach in reducing and redistributing pressures to promote ulcer healing. Its success depends on proper patient selection, glycemic control, and postoperative care. When combined with multidisciplinary management, surgical offloading plays a pivotal role in promoting healing, reducing infection, and preventing infections.",
+          "matched_chunk": "Surgical Offloading in the Diabetic Foot. | 2025 | Mixed or general diabetes | Review\nDiabetic foot ulcers are severe complications of diabetes resulting in high health care costs and reduced quality of life. Persistent mechanical pressure, neuropathy, foot deformity, and patient comorbidities contribute to the ulcer formation and poor healing. While nonsurgical offloading techniques are common, they are associated with noncompliance, skin irritation, and limited wound assessment capability. Surgical offloading offers a direct approach in reducing and redistributing pressures to promote ulcer healing. Its success depends on proper patient selection, glycemic control, and postoperative care. When combined with multidisciplinary management, surgical offloading plays a pivotal role in promoting healing, reducing infection, and preventing infections.",
+          "fusion_rank": 4,
+          "dense_rank": null,
+          "bm25_rank": 4,
+          "score": 0.015625
+        },
+        {
+          "source_type": "evidence",
+          "pmid": "38864979",
+          "title": "Effectiveness of different advanced wound dressings versus standard of care for the management of diabetic foot ulcers: a meta-analysis of randomized controlled trials for the development of the Italian guidelines for the treatment of diabetic foot syndrome.",
+          "journal": "Acta diabetologica",
+          "year": "2024",
+          "publication_type": "Journal Article; Meta-Analysis; Comparative Study",
+          "evidence_badge": "Meta-analysis",
+          "publisher": "",
+          "source_url": "",
+          "population": "mixed",
+          "excerpt": "AIM: to assess the effects of advanced wound dressings (AWD) commonly used in the treatment of predominantly neuropathic diabetic foot ulcers (DFU) The present meta-analysis was designed to support the development of the Italian Guidelines for the Treatment of Diabetic Foot Syndrome (DFS). METHODS: A Medline and Embase search were performed up to April 1st, 2024 collecting all RCTs including diabetic patients or reporting subgroup analyses on diabetic patients with DFU comparing AWD with placebo/standard of care (SoC), with a duration of at least 12 weeks. Prespecified endpoints were: ulcer healing (principal), time-to-healing, frequency of dressings change, major and minor amputation, pain, and all-cause mortality. AWD assessed were: alginates; foam, hydrocolloids, hydrogels, hyaluronic acid, hemoglobin spray, silver-impregnated, sucrose octasulfate-impregnated, honey-impregnated, micro-organism-binding, and protease-modulating matrix dressings. Mantel-Haenzel Odds ratios and 95% confidence intervals (MH-OR, 95% CIs) were either calculated or extracted directly from the publications. Weighted mean differences (WMD) and 95% CIs were calculated for continuous variables. RESULTS: Fifteen studies fulfilled all inclusion criteria. Participants treated with AWD had a significantly higher ulcer healing rate and shorter time-to-healing in comparison with SoC/placebo (MH-OR 1.50 [0.80, 2.79], p = 0.20 and WMD:: - 24.38 [- 42.90, - 5.86] days, p = 0.010). No other significant effect on the above reported prespecified endpoints were observed. For the primary endpoint, the quality of evidence was rated as \"moderate\". CONCLUSIONS: In conclusion, AWD, particularly sucrose-octasulfate, hydrogels, hyaluronic acid, and honey dressings, can actively promote wound healing and shortening time-to-healing in patients with DFU.",
+          "matched_chunk": "",
+          "fusion_rank": 2,
+          "dense_rank": 1,
+          "bm25_rank": null,
+          "score": 0.01639344262295082
+        }
+      ],
+      "considered_sources": [],
+      "sentence_records": [
+        {
+          "sentence": "Typical wound care for a diabetic foot ulcer usually involves cleaning the wound, removing dead or damaged tissue (called debridement), relieving pressure on the area (called offloading), and covering the wound with a dressing.",
+          "chunk_ids": [
+            1,
+            3,
+            4
+          ],
+          "pmids": [
+            "36219460",
+            "41101883",
+            "38864979"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "This information comes from studies that included a mix of people with diabetes, without separating results by type 1 or type 2.",
+          "chunk_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "pmids": [
+            "36219460",
+            "35287509",
+            "41101883",
+            "38864979"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Removing dead or damaged tissue, called debridement, is seen as a key step to help prepare the wound for healing.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "36219460"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Taking pressure off the ulcer, called offloading, is another common part of care, and can be done with non-surgical methods, or with surgery when needed, especially when combined with good blood sugar control and other care.",
+          "chunk_ids": [
+            3
+          ],
+          "pmids": [
+            "41101883"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "Covering the wound with a dressing, including some newer advanced dressing types, is also a standard part of care.",
+          "chunk_ids": [
+            4
+          ],
+          "pmids": [
+            "38864979"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "One large analysis of multiple studies found that these advanced dressings, including hydrogels, helped wounds heal faster than standard dressings alone.",
+          "chunk_ids": [
+            4
+          ],
+          "pmids": [
+            "38864979"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "However, a separate smaller trial found that one specific hydrogel, enriched with sodium alginate and vitamins A and E, was no better than regular dressings for healing diabetic foot ulcers.",
+          "chunk_ids": [
+            1
+          ],
+          "pmids": [
+            "36219460"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": false
+        },
+        {
+          "sentence": "A separate small trial tested applying cow's milk onto ulcers and found that it reduced ulcer size more than standard dressings after two weeks, though the number of ulcers that fully healed was not significantly different between groups.",
+          "chunk_ids": [
+            2
+          ],
+          "pmids": [
+            "35287509"
+          ],
+          "supported": true,
+          "source_type": "evidence",
+          "new_paragraph": true
+        },
+        {
+          "sentence": "The studies found here don't address whether checking for and correcting poor nutrition is part of standard wound care for diabetic foot ulcers.",
+          "chunk_ids": [],
+          "pmids": [],
+          "supported": false,
+          "source_type": null,
+          "new_paragraph": true
+        }
+      ],
+      "num_contradictions": 1,
+      "error": null,
+      "query_step": {
+        "search_query": "What is the standard wound care protocol for diabetic foot ulcers?",
+        "keywords": [
+          "diabetic foot ulcer",
+          "wound care",
+          "debridement",
+          "ulcer treatment",
+          "diabetic wound management"
+        ],
+        "personal_dosing": false,
+        "fallback": null,
+        "reason": null,
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "retrieval": {
+        "namespace": "v3_5k_recursive",
+        "dense": [
+          {
+            "chunk_id": "38864979_0.0",
+            "score": 0.7973
+          },
+          {
+            "chunk_id": "38864979_2.0",
+            "score": 0.7853
+          },
+          {
+            "chunk_id": "38864979_3.0",
+            "score": 0.7647
+          },
+          {
+            "chunk_id": "38864979_1.0",
+            "score": 0.7526
+          },
+          {
+            "chunk_id": "38425229_0.0",
+            "score": 0.7344
+          },
+          {
+            "chunk_id": "41101883_0.0",
+            "score": 0.7267
+          },
+          {
+            "chunk_id": "36459908_0.0",
+            "score": 0.7255
+          },
+          {
+            "chunk_id": "41637846_0.0",
+            "score": 0.717
+          },
+          {
+            "chunk_id": "37921900_0.0",
+            "score": 0.7021
+          },
+          {
+            "chunk_id": "37921900_1.0",
+            "score": 0.6952
+          },
+          {
+            "chunk_id": "41816212_1.0",
+            "score": 0.688
+          },
+          {
+            "chunk_id": "41101878_0.0",
+            "score": 0.6841
+          },
+          {
+            "chunk_id": "40629913_0.0",
+            "score": 0.6782
+          },
+          {
+            "chunk_id": "40629913_1.0",
+            "score": 0.6747
+          },
+          {
+            "chunk_id": "41816212_2.0",
+            "score": 0.6744
+          },
+          {
+            "chunk_id": "36734085_0.0",
+            "score": 0.6744
+          },
+          {
+            "chunk_id": "35745123_0.0",
+            "score": 0.6691
+          },
+          {
+            "chunk_id": "41856718_0.0",
+            "score": 0.6683
+          },
+          {
+            "chunk_id": "41928876_2.0",
+            "score": 0.668
+          },
+          {
+            "chunk_id": "34844794_1.0",
+            "score": 0.6651
+          }
+        ],
+        "bm25": [
+          {
+            "chunk_id": "36219460_0",
+            "score": 57.238
+          },
+          {
+            "chunk_id": "38864979_0",
+            "score": 50.655
+          },
+          {
+            "chunk_id": "35287509_0",
+            "score": 49.702
+          },
+          {
+            "chunk_id": "41101883_0",
+            "score": 48.553
+          },
+          {
+            "chunk_id": "34844794_0",
+            "score": 48.367
+          },
+          {
+            "chunk_id": "36963855_2",
+            "score": 46.56
+          },
+          {
+            "chunk_id": "37032304_0",
+            "score": 43.19
+          },
+          {
+            "chunk_id": "38425229_0",
+            "score": 43.045
+          },
+          {
+            "chunk_id": "38864979_1",
+            "score": 42.758
+          },
+          {
+            "chunk_id": "41637846_1",
+            "score": 42.658
+          },
+          {
+            "chunk_id": "38864979_2",
+            "score": 42.361
+          },
+          {
+            "chunk_id": "35287509_1",
+            "score": 42.069
+          },
+          {
+            "chunk_id": "36219460_1",
+            "score": 41.561
+          },
+          {
+            "chunk_id": "36113854_0",
+            "score": 41.472
+          },
+          {
+            "chunk_id": "39215492_1",
+            "score": 40.773
+          },
+          {
+            "chunk_id": "38864979_3",
+            "score": 40.08
+          },
+          {
+            "chunk_id": "36459908_1",
+            "score": 38.613
+          },
+          {
+            "chunk_id": "36963855_1",
+            "score": 36.241
+          },
+          {
+            "chunk_id": "36113854_1",
+            "score": 36.038
+          },
+          {
+            "chunk_id": "41637846_0",
+            "score": 35.116
+          }
+        ],
+        "fused": [
+          {
+            "parent_id": "36219460",
+            "chunk_id": "36219460_0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "38864979",
+            "chunk_id": "38864979_0.0",
+            "score": 0.01639
+          },
+          {
+            "parent_id": "35287509",
+            "chunk_id": "35287509_0",
+            "score": 0.01587
+          },
+          {
+            "parent_id": "41101883",
+            "chunk_id": "41101883_0",
+            "score": 0.01562
+          },
+          {
+            "parent_id": "34844794",
+            "chunk_id": "34844794_0",
+            "score": 0.01538
+          },
+          {
+            "parent_id": "38425229",
+            "chunk_id": "38425229_0.0",
+            "score": 0.01538
+          }
+        ],
+        "strategy": "hybrid"
+      },
+      "evidence_verdict": "partial",
+      "evidence_reason": "While C6 directly describes advanced wound dressings as typical treatment for DFU, C1 and C2 discuss specific dressings as intervention options rather than establishing them as standard protocol components, and C4 addresses nutritional factors only partially without establishing it as a typical protocol component.",
+      "propositions": [
+        {
+          "claim": "Wound bed preparation is a component of diabetic foot ulcer wound care protocol",
+          "core": false,
+          "direct": [
+            1
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Debridement is a fundamental component of diabetic foot ulcer wound care protocol",
+          "core": false,
+          "direct": [
+            1
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Standard dressing/conventional dressing is used in diabetic foot ulcer wound care",
+          "core": false,
+          "direct": [
+            1,
+            2
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Offloading (nonsurgical or surgical) is used in diabetic foot ulcer wound care protocol",
+          "core": false,
+          "direct": [
+            3
+          ],
+          "partial": [],
+          "absent": false
+        },
+        {
+          "claim": "Nutritional assessment and correction of nutritional imbalances is part of diabetic foot ulcer wound care protocol",
+          "core": false,
+          "direct": [],
+          "partial": [
+            4
+          ],
+          "absent": false
+        },
+        {
+          "claim": "Advanced wound dressings (alginates, hydrogels, hydrocolloids, etc.) are typically used in diabetic foot ulcer wound care",
+          "core": true,
+          "direct": [
+            6
+          ],
+          "partial": [
+            1,
+            2,
+            5
+          ],
+          "absent": false
+        }
+      ],
+      "population_mismatch": false,
+      "refusal_message": null,
+      "timing_ms": {
+        "query": 0.1,
+        "retrieval": 1320.4,
+        "evidence": 4777.6,
+        "generation": 24958.1,
+        "total": 31077.9
+      },
+      "usage": {
+        "input_tokens": 4332,
+        "output_tokens": 2838
+      },
+      "truncated": false,
+      "model_generation": "claude-sonnet-5",
+      "audience": "patient",
+      "strategy": "hybrid",
+      "namespace": "v3_5k_recursive",
+      "model_evidence": "claude-haiku-4-5-20251001",
+      "medication_note": false,
+      "generated_answer": "Typical wound care for a diabetic foot ulcer usually involves cleaning the wound, removing dead or damaged tissue (called debridement), relieving pressure on the area (called offloading), and covering the wound with a dressing. This information comes from studies that included a mix of people with diabetes, without separating results by type 1 or type 2. Removing dead or damaged tissue, called debridement, is seen as a key step to help prepare the wound for healing. Taking pressure off the ulcer, called offloading, is another common part of care, and can be done with non-surgical methods, or with surgery when needed, especially when combined with good blood sugar control and other care. Covering the wound with a dressing, including some newer advanced dressing types, is also a standard part of care. One large analysis of multiple studies found that these advanced dressings, including hydrogels, helped wounds heal faster than standard dressings alone. However, a separate smaller trial found that one specific hydrogel, enriched with sodium alginate and vitamins A and E, was no better than regular dressings for healing diabetic foot ulcers. A separate small trial tested applying cow's milk onto ulcers and found that it reduced ulcer size more than standard dressings after two weeks, though the number of ulcers that fully healed was not significantly different between groups. The studies found here don't address whether checking for and correcting poor nutrition is part of standard wound care for diabetic foot ulcers.",
+      "wall_ms": 31080.8
+    }
+  ]
+}

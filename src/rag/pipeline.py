@@ -383,6 +383,8 @@ def stream_answer_v3(
         return
 
     # --- 5. generation ----------------------------------------------------------------------------
+    # Tells the UI what the wait is for: nothing is shown until the drafted answer passes the checks.
+    yield {"event": "progress", "data": {"stage": "checking_sources"}}
     # The whole answer is held back until the post-generation checks pass: text already shown
     # can't be taken back, and the checks can change the status or refuse outright.
     system_prompt = SYSTEM_PROMPT_V3.format(

@@ -198,3 +198,31 @@ held back until the checks pass. Log: `data/answer_check_log.jsonl`.
   was logged. Id 35 cited passages this time.
 - The re-run regenerated every answer, so some grade changes are run-to-run variation, not the
   checks: ids 12 and 36 dropped to UNSUPPORTED and ids 7 and 15 rose, with the check reporting "ok".
+
+## 11. Grading partial answers
+
+**Why change.** The grader's overall judgment asks whether the answer resolved the whole question.
+A partial answer is meant to answer only what the evidence supports and say what it doesn't cover,
+so that rule marks honest partial answers down.
+**Changed.** `scripts/grade_faithfulness.py`, `answered_partial` only (rubric `partial_v2`): the
+model labels each sentence and reports whether the answer states what is not covered; the overall
+grade is computed in code. SUPPORTED = every factual sentence supported by its cited source AND a
+gap statement present. Missing coverage is not penalized. `answered` keeps the original rubric.
+**Result** (same 25 answers, not regenerated; `eval/results/v3_2026-10-02/eval_v3_partial_v2_report.md`):
+
+| Rubric | answered | answered_partial | all |
+|---|---|---|---|
+| Original | 8/10 (80%) | 7/15 (47%) | 15/25 (60%) |
+| partial_v2 | 8/10 (80%) | 8/15 (53%) | 16/25 (64%) |
+
+- It moves grades both ways: 6 partial answers rose (7, 12, 19, 25, 33, 35) and 4 fell (1, 10, 16,
+  34), because it checks every sentence instead of one overall impression. UNSUPPORTED partial answers
+  fell from 2 to 0.
+- Limitation: an answer with a single supported sentence plus a gap statement grades SUPPORTED even
+  if it barely answers the question. Id 35 ("How is peripheral arterial disease assessed…") is
+  exactly that: one supported sentence, then "the studies gathered here don't explain how it is checked".
+- Grades from this rubric are not comparable with earlier rows graded with the original rubric.
+
+Ids 19 and 33 re-run after the evidence-statement pattern fix: no sentence removed in either. Id 19
+came back `answered`, id 33 `answered_partial`; both SUPPORTED (were PARTIALLY_SUPPORTED under the
+original rubric with the wrong removals). With them: 9/11 answered (82%), 7/14 partial (50%), 16/25 (64%).

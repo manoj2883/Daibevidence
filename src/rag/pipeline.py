@@ -242,6 +242,7 @@ def _patient_generation(client, system_prompt: str, question: str, chunks: List[
     """
     generation: Dict[str, Any] = {}
     events = list(stream_generation(client, system_prompt, question, chunks, t_gen, generation))
+    generation["first_pass_ms"] = round((time.monotonic() - t_gen) * 1000, 1)
     if generation.get("failed"):
         return events, generation, None
     flagged = names_unmentioned_drugs(question, _event_texts(events))
@@ -256,6 +257,7 @@ def _patient_generation(client, system_prompt: str, question: str, chunks: List[
     retry: Dict[str, Any] = {}
     retry_events = list(stream_generation(client, retry_prompt, question, chunks, t_gen, retry))
     if not retry.get("failed"):
+        retry["first_pass_ms"] = generation["first_pass_ms"]
         events, generation = retry_events, retry
         remaining = names_unmentioned_drugs(question, _event_texts(events))
     else:
@@ -424,6 +426,10 @@ def stream_answer_v3(
     if generation.get("failed"):
         yield from (e for e in events if e["event"] == "error")
         return
+    gen_total_ms = round((time.monotonic() - t_gen) * 1000, 1)
+    timing["generation"] = generation.get("first_pass_ms", gen_total_ms)
+    timing["drug_check"] = round(gen_total_ms - timing["generation"], 1)
+    t_checks = time.monotonic()
 
     # --- 6. post-generation checks (no model calls; src.rag.answer_checks) -------------------------
     all_sentences = generation["sentences"]
@@ -431,7 +437,7 @@ def stream_answer_v3(
     check = check_answer(all_sentences, len(gen_chunks), retrieved_pmids)
     if check["outcome"] != "ok":
         _log_answer_check(question, status, check)
-    timing["generation"] = round((time.monotonic() - t_gen) * 1000, 1)
+    timing["citation_checks"] = round((time.monotonic() - t_checks) * 1000, 1)
 
     if check["outcome"] == "not_covered":
         log_query_event(question, sorted(requested_population), [], NOT_COVERED_TEXT, state="not_covered")

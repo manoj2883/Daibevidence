@@ -414,6 +414,14 @@
   .safety-note { font-weight: 600; color: var(--ink); background: var(--bg2); border-radius: var(--r-sm); padding: var(--space-3) var(--space-4); }
   .inspector-query { font-size: 12.5px; line-height: 1.6; margin: var(--space-2) 0; overflow-wrap: anywhere; }
   .inspector-query code { background: var(--bg2); padding: 1px 6px; border-radius: 6px; }
+  .progress-steps { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); list-style: none; margin: 0 0 var(--space-3); padding: 0; font-size: 13.5px; color: var(--muted); }
+  .progress-steps li { display: flex; align-items: center; gap: 6px; }
+  .progress-steps li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--line); flex-shrink: 0; }
+  .progress-steps li.active { color: var(--ink); font-weight: 600; }
+  .progress-steps li.active::before { border-color: var(--blue); background: var(--blue); animation: pulse 1.2s ease-in-out infinite; }
+  .progress-steps li.done::before { border-color: var(--green); background: var(--green); }
+  @keyframes pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .progress-steps li.active::before { animation: none; } }
 </style>
 </head>
 <body>
@@ -848,6 +856,9 @@
     });
   }
 
+  // Server-sent progress stages (src/rag/pipeline.py), in order.
+  var PROGRESS_STEPS = [["searching_papers", "Searching papers"], ["checking_evidence", "Checking evidence"],
+                        ["writing_answer", "Writing answer"], ["checking_sources", "Checking sources"]];
   var STATUS_STAGES = ["Understanding the question…", "Searching studies and background pages…", "Checking the evidence…", "Writing the answer…"];
 
   function wireMobileSheet(evidenceColumnEl, answerColumnEl, count) {
@@ -889,6 +900,7 @@
     row.innerHTML =
       '<div class="answer-row">' +
         '<div class="answer-column">' +
+          '<ol class="progress-steps" aria-live="polite">' + PROGRESS_STEPS.map(function (p) { return '<li data-stage="' + p[0] + '">' + p[1] + "</li>"; }).join("") + "</ol>" +
           '<div class="status-line"><span class="status-dot"></span><span class="status-text">' + STATUS_STAGES[0] + '</span></div>' +
           '<div class="skeleton"><div class="bar w1"></div><div class="bar w2"></div><div class="bar w3"></div></div>' +
           '<div class="notice-slot"></div>' +
@@ -920,6 +932,7 @@
       msgId: msgId,
       status: rowContent.querySelector(".status-text"),
       statusLine: rowContent.querySelector(".status-line"),
+      steps: rowContent.querySelector(".progress-steps"),
       skeleton: rowContent.querySelector(".skeleton"),
       notice: rowContent.querySelector(".notice-slot"),
       mismatch: rowContent.querySelector(".mismatch-slot"),
@@ -951,11 +964,20 @@
         queryData = data;
         els.status.textContent = STATUS_STAGES[1];
       },
-      // The answer is drafted and then checked against its sources before anything is shown.
+      // One step per pipeline stage: earlier steps are marked done, the current one active.
       onProgress: function (data) {
-        if (data.stage === "checking_sources") els.status.textContent = "Checking sources…";
+        var reached = false;
+        for (var i = PROGRESS_STEPS.length - 1; i >= 0; i--) {
+          var li = els.steps.querySelector('[data-stage="' + PROGRESS_STEPS[i][0] + '"]');
+          var isCurrent = PROGRESS_STEPS[i][0] === data.stage;
+          li.classList.toggle("active", isCurrent);
+          li.classList.toggle("done", reached);
+          if (isCurrent) reached = true;
+        }
+        els.statusLine.hidden = true;
       },
       onSources: function (data) {
+        els.steps.hidden = true;
         if (queryData && !data.query_step) data.query_step = queryData.query_step;
         sourcesData = data.sources || [];
         timing.retrieval = data.timing_ms && data.timing_ms.retrieval;
@@ -1120,6 +1142,7 @@
         scrollToBottom();
       },
       onRefusal: function (data) {
+        els.steps.hidden = true;
         els.statusLine.hidden = true;
         els.skeleton.hidden = true;
         els.evidenceColumn.hidden = true;
@@ -1136,6 +1159,7 @@
         scrollToBottom();
       },
       onError: function (data) {
+        els.steps.hidden = true;
         els.statusLine.hidden = true;
         els.skeleton.hidden = true;
         removeCaret();

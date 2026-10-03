@@ -335,6 +335,8 @@ def stream_answer_v3(
         return
 
     # --- 3. retrieval ---------------------------------------------------------------------------
+    # Progress steps shown in the UI: searching_papers -> checking_evidence -> writing_answer -> checking_sources.
+    yield {"event": "progress", "data": {"stage": "searching_papers"}}
     t0 = time.monotonic()
     try:
         if retrieval_strategy == "hybrid":
@@ -348,6 +350,7 @@ def stream_answer_v3(
     retrieval_info["strategy"] = retrieval_strategy
 
     # --- 4. evidence judge (original question, identical across audiences) ---------------------
+    yield {"event": "progress", "data": {"stage": "checking_evidence"}}
     t0 = time.monotonic()
     evidence = judge_evidence(client, question, chunks)
     evidence_ms = round((time.monotonic() - t0) * 1000, 1)
@@ -380,8 +383,7 @@ def stream_answer_v3(
         return
 
     # --- 5. generation ----------------------------------------------------------------------------
-    # Tells the UI what the wait is for: nothing is shown until the drafted answer passes the checks.
-    yield {"event": "progress", "data": {"stage": "checking_sources"}}
+    yield {"event": "progress", "data": {"stage": "writing_answer"}}
     # The whole answer is held back until the post-generation checks pass: text already shown
     # can't be taken back, and the checks can change the status or refuse outright.
     system_prompt = SYSTEM_PROMPT_V3.format(
@@ -410,6 +412,8 @@ def stream_answer_v3(
     gen_total_ms = round((time.monotonic() - t_gen) * 1000, 1)
     timing["generation"] = generation.get("first_pass_ms", gen_total_ms)
     timing["drug_check"] = round(gen_total_ms - timing["generation"], 1)
+    # Nothing is shown until the drafted answer passes the checks and the verifier.
+    yield {"event": "progress", "data": {"stage": "checking_sources"}}
     t_checks = time.monotonic()
 
     # --- 6. post-generation checks (no model calls; src.rag.answer_checks) -------------------------

@@ -221,8 +221,10 @@ def test_drug_check_clean_answer_and_clinician_mode_make_one_call(tmp_path):
     assert len(calls) == 1 and done["drug_check"] is None and sentences[0] == "Metformin users also benefited."
 
 
-def test_progress_event_precedes_the_held_back_answer():
+def test_progress_steps_arrive_in_order_before_the_answer():
     events, _, _, _ = _run(QUERY)
+    stages = [e["data"]["stage"] for e in events if e["event"] == "progress"]
+    assert stages == ["searching_papers", "checking_evidence", "writing_answer", "checking_sources"]
     names = [e["event"] for e in events]
-    assert names.index("progress") < names.index("sources") < names.index("sentence")
-    assert [e for e in events if e["event"] == "progress"][0]["data"] == {"stage": "checking_sources"}
+    last_progress = max(i for i, n in enumerate(names) if n == "progress")
+    assert last_progress < names.index("sources") < names.index("sentence")

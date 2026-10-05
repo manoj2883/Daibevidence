@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from src.ingest.config import NAMESPACE_V1_300, NAMESPACE_V2_5K, NAMESPACE_V3
 from src.ingest.local_embeddings import LocalSentenceTransformerEmbeddings
 from src.rag.hybrid_retriever import load_corpus
+from src.rag.offline import load_offline_index, offline_mode
 from src.rag.pipeline import AUDIENCES, run_pipeline, scope_judge_enabled
 from src.rag.retriever import get_namespace, validate_namespace
 
@@ -39,6 +40,16 @@ async def lifespan(app: FastAPI):
     # Load the local embedding model once at boot instead of lazily on the
     # first query, so cold starts are predictable and config issues fail fast.
     LocalSentenceTransformerEmbeddings()
+
+    if offline_mode():
+        # OFFLINE_MODE=1: no Pinecone or Anthropic calls at all. Search runs over the local corpus
+        # file; the chunk-vector cache is built here on first start (a few minutes) if missing.
+        load_corpus()
+        app.state.namespace = "offline (local corpus)"
+        app.state.namespace_vector_count = len(load_offline_index()["ids"])
+        print(f"[startup] OFFLINE_MODE: {app.state.namespace_vector_count} local chunks, no API calls")
+        yield
+        return
 
     # Fail fast if the configured Pinecone namespace doesn't exist or is
     # empty, rather than starting up and silently answering from the wrong
@@ -139,6 +150,7 @@ async def health():
         # a duplicate of ALLOWED_QUERY_NAMESPACES that could drift from it.
         "available_namespaces": sorted(ALLOWED_QUERY_NAMESPACES),
         "scope_judge_enabled": scope_judge_enabled(),
+        "offline_mode": offline_mode(),
     }
 
 
@@ -208,7 +220,7 @@ async def query_rag(request: QueryRequest):
     Omitted, it falls through to the server's configured production
     namespace (unchanged behavior).
     """
-    if request.namespace is not None and request.namespace not in ALLOWED_QUERY_NAMESPACES:
+    if request.namespace is not None and not offline_mode() and request.namespace not in ALLOWED_QUERY_NAMESPACES:
         raise HTTPException(
             status_code=400,
             detail=f"Invalid namespace {request.namespace!r}. Must be one of {sorted(ALLOWED_QUERY_NAMESPACES)}.",

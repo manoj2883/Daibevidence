@@ -43,7 +43,9 @@ from src.rag.chain import (
 from src.rag.answer_checks import check_answer
 from src.rag.cost import print_prompt_estimate
 from src.rag.evidence_judge import judge_evidence
+from src.rag.greetings import greeting_events, match_greeting
 from src.rag.hybrid_retriever import dense_chunks_retrieve, hybrid_retrieve
+from src.rag.offline import offline_events, offline_mode
 from src.rag.query_log import log_query_event
 from src.rag.query_rewriter import rewrite_query
 from src.rag.retriever import resolve_namespace
@@ -508,7 +510,17 @@ def stream_answer_v3(
     }}
 
 def run_pipeline(question: str, namespace: Optional[str] = None, audience: str = "patient"):
-    """The API entry point: v3 by default, the two-stage pipeline when SCOPE_JUDGE_ENABLED=true."""
+    """
+    The API entry point, in order:
+    1. small talk (hi / thanks / bye / who are you): fixed reply, no retrieval or model call;
+    2. OFFLINE_MODE=1: the most relevant studies from the local corpus, no Anthropic or Pinecone call;
+    3. the two-stage pipeline when SCOPE_JUDGE_ENABLED=true;
+    4. otherwise the v3 pipeline.
+    """
+    if match_greeting(question):
+        return greeting_events(question)
+    if offline_mode():
+        return offline_events(question)
     if scope_judge_enabled():
         return stream_answer_two_stage(question, namespace=namespace)
     return stream_answer_v3(question, namespace=namespace, audience=audience)

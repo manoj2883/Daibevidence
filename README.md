@@ -139,6 +139,28 @@ uvicorn src.api.main:app --reload
 
 There is no live ingestion endpoint — the frontend is chat-only, and ingestion is CLI-only (`python -m src.ingest.run_ingest`), per the offline ingestion pipeline above.
 
+Small talk ("hi", "thanks", "bye", "who are you", "what can you do") gets a fixed reply before the
+pipeline runs: no search and no API call (`src/rag/greetings.py`).
+
+### Offline mode (no Anthropic or Pinecone calls)
+
+Runs entirely on this machine: no API keys needed. Each question returns the 5 most relevant studies
+from the local corpus (`corpus/v3_5k_recursive.json.gz`), found with the local MiniLM model plus BM25,
+with title, year, evidence badge and an abstract snippet. There is no written answer: the query
+rewrite, evidence judge, generation and verifier all need Anthropic and are skipped. Greetings still work.
+
+```bash
+# bash / macOS / Linux
+OFFLINE_MODE=1 uvicorn src.api.main:app --port 8000
+
+# Windows PowerShell
+$env:OFFLINE_MODE = "1"; uvicorn src.api.main:app --port 8000
+```
+
+The first offline start embeds all 14,658 chunks once and caches them in `data/offline_index_v3.npz`
+(about 20–30 minutes on a laptop CPU); later starts load the cache in seconds. To build it ahead of time:
+`python -m scripts.build_offline_index`.
+
 ## Frontend
 
 `src/api/index.html` — a single vanilla HTML/CSS/JS file, no build step, no external dependencies (system fonts, hand-written SVG icons). Built for patients, not clinicians, but designed to survive being demoed to a researcher — evidence is visible by default, not hidden behind a toggle.

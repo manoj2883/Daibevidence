@@ -414,6 +414,13 @@
   .safety-note { font-weight: 600; color: var(--ink); background: var(--bg2); border-radius: var(--r-sm); padding: var(--space-3) var(--space-4); }
   .inspector-query { font-size: 12.5px; line-height: 1.6; margin: var(--space-2) 0; overflow-wrap: anywhere; }
   .inspector-query code { background: var(--bg2); padding: 1px 6px; border-radius: 6px; }
+  /* greetings + offline mode */
+  .greeting-block > p { font-size: 17px; line-height: 1.5; margin: 0 0 var(--space-4); }
+  .offline-list { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+  .offline-card { border: 1px solid var(--line); border-radius: var(--r); padding: var(--space-4); background: var(--card); }
+  .offline-card .title { font-weight: 600; margin: var(--space-2) 0 var(--space-1); line-height: 1.35; }
+  .offline-card .meta { font-size: 13px; color: var(--muted); margin: 0 0 var(--space-2); }
+  .offline-card .snippet { font-size: 14.5px; line-height: 1.5; margin: 0; color: var(--ink); }
 </style>
 </head>
 <body>
@@ -674,7 +681,9 @@
         var data;
         try { data = JSON.parse(dataStr); } catch (e) { continue; }
 
-        if (eventType === "query" && handlers.onQuery) handlers.onQuery(data);
+        if (eventType === "greeting" && handlers.onGreeting) handlers.onGreeting(data);
+        else if (eventType === "offline" && handlers.onOffline) handlers.onOffline(data);
+        else if (eventType === "query" && handlers.onQuery) handlers.onQuery(data);
         else if (eventType === "progress" && handlers.onProgress) handlers.onProgress(data);
         else if (eventType === "sources" && handlers.onSources) handlers.onSources(data);
         else if (eventType === "contradictions" && handlers.onContradictions) handlers.onContradictions(data);
@@ -792,6 +801,29 @@
       (suggestionsHtml ? '<div class="refusal-try"><div class="starters-label">Try asking</div><div class="starters">' + suggestionsHtml + "</div></div>" : "") +
       "</div>"
     );
+  }
+
+  // Starter-question chips (the landing page's starter cards), reused by refusals and greetings.
+  function starterChipsHtml() {
+    var html = "";
+    document.querySelectorAll("#empty-state .starter-card").forEach(function (btn, i) {
+      if (i < 4) html += '<button type="button" class="starter-card refusal-starter" data-question="' + escapeHtml(btn.getAttribute("data-question")) + '"><span class="q">' + escapeHtml(btn.getAttribute("data-question")) + "</span></button>";
+    });
+    return '<div class="refusal-try"><div class="starters-label">Try asking</div><div class="starters">' + html + "</div></div>";
+  }
+
+  function buildOfflineCard(source) {
+    var isBackground = source.source_type === "background";
+    var link = isBackground
+      ? (source.source_url ? '<a class="pmid-link" href="' + escapeHtml(source.source_url) + '" target="_blank" rel="noopener">' + escapeHtml(source.publisher || "Source") + "</a>" : "")
+      : (source.pmid ? '<a class="pmid-link" href="https://pubmed.ncbi.nlm.nih.gov/' + encodeURIComponent(source.pmid) + '/" target="_blank" rel="noopener">PMID ' + escapeHtml(source.pmid) + "</a>" : "");
+    var badgeKind = isBackground ? "background" : String(source.evidence_badge || "").toLowerCase().replace(/[^a-z]+/g, "-");
+    return '<div class="offline-card">' +
+      (source.evidence_badge ? '<span class="evidence-badge evidence-badge--' + badgeKind + '" style="margin-left:0">' + escapeHtml(source.evidence_badge) + "</span>" : "") +
+      '<p class="title">' + escapeHtml(source.title || "Untitled") + "</p>" +
+      '<p class="meta">' + escapeHtml(String(source.year || (isBackground ? "" : "Year unknown"))) + (link ? " · " + link : "") + "</p>" +
+      '<p class="snippet">' + escapeHtml(source.snippet || "") + "</p>" +
+      "</div>";
   }
 
   function wireRefusalStarters(container) {
@@ -946,7 +978,28 @@
     }
 
     var queryData = null;
+    function clearProgress() {
+      els.statusLine.hidden = true;
+      els.skeleton.hidden = true;
+      els.evidenceColumn.hidden = true;
+    }
     return {
+      // Small talk (hi / thanks / bye / who are you): fixed reply, no search or model call.
+      onGreeting: function (data) {
+        clearProgress();
+        els.answerText.innerHTML = '<div class="greeting-block"><p>' + escapeHtml(data.message || "") + "</p>" +
+          (data.show_starters ? starterChipsHtml() : "") + "</div>";
+        wireRefusalStarters(els.answerText);
+        scrollToBottom();
+      },
+      // OFFLINE_MODE: the most relevant studies from the local corpus, no written answer.
+      onOffline: function (data) {
+        clearProgress();
+        var cards = (data.sources || []).map(buildOfflineCard).join("");
+        els.answerText.innerHTML = '<div class="notice"><span><span class="label">Offline mode</span>' +
+          escapeHtml(data.message || "") + "</span></div>" + '<div class="offline-list">' + cards + "</div>";
+        scrollToBottom();
+      },
       onQuery: function (data) {
         queryData = data;
         els.status.textContent = STATUS_STAGES[1];

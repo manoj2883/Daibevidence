@@ -72,7 +72,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Diabevidence",
+    title="DiabEvidence",
     description=(
         "A trustworthy retrieval-augmented QA system that answers diabetes questions "
         "using only published PubMed research, with visible citations and honest refusals. "

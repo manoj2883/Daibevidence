@@ -158,7 +158,7 @@ $env:OFFLINE_MODE = "1"; uvicorn src.api.main:app --port 8000
 ```
 
 The first offline start embeds all 14,658 chunks once and caches them in `data/offline_index_v3.npz`
-(about 20–30 minutes on a laptop CPU); later starts load the cache in seconds. To build it ahead of time:
+(about 12 minutes on a laptop CPU, 11 MB); later starts load the cache in seconds. To build it ahead of time:
 `python -m scripts.build_offline_index`.
 
 ## Frontend

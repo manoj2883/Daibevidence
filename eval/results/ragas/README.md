@@ -32,6 +32,42 @@ excluding definition/gap/safety statements before the verdict step).
 The existing grades are mixed too: 17 of 24 were by Claude Code by hand (credit exhausted at the time), 7 by the automated
 Sonnet grader. Agreement is the same for both groups (29%).
 
+## Faithfulness without definition, gap and safety statements (`--filtered`)
+
+Files: `faithfulness_filtered.md` (table, per-id), `faithfulness_filtered.jsonl` (every statement with its kind,
+verdict and judge reason), `faithfulness_filtered_summary.json`. Two changes from the first run:
+
+1. Contexts now carry the per-passage header the generator saw (`format_context_v3`: title, journal, year, study
+   design, Population). The first run passed abstract text only, so population statements could never be supported.
+   Context precision/recall in `report.md` still use abstract text only.
+2. Haiku labels each ragas statement finding/definition/gap/safety from the question and statements alone; one NLI
+   call judges all statements; the score is computed over all statements and over findings only.
+
+| Variant | mean (n=24) | agreement 3-class | binary |
+|---|---|---|---|
+| first run (abstract text, all statements) | 0.711 | 7/24 (29%) | 8/24 (33%) |
+| headers, all statements | 0.753 | 7/24 (29%) | 8/24 (33%) |
+| headers, findings only | 0.926 | 16/24 (67%) | 17/24 (71%) |
+| headers, findings only, classifier audit applied | 0.910 | 15/24 (62%) | 16/24 (67%) |
+
+Unsupported share by kind: findings 21/283, definitions 50/103, gaps 16/47, safety 17/18. The filter, not the header,
+moves agreement.
+
+**Classifier audit** (all 83 dropped statements judged unsupported, read by hand): 6 should have been findings.
+- id 1: a population-match claim, labeled gap.
+- id 3: a trial's stated limitation, labeled gap.
+- id 11: "experts say more research is needed", labeled gap (borderline).
+- id 33: three treatment-step claims, labeled definition.
+
+The last table row counts those 6 as findings; only id 3 changes label.
+
+**What the remaining disagreements are.** 21 findings stay unsupported. A cluster are population sentences ("this
+evidence comes from research in people with type 2 diabetes"). For ids 10, 15 and 16 the judge reads the abstracts and
+notes that non-diabetic participants were included, although the corpus labels those papers `type2`. That points at the
+keyword population classifier (`src/ingest/population.py`) labeling too broadly, and the answers repeating the label.
+Others look like real misses worth checking by hand: id 4 (vegetarian/vegan >12 weeks), id 8 ("eleven trials"),
+id 19 (B12 "rose sharply ... back to normal"), id 34 ("one study").
+
 **Context metrics.**
 - `answered_partial` precision (0.771) is measured on the parents the evidence judge kept, which is a filtered set, so it is
   not comparable to a raw top-6 precision.

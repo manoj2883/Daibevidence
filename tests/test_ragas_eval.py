@@ -20,6 +20,14 @@ def test_answered_rows_use_the_generators_parents_with_full_text(rows):
     assert all(len(c.split()) > 100 for c in r["retrieved_contexts"])
 
 
+def test_generator_contexts_carry_the_header_the_generator_saw(rows):
+    r = rows[34]
+    assert len(r["generator_contexts"]) == len(r["retrieved_contexts"])
+    assert r["generator_contexts"][0].startswith("[Excerpt 1] SOURCE TYPE: study | PMID 41958058")
+    assert "| Population: mixed\n" in r["generator_contexts"][0]
+    assert r["generator_contexts"][0].endswith(r["retrieved_contexts"][0])
+
+
 def test_not_covered_rows_carry_retrieved_parents_and_no_response(rows):
     r = rows[6]
     assert r["status"] == "not_covered" and r["response"] is None

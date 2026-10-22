@@ -1,0 +1,94 @@
+{
+ "judge_model": "claude-haiku-5-5",
+ "usage_this_run": {
+  "requests": 72,
+  "input_tokens": 199424,
+  "output_tokens": 93457
+ },
+ "statement_kinds": {
+  "finding": 283,
+  "definition": 103,
+  "gap": 47,
+  "safety": 18
+ },
+ "unsupported_by_kind": {
+  "definition": 50,
+  "finding": 21,
+  "gap": 16,
+  "safety": 17
+ },
+ "variants": {
+  "first run (abstract text, all statements)": {
+   "means": [
+    [
+     0.739,
+     9
+    ],
+    [
+     0.694,
+     15
+    ],
+    [
+     0.711,
+     24
+    ]
+   ],
+   "agree_3class": [
+    7,
+    24
+   ],
+   "agree_binary": [
+    8,
+    24
+   ]
+  },
+  "generator contexts, all statements": {
+   "means": [
+    [
+     0.8,
+     9
+    ],
+    [
+     0.725,
+     15
+    ],
+    [
+     0.753,
+     24
+    ]
+   ],
+   "agree_3class": [
+    7,
+    24
+   ],
+   "agree_binary": [
+    8,
+    24
+   ]
+  },
+  "generator contexts, findings only": {
+   "means": [
+    [
+     0.955,
+     9
+    ],
+    [
+     0.909,
+     15
+    ],
+    [
+     0.926,
+     24
+    ]
+   ],
+   "agree_3class": [
+    16,
+    24
+   ],
+   "agree_binary": [
+    17,
+    24
+   ]
+  }
+ }
+}

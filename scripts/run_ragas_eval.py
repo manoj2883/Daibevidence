@@ -27,6 +27,14 @@ f < 0.5 -> UNSUPPORTED. Also reported binary: SUPPORTED vs not.
     python -m scripts.run_ragas_eval              # build dataset, score, write report
     python -m scripts.run_ragas_eval --limit 1    # smoke: first scorable id only
     python -m scripts.run_ragas_eval --report     # rebuild the report from saved scores only
+    python -m scripts.run_ragas_eval --filtered   # faithfulness without definition/gap/safety statements
+
+--filtered (results in faithfulness_filtered.*): contexts carry the per-passage header the generator saw
+(format_context_v3: title, journal, year, study design, population); the first run passed abstract
+text only. Ragas extracts statements, Haiku labels each finding/definition/gap/safety from the question
+and statements alone (no passages, no verdicts), then one ragas NLI call judges every statement. Two
+scores from the same verdicts: all statements, and findings only (definition, gap and safety dropped).
+Same SUPPORTED/PARTIAL/UNSUPPORTED mapping as above.
 
 Resumable: each finished (id, metric) score is appended to scores.jsonl and skipped on restart;
 failed scores are logged with their error and retried on the next run.
@@ -53,6 +61,9 @@ DATASET_OUT = f"{OUT_DIR}/dataset.jsonl"
 SCORES_OUT = f"{OUT_DIR}/scores.jsonl"
 SUMMARY_OUT = f"{OUT_DIR}/summary.json"
 REPORT_OUT = f"{OUT_DIR}/report.md"
+FILTERED_OUT = f"{OUT_DIR}/faithfulness_filtered.jsonl"
+FILTERED_REPORT = f"{OUT_DIR}/faithfulness_filtered.md"
+FILTERED_SUMMARY = f"{OUT_DIR}/faithfulness_filtered_summary.json"
 
 JUDGE_MODEL = "claude-haiku-5-5"
 JUDGE_EFFORT = "medium"
@@ -66,6 +77,18 @@ STATUS_ROWS = ("answered", "answered_partial", "not_covered")
 def load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def generator_contexts(parents, ids):
+    """Each parent as the generator saw it: format_context_v3's header line plus the full text."""
+    from src.rag.pipeline import format_context_v3
+    from src.rag.types import RetrievedChunk
+    out = []
+    for n, i in enumerate(ids, start=1):
+        chunk = RetrievedChunk(text=parents[i]["text"], metadata={k: v for k, v in parents[i].items() if k != "text"},
+                               score=0.0)
+        out.append(format_context_v3([chunk]).replace("[Excerpt 1]", f"[Excerpt {n}]", 1))
+    return out
 
 
 def build_dataset():
@@ -86,6 +109,7 @@ def build_dataset():
             "run_file": os.path.basename(run_file),
             "user_input": q["question"],
             "retrieved_contexts": [parents[i]["text"] for i in ids],
+            "generator_contexts": generator_contexts(parents, ids),
             "context_ids": ids,
             "contexts_kind": "used_for_generation" if used else "retrieved_not_used",
             "response": run.get("generated_answer") if used else None,
@@ -220,6 +244,133 @@ async def explain(rows, ids):
                 print(f"  - {v.statement}\n      judge: {v.reason}")
 
 
+CLASSIFY_PROMPT = """You label statements taken from a patient-facing answer about diabetes research. Label each \
+statement with exactly one kind:
+
+- finding: a claim about what research, a study, a review or the evidence shows or reports, including who or what \
+was studied (population, study design, number or type of studies).
+- definition: a general explanation of a term, condition or test that is not a claim about any study \
+(e.g. "HbA1c is a blood test showing average blood sugar over about three months").
+- gap: a statement that the retrieved studies or evidence do not cover, report or address something, or that \
+information is missing (e.g. "None of the studies report the size of the effect").
+- safety: advice to consult a doctor, pharmacist or care team, a disclaimer, or advice not to change treatment.
+
+Label by what the statement says, not by whether it is true. Return one label per statement, in order, keeping \
+each statement's index.
+
+Question: {question}
+
+Statements:
+{statements}"""
+
+
+async def classify_statements(llm, question, statements):
+    from typing import List, Literal
+    from pydantic import BaseModel
+
+    class Label(BaseModel):
+        index: int
+        kind: Literal["finding", "definition", "gap", "safety"]
+
+    class Labels(BaseModel):
+        labels: List[Label]
+
+    numbered = "\n".join(f"{i}. {s}" for i, s in enumerate(statements))
+    out = await llm.agenerate(CLASSIFY_PROMPT.format(question=question, statements=numbered), Labels)
+    kinds = {l.index: l.kind for l in out.labels}
+    if sorted(kinds) != list(range(len(statements))):
+        raise RuntimeError(f"classifier returned indices {sorted(kinds)} for {len(statements)} statements")
+    return [kinds[i] for i in range(len(statements))]
+
+
+def load_filtered():
+    if not os.path.exists(FILTERED_OUT):
+        return {}
+    with open(FILTERED_OUT, encoding="utf-8") as f:
+        recs = [json.loads(line) for line in f]
+    return {r["id"]: r for r in recs if r.get("error") is None}
+
+
+async def score_filtered(rows):
+    """Faithfulness on generator contexts, scored on all statements and on findings only (same verdicts)."""
+    llm, metrics = make_metrics()
+    metric = metrics["faithfulness"][0]
+    done = load_filtered()
+    todo = [r for r in rows if "faithfulness" in metrics_for(r) and r["id"] not in done]
+    print(f"{len(done)} rows already saved, {len(todo)} to run")
+    sem, lock = asyncio.Semaphore(CONCURRENCY), asyncio.Lock()
+
+    async def one(row):
+        rec = {"id": row["id"], "status": row["status"], "error": None}
+        async with sem:
+            try:
+                statements = await metric._create_statements(row["user_input"], row["response"])
+                kinds = await classify_statements(llm, row["user_input"], statements)
+                verdicts = (await metric._create_verdicts(statements, "\n".join(row["generator_contexts"]))).statements
+                if len(verdicts) != len(statements):
+                    raise RuntimeError(f"{len(verdicts)} verdicts for {len(statements)} statements")
+                rec["statements"] = [{"statement": s, "kind": k, "verdict": int(v.verdict), "reason": v.reason}
+                                     for s, k, v in zip(statements, kinds, verdicts)]
+                findings = [x["verdict"] for x in rec["statements"] if x["kind"] == "finding"]
+                rec["all_statements"] = sum(x["verdict"] for x in rec["statements"]) / len(statements)
+                rec["findings_only"] = sum(findings) / len(findings) if findings else None
+            except Exception as e:  # recorded and retried on the next run
+                rec["error"] = f"{type(e).__name__}: {e}"[:500]
+        async with lock:
+            with open(FILTERED_OUT, "a", encoding="utf-8") as f:
+                f.write(json.dumps(rec) + "\n")
+        print(f"  id={row['id']:>2} all={rec.get('all_statements')} findings={rec.get('findings_only')} {rec['error'] or ''}")
+
+    await asyncio.gather(*(one(r) for r in todo))
+    return dict(llm.usage)
+
+
+def write_filtered_report(rows, usage):
+    recs = load_filtered()
+    first = {i: s["value"] for (i, m), s in load_scores().items() if m == "faithfulness"}
+    grades = {g["id"]: g for g in load_json(GRADES_PATH)["results"]}
+    variants = (("first run (abstract text, all statements)", lambda r: first.get(r["id"])),
+                ("generator contexts, all statements", lambda r: r["all_statements"]),
+                ("generator contexts, findings only", lambda r: r["findings_only"]))
+    kinds = Counter(x["kind"] for r in recs.values() for x in r["statements"])
+    unsupported = Counter(x["kind"] for r in recs.values() for x in r["statements"] if not x["verdict"])
+    L = ["# Ragas faithfulness without definition, gap and safety statements", "",
+         f"Judge `{JUDGE_MODEL}`; method in the `scripts/run_ragas_eval.py` docstring (`--filtered`). "
+         f"{len(recs)} answered rows. Statements are re-extracted, so counts differ slightly from the first run.", "",
+         "Statement kinds (unsupported / total): " + ", ".join(
+             f"{k} {unsupported[k]}/{kinds[k]}" for k in ("finding", "definition", "gap", "safety")), "",
+         "| Variant | answered | answered_partial | all | agreement 3-class | agreement binary |", "|---|---|---|---|---|---|"]
+    summary = {"judge_model": JUDGE_MODEL, "usage_this_run": usage, "statement_kinds": kinds,
+               "unsupported_by_kind": unsupported, "variants": {}}
+    for name, get in variants:
+        vals = {i: get(r) for i, r in recs.items()}
+        cells = [mean([v for i, v in vals.items() if status == "all" or recs[i]["status"] == status])
+                 for status in ANSWERED + ("all",)]
+        pairs = [(ragas_label(v), grades[i]["overall"]) for i, v in vals.items() if v is not None and i in grades]
+        a3 = sum(x == y for x, y in pairs)
+        a2 = sum((x == "SUPPORTED") == (y == "SUPPORTED") for x, y in pairs)
+        L.append(f"| {name} | " + " | ".join(fmt(c) for c in cells) + f" | {pct(a3, len(pairs))} | {pct(a2, len(pairs))} |")
+        summary["variants"][name] = {"means": cells, "agree_3class": [a3, len(pairs)], "agree_binary": [a2, len(pairs)]}
+    no_findings = sorted(i for i, r in recs.items() if r["findings_only"] is None)
+    L += ["", "Rows with no finding statements (excluded from findings-only): " + (str(no_findings) if no_findings else "none")]
+    L += ["", "## Per id", "", "| id | status | first run | all statements | findings only | findings label | existing | "
+          "unsupported findings |", "|---|---|---|---|---|---|---|---|"]
+    for i, r in sorted(recs.items()):
+        f = r["findings_only"]
+        bad = [x["statement"] for x in r["statements"] if x["kind"] == "finding" and not x["verdict"]]
+        L.append(f"| {i} | {r['status']} | {first.get(i, float('nan')):.2f} | {r['all_statements']:.2f} | "
+                 f"{'—' if f is None else f'{f:.2f}'} | {'—' if f is None else ragas_label(f)} | "
+                 f"{grades.get(i, {}).get('overall', '—')} | {' / '.join(bad) or '—'} |")
+    failed = sorted(r["id"] for r in rows if "faithfulness" in metrics_for(r) and r["id"] not in recs)
+    if failed:
+        L += ["", f"**Failed rows** (see faithfulness_filtered.jsonl): {failed}"]
+    with open(FILTERED_REPORT, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(L) + "\n")
+    with open(FILTERED_SUMMARY, "w", encoding="utf-8") as fh:
+        json.dump(summary, fh, indent=1)
+    print("\n".join(L))
+
+
 def mean(xs):
     xs = [x for x in xs if x is not None and not math.isnan(x)]
     return (round(sum(xs) / len(xs), 3), len(xs)) if xs else (None, 0)
@@ -306,17 +457,22 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--limit", type=int, help="score only the first N scorable ids (smoke test)")
     p.add_argument("--report", action="store_true", help="rebuild the report from saved scores, no API calls")
+    p.add_argument("--filtered", action="store_true",
+                   help="faithfulness on generator contexts without definition/gap/safety statements")
     p.add_argument("--explain", type=int, nargs="+", metavar="ID",
                    help="print the statements ragas faithfulness marks unsupported for these ids (re-runs the judge)")
     args = p.parse_args()
     load_dotenv(".env")
     os.makedirs(OUT_DIR, exist_ok=True)
     rows = build_dataset()
+    with open(DATASET_OUT, "w", encoding="utf-8") as f:
+        f.writelines(json.dumps(r) + "\n" for r in rows)
     if args.explain:
         asyncio.run(explain(rows, args.explain))
         return
-    with open(DATASET_OUT, "w", encoding="utf-8") as f:
-        f.writelines(json.dumps(r) + "\n" for r in rows)
+    if args.filtered:
+        write_filtered_report(rows, asyncio.run(score_filtered(rows)))
+        return
     usage = {} if args.report else asyncio.run(score_all(rows, args.limit))
     print("judge usage this run:", usage)
     write_report(summarize(rows, usage))

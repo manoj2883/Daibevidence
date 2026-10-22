@@ -1,0 +1,6 @@
+# Offline evaluation only (scripts/run_ragas_eval.py); not installed on Render.
+# langchain-community is pinned below 0.4: ragas 0.4.3 imports
+# langchain_community.chat_models.vertexai, which 0.4.x removed.
+-r requirements.txt
+ragas==0.4.3
+langchain-community==0.3.31

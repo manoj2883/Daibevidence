@@ -1,0 +1,391 @@
+{
+ "judge_model": "claude-haiku-5-5",
+ "judge_effort": "medium",
+ "embeddings": "sentence-transformers/all-MiniLM-L6-v2",
+ "table": {
+  "answered": {
+   "faithfulness": [
+    0.739,
+    9
+   ],
+   "answer_relevancy": [
+    0.908,
+    9
+   ],
+   "context_precision": [
+    0.73,
+    6
+   ],
+   "context_recall": [
+    0.458,
+    6
+   ]
+  },
+  "answered_partial": {
+   "faithfulness": [
+    0.694,
+    15
+   ],
+   "answer_relevancy": [
+    0.781,
+    15
+   ],
+   "context_precision": [
+    0.771,
+    11
+   ],
+   "context_recall": [
+    0.386,
+    11
+   ]
+  },
+  "not_covered": {
+   "faithfulness": [
+    null,
+    0
+   ],
+   "answer_relevancy": [
+    null,
+    0
+   ],
+   "context_precision": [
+    0.259,
+    6
+   ],
+   "context_recall": [
+    0.167,
+    6
+   ]
+  },
+  "all": {
+   "faithfulness": [
+    0.711,
+    24
+   ],
+   "answer_relevancy": [
+    0.829,
+    24
+   ],
+   "context_precision": [
+    0.627,
+    23
+   ],
+   "context_recall": [
+    0.348,
+    23
+   ]
+  }
+ },
+ "lowest": {
+  "faithfulness": [
+   [
+    0.14285714285714285,
+    34
+   ],
+   [
+    0.4666666666666667,
+    25
+   ],
+   [
+    0.5263157894736842,
+    15
+   ],
+   [
+    0.5555555555555556,
+    10
+   ],
+   [
+    0.6190476190476191,
+    33
+   ]
+  ],
+  "answer_relevancy": [
+   [
+    0.5267874933991722,
+    16
+   ],
+   [
+    0.6297957581907961,
+    8
+   ],
+   [
+    0.6407965451075599,
+    37
+   ],
+   [
+    0.660165879696086,
+    10
+   ],
+   [
+    0.6926006865681918,
+    5
+   ]
+  ],
+  "context_precision": [
+   [
+    0.0,
+    7
+   ],
+   [
+    0.0,
+    9
+   ],
+   [
+    0.0,
+    20
+   ],
+   [
+    0.0,
+    21
+   ],
+   [
+    0.0,
+    24
+   ]
+  ],
+  "context_recall": [
+   [
+    0.0,
+    3
+   ],
+   [
+    0.0,
+    7
+   ],
+   [
+    0.0,
+    9
+   ],
+   [
+    0.0,
+    10
+   ],
+   [
+    0.0,
+    13
+   ]
+  ]
+ },
+ "agreement": {
+  "n": 24,
+  "three_class": 7,
+  "binary": 8,
+  "by_grader": {
+   "manual": [
+    5,
+    17
+   ],
+   "automated": [
+    2,
+    7
+   ]
+  },
+  "confusion": {
+   "SUPPORTED -> PARTIALLY_SUPPORTED": 14,
+   "PARTIALLY_SUPPORTED -> PARTIALLY_SUPPORTED": 7,
+   "UNSUPPORTED -> PARTIALLY_SUPPORTED": 1,
+   "SUPPORTED -> UNSUPPORTED": 2
+  },
+  "pairs": [
+   {
+    "id": 1,
+    "status": "answered",
+    "ragas": 0.812,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 2,
+    "status": "answered",
+    "ragas": 0.739,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 3,
+    "status": "answered_partial",
+    "ragas": 0.773,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 4,
+    "status": "answered",
+    "ragas": 0.778,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 5,
+    "status": "answered_partial",
+    "ragas": 0.769,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 7,
+    "status": "answered_partial",
+    "ragas": 0.875,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 8,
+    "status": "answered_partial",
+    "ragas": 0.773,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "automated"
+   },
+   {
+    "id": 10,
+    "status": "answered_partial",
+    "ragas": 0.556,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "UNSUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 11,
+    "status": "answered_partial",
+    "ragas": 0.778,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 12,
+    "status": "answered_partial",
+    "ragas": 0.667,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 13,
+    "status": "answered",
+    "ragas": 0.84,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 14,
+    "status": "answered",
+    "ragas": 0.85,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 15,
+    "status": "answered_partial",
+    "ragas": 0.526,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 16,
+    "status": "answered_partial",
+    "ragas": 0.667,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 17,
+    "status": "answered_partial",
+    "ragas": 0.87,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 19,
+    "status": "answered_partial",
+    "ragas": 0.75,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 22,
+    "status": "answered",
+    "ragas": 0.8,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 25,
+    "status": "answered",
+    "ragas": 0.467,
+    "ragas_label": "UNSUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 31,
+    "status": "answered_partial",
+    "ragas": 0.739,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 32,
+    "status": "answered",
+    "ragas": 0.667,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 33,
+    "status": "answered_partial",
+    "ragas": 0.619,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "PARTIALLY_SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 34,
+    "status": "answered_partial",
+    "ragas": 0.143,
+    "ragas_label": "UNSUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 36,
+    "status": "answered",
+    "ragas": 0.7,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   },
+   {
+    "id": 37,
+    "status": "answered_partial",
+    "ragas": 0.9,
+    "ragas_label": "PARTIALLY_SUPPORTED",
+    "existing": "SUPPORTED",
+    "grader": "manual"
+   }
+  ]
+ },
+ "missing_scores": [],
+ "usage_this_run": {},
+ "status_counts": {
+  "answered": 9,
+  "answered_partial": 15,
+  "not_covered": 19
+ }
+}

@@ -1,0 +1,36 @@
+
+id 34: 1/7 statements supported
+  - One study found that wearable, specialized footwear lowered the chance of getting a diabetic foot ulcer.
+      judge: The context states that specialized footwear reduced the risk of diabetic foot ulcers, but it does not say this came from one study; it refers to the included studies generally, so the 'one study' detail is not directly stated.
+  - A diabetic foot ulcer is an open sore on the foot that can happen with diabetes.
+      judge: The context mentions diabetic foot ulcers but does not define them as an open sore on the foot, so this definition is not directly inferable from the context.
+  - The review looked at mixed groups of people with diabetes.
+      judge: The context does not describe the populations in the reviewed studies as mixed groups, so this is not directly inferable.
+  - The review did not specifically look at people with type 2 diabetes.
+      judge: The context does not state which diabetes types were included or excluded, so this cannot be directly inferred.
+  - The studies found in the review do not address exactly what type of footwear is recommended to prevent diabetic foot problems.
+      judge: The context does not mention footwear type recommendations or their absence, so this cannot be directly inferred.
+  - The studies found in the review do not address how footwear should be used to prevent diabetic foot problems.
+      judge: The context does not discuss how footwear should be used or whether the studies address this, so this cannot be directly inferred.
+
+id 13: 21/25 statements supported
+  - Remission of type 2 diabetes means blood sugar levels return to normal or near-normal.
+      judge: The context does not define remission of type 2 diabetes.
+  - Average blood sugar is measured by HbA1c.
+      judge: The context refers to HbA1c levels and hemoglobin A1c but does not explicitly state that HbA1c measures average blood sugar.
+  - HbA1c is a blood test showing average blood sugar over about three months.
+      judge: The context does not describe the HbA1c test or its three-month time frame.
+  - Prediabetes is a condition where blood sugar is higher than normal but not yet high enough to be called diabetes.
+      judge: The context does not define prediabetes.
+
+id 25: 9/14 statements supported
+  - Diabetic macular edema is a condition where fluid builds up and swells the center of the retina.
+      judge: The context mentions DME but never describes it as fluid buildup or swelling of the macular center.
+  - A type of laser treatment covers a wide area of the retina.
+      judge: The context mentions panretinal photocoagulation but does not describe its coverage area; widefield angiography is an imaging method, not a treatment.
+  - The evidence on laser treatment for diabetic eye complications comes from research covering a mix of people with diabetes.
+      judge: The context does not describe the population composition of studies on laser treatment.
+  - Some studies in the research on laser treatment for diabetic eye complications focused specifically on people with type 2 diabetes.
+      judge: The context does not state anything about type 2 diabetes-specific studies of laser treatment.
+  - A person with diabetes should talk to a doctor or pharmacist before changing any diabetes treatment.
+      judge: The context contains no advice about consulting a doctor or pharmacist before changing diabetes treatment.
